@@ -1,0 +1,451 @@
+!    -*- f90 -*-
+python module pyxlight_cs ! in 
+    interface  ! in :xfoil
+        subroutine xfoil ! in :xfoil:XFOIL.INC
+            logical :: ok
+            logical :: limage
+            logical :: sharp
+            logical :: lgamu
+            logical :: lqinu
+            logical :: lvisc
+            logical :: lalfa
+            logical :: lwake
+            logical :: lpacc
+            logical :: lblini
+            logical :: lipan
+            logical :: lqaij
+            logical :: ladij
+            logical :: lwdij
+            logical :: lcpxx
+            logical :: lqvdes
+            logical :: lqrefl
+            logical :: lqspec
+            logical :: lvconv
+            logical :: lcpref
+            logical :: lclock
+            logical :: lpfile
+            logical :: lpfilx
+            logical :: lppsho
+            logical :: lbflap
+            logical :: lflap
+            logical :: leiw
+            logical :: lscini
+            logical :: lforef
+            logical :: lnorm
+            logical :: lgsame
+            logical :: lplcam
+            logical :: lqsym
+            logical :: lgsym
+            logical :: lqgrid
+            logical :: lggrid
+            logical :: lgtick
+            logical :: lqslop
+            logical :: lgslop
+            logical :: lcslop
+            logical :: lqsppl
+            logical :: lgeopl
+            logical :: lgparm
+            logical :: lcpgrd
+            logical :: lblgrd
+            logical :: lblsym
+            logical :: lplot
+            logical :: lsym
+            logical :: liqset
+            logical :: lclip
+            logical :: lvlab
+            logical :: lcurs
+            logical :: lland
+            logical :: lpgrid
+            logical :: lpcdw
+            logical :: lplist
+            logical :: lplegn
+            logical :: lcminp
+            logical :: lhmomp
+            logical dimension(2) :: tforce
+            double complex :: ssple
+            double complex dimension(572) :: sspec
+            double complex dimension(572) :: xspoc
+            double complex dimension(572) :: yspoc
+            double complex dimension(572) :: qgamm
+            double complex dimension(572,5) :: qspec
+            double complex dimension(572,5) :: qspecp
+            double complex :: algam
+            double complex :: clgam
+            double complex :: cmgam
+            double complex dimension(5) :: alqsp
+            double complex dimension(5) :: clqsp
+            double complex dimension(5) :: cmqsp
+            double complex dimension(286) :: qf0
+            double complex dimension(286) :: qf1
+            double complex dimension(286) :: qf2
+            double complex dimension(286) :: qf3
+            double complex :: qdof0
+            double complex :: qdof1
+            double complex :: qdof2
+            double complex :: qdof3
+            double complex :: clspec
+            double complex :: ffilt
+            double complex dimension(286) :: gam
+            double complex dimension(286,2) :: gamu
+            double complex dimension(286) :: gam_a
+            double complex dimension(322) :: sig
+            double complex dimension(322) :: nx
+            double complex dimension(322) :: ny
+            double complex dimension(322) :: apanel
+            double complex :: sst
+            double complex :: sst_go
+            double complex :: sst_gp
+            double complex :: gamte
+            double complex :: gamte_a
+            double complex :: sigte
+            double complex :: sigte_a
+            double complex :: dste
+            double complex :: ante
+            double complex :: aste
+            double complex dimension(322) :: x
+            double complex dimension(322) :: y
+            double complex dimension(322) :: xp
+            double complex dimension(322) :: yp
+            double complex dimension(322) :: s
+            double complex :: sle
+            double complex :: xle
+            double complex :: yle
+            double complex :: xte
+            double complex :: yte
+            double complex :: chord
+            double complex :: yimage
+            double complex dimension(36) :: wgap
+            double complex :: waklen
+            double complex dimension(322) :: qinv
+            double complex dimension(322) :: qvis
+            double complex dimension(322) :: cpi
+            double complex dimension(322) :: cpv
+            double complex dimension(322,2) :: qinvu
+            double complex dimension(322) :: qinv_a
+            double complex dimension(286,286) :: aij
+            double complex dimension(322,322) :: dij
+            double complex :: version
+            double complex :: adeg
+            double complex :: alfa
+            double complex :: awake
+            double complex :: mvisc
+            double complex :: avisc
+            double complex :: xcmref
+            double complex :: ycmref
+            double complex :: cl
+            double complex :: cm
+            double complex :: cd
+            double complex :: cdp
+            double complex :: cdf
+            double complex :: cl_alf
+            double complex :: cl_msq
+            double complex :: psio
+            double complex :: circ
+            double complex :: cosa
+            double complex :: sina
+            double complex :: qinf
+            double complex :: gamma
+            double complex :: gamm1
+            double complex :: minf1
+            double complex :: minf
+            double complex :: minf_cl
+            double complex :: tklam
+            double complex :: tkl_msq
+            double complex :: cpstar
+            double complex :: qstar
+            double complex :: cpmn
+            double complex :: cpmni
+            double complex :: cpmnv
+            double complex :: xcpmni
+            double complex :: xcpmnv
+            integer :: n
+            integer :: nb
+            integer :: nw
+            integer :: npan
+            integer :: ist
+            integer :: kimage
+            integer :: itmax
+            integer :: nseqex
+            integer :: retyp
+            integer :: matyp
+            integer dimension(286) :: aijpiv
+            integer :: idev
+            integer :: idevrp
+            integer :: ipslu
+            integer :: ncolor
+            integer dimension(2) :: icols
+            integer :: nover
+            integer :: ncm
+            integer :: ntk
+            integer dimension(2) :: iblte
+            integer dimension(2) :: nbl
+            integer dimension(229,2) :: ipan
+            integer dimension(229,2) :: isys
+            integer :: nsys
+            integer dimension(2) :: itran
+            integer :: imxbl
+            integer :: ismxbl
+            integer :: iq1
+            integer :: iq2
+            integer :: nsp
+            integer :: nqsp
+            integer :: kqtarg
+            integer :: iacqsp
+            integer :: nc1
+            integer :: nname
+            integer :: nprefix
+            integer :: ncpref
+            integer dimension(8) :: napol
+            integer :: npol
+            integer :: ipact
+            integer :: nlref
+            integer dimension(8) :: icolp
+            integer dimension(8) :: icolr
+            integer dimension(8) :: imatyp
+            integer dimension(8) :: iretyp
+            integer dimension(8) :: nxypol
+            integer :: npolref
+            integer dimension(4,8) :: ndref
+            character*32 :: labref
+            character*1 :: vmxbl
+            character*64 :: fname
+            character*48 :: name
+            character*80 :: ispars
+            character*64 :: oname
+            character*64 :: prefix
+            character dimension(8,64),intent(c) :: pfname
+            character dimension(8,64),intent(c) :: pfnamx
+            character dimension(8,48),intent(c) :: namepol
+            character dimension(8,48),intent(c) :: codepol
+            character dimension(8,48),intent(c) :: nameref
+            double complex dimension(572) :: xb
+            double complex dimension(572) :: yb
+            double complex dimension(572) :: xbp
+            double complex dimension(572) :: ybp
+            double complex dimension(572) :: sb
+            double complex dimension(2288) :: snew
+            double complex :: xbf
+            double complex :: ybf
+            double complex :: xof
+            double complex :: yof
+            double complex :: hmom
+            double complex :: hfx
+            double complex :: hfy
+            double complex :: xbmin
+            double complex :: xbmax
+            double complex :: ybmin
+            double complex :: ybmax
+            double complex :: sble
+            double complex :: chordb
+            double complex :: areab
+            double complex :: radble
+            double complex :: angbte
+            double complex :: ei11ba
+            double complex :: ei22ba
+            double complex :: apx1ba
+            double complex :: apx2ba
+            double complex :: ei11bt
+            double complex :: ei22bt
+            double complex :: apx1bt
+            double complex :: apx2bt
+            double complex :: thickb
+            double complex :: cambrb
+            double complex dimension(1144) :: xcm
+            double complex dimension(1144) :: ycm
+            double complex dimension(1144) :: scm
+            double complex dimension(1144) :: xcmp
+            double complex dimension(1144) :: ycmp
+            double complex dimension(1144) :: xtk
+            double complex dimension(1144) :: ytk
+            double complex dimension(1144) :: stk
+            double complex dimension(1144) :: xtkp
+            double complex dimension(1144) :: ytkp
+            double complex dimension(229,2) :: xssi
+            double complex dimension(229,2) :: uedg
+            double complex dimension(229,2) :: uinv
+            double complex dimension(229,2) :: mass
+            double complex dimension(229,2) :: thet
+            double complex dimension(229,2) :: dstr
+            double complex dimension(229,2) :: ctau
+            double complex dimension(229,2) :: delt
+            double complex dimension(229,2) :: uslp
+            double complex dimension(229,2) :: guxq
+            double complex dimension(229,2) :: guxd
+            double complex dimension(229,2) :: tau
+            double complex dimension(229,2) :: dis
+            double complex dimension(229,2) :: ctq
+            double complex dimension(229,2) :: vti
+            double complex :: reinf1
+            double complex :: reinf
+            double complex :: reinf_cl
+            double complex :: acrit
+            double complex dimension(2) :: xstrip
+            double complex dimension(2) :: xoctr
+            double complex dimension(2) :: yoctr
+            double complex dimension(2) :: xssitr
+            double complex dimension(229,2) :: uinv_a
+            double complex :: rmsbl
+            double complex :: rmxbl
+            double complex :: rlx
+            double complex :: vaccel
+            double complex dimension(286) :: xpref
+            double complex dimension(286) :: cpref
+            double complex dimension(8) :: verspol
+            double complex dimension(800,11,8) :: cpol
+            double complex dimension(800,2,2,8) :: cpolsd
+            double complex dimension(286,2,8) :: cpolxy
+            double complex dimension(8) :: machp1
+            double complex dimension(8) :: reynp1
+            double complex dimension(8) :: acritp
+            double complex dimension(2,8) :: xstripp
+            double complex dimension(128,2,4,8) :: cpolref
+            double complex :: pi
+            double complex :: hopi
+            double complex :: qopi
+            double complex :: dtor
+            double complex :: cvpar
+            double complex :: cterat
+            double complex :: ctrrat
+            double complex :: xsref1
+            double complex :: xsref2
+            double complex :: xpref1
+            double complex :: xpref2
+            double complex :: size
+            double complex :: scrnfr
+            double complex :: plotar
+            double complex :: pfac
+            double complex :: qfac
+            double complex :: vfac
+            double complex :: xwind
+            double complex :: ywind
+            double complex :: xpage
+            double complex :: ypage
+            double complex :: xmarg
+            double complex :: ymarg
+            double complex :: ch
+            double complex :: chg
+            double complex :: chq
+            double complex :: xofair
+            double complex :: yofair
+            double complex :: facair
+            double complex :: xofa
+            double complex :: yofa
+            double complex :: faca
+            double complex :: uprwt
+            double complex :: cpmin
+            double complex :: cpmax
+            double complex :: cpdel
+            double complex dimension(3,4) :: cpolplf
+            double complex :: xcdwid
+            double complex :: xalwid
+            double complex :: xocwid
+            double complex :: xsf
+            double complex :: ysf
+            double complex :: xoff
+            double complex :: yoff
+            double complex :: xgmin
+            double complex :: xgmax
+            double complex :: ygmin
+            double complex :: ygmax
+            double complex :: dxyg
+            double complex :: xcmin
+            double complex :: xcmax
+            double complex :: ycmin
+            double complex :: ycmax
+            double complex :: dxyc
+            double complex :: dyoffc
+            double complex :: xpmin
+            double complex :: xpmax
+            double complex :: ypmin
+            double complex :: ypmax
+            double complex :: dxyp
+            double complex :: dyoffp
+            double complex :: ysfp
+            double complex :: gtick
+            double complex dimension(286,286) :: q
+            double complex dimension(286) :: dq
+            double complex dimension(286) :: dzdg
+            double complex dimension(286) :: dzdn
+            double complex dimension(322) :: dzdm
+            double complex dimension(286) :: dqdg
+            double complex dimension(322) :: dqdm
+            double complex :: qtan1
+            double complex :: qtan2
+            double complex :: z_qinf
+            double complex :: z_alfa
+            double complex :: z_qdof0
+            double complex :: z_qdof1
+            double complex :: z_qdof2
+            double complex :: z_qdof3
+            double complex dimension(3,2,322) :: va
+            double complex dimension(3,2,322) :: vb
+            double complex dimension(3,2,322) :: vdel
+            double complex dimension(3,322,322) :: vm
+            double complex dimension(3,2) :: vz
+            common /cl01/ ok,limage,sharp,lgamu,lqinu,lvisc,lalfa,lwake,lpacc,lblini,lipan,lqaij,ladij,lwdij,lcpxx,lqvdes,lqrefl,lqspec,lvconv,lcpref,lclock,lpfile,lpfilx,lppsho,lbflap,lflap,leiw,lscini,lforef,lnorm,lgsame,lplcam,lqsym,lgsym,lqgrid,lggrid,lgtick,lqslop,lgslop,lcslop,lqsppl,lgeopl,lgparm,lcpgrd,lblgrd,lblsym,lplot,lsym,liqset,lclip,lvlab,lcurs,lland,lpgrid,lpcdw,lplist,lplegn,lcminp,lhmomp,lexitflag
+            common /cl02/ tforce
+            common /cr07/ ssple,sspec,xspoc,yspoc,qgamm,qspec,qspecp,algam,clgam,cmgam,alqsp,clqsp,cmqsp,qf0,qf1,qf2,qf3,qdof0,qdof1,qdof2,qdof3,clspec,ffilt
+            common /cr06/ gam,gamu,gam_a,sig,nx,ny,apanel,sst,sst_go,sst_gp,gamte,gamte_a,sigte,sigte_a,dste,ante,aste
+            common /cr05/ x,y,xp,yp,s,sle,xle,yle,xte,yte,chord,yimage,wgap,waklen
+            common /cr04/ qinv,qvis,cpi,cpv,qinvu,qinv_a
+            common /cr03/ aij,dij
+            common /cr01/ version
+            common /cr09/ adeg,alfa,awake,mvisc,avisc,xcmref,ycmref,cl,cm,cd,cdp,cdf,cl_alf,cl_msq,psio,circ,cosa,sina,qinf,gamma,gamm1,minf1,minf,minf_cl,tklam,tkl_msq,cpstar,qstar,cpmn,cpmni,cpmnv,xcpmni,xcpmnv
+            common /ci04/ n,nb,nw,npan,ist,kimage,itmax,nseqex,retyp,matyp,aijpiv,idev,idevrp,ipslu,ncolor,icols,nover,ncm,ntk
+            common /ci05/ iblte,nbl,ipan,isys,nsys,itran
+            common /ci06/ imxbl,ismxbl
+            common /ci01/ iq1,iq2,nsp,nqsp,kqtarg,iacqsp,nc1,nname,nprefix
+            common /ci03/ ncpref,napol,npol,ipact,nlref,icolp,icolr,imatyp,iretyp,nxypol,npolref,ndref
+            common /cc02/ labref
+            common /cc03/ vmxbl
+            common /cc01/ fname,name,ispars,oname,prefix,pfname,pfnamx,namepol,codepol,nameref
+            common /cr14/ xb,yb,xbp,ybp,sb,snew,xbf,ybf,xof,yof,hmom,hfx,hfy,xbmin,xbmax,ybmin,ybmax,sble,chordb,areab,radble,angbte,ei11ba,ei22ba,apx1ba,apx2ba,ei11bt,ei22bt,apx1bt,apx2bt,thickb,cambrb,xcm,ycm,scm,xcmp,ycmp,xtk,ytk,stk,xtkp,ytkp
+            common /cr15/ xssi,uedg,uinv,mass,thet,dstr,ctau,delt,uslp,guxq,guxd,tau,dis,ctq,vti,reinf1,reinf,reinf_cl,acrit,xstrip,xoctr,yoctr,xssitr,uinv_a
+            common /cr17/ rmsbl,rmxbl,rlx,vaccel
+            common /cr10/ xpref,cpref,verspol,cpol,cpolsd,cpolxy,machp1,reynp1,acritp,xstripp,cpolref
+            common /cr11/ pi,hopi,qopi,dtor
+            common /cr12/ cvpar,cterat,ctrrat,xsref1,xsref2,xpref1,xpref2
+            common /cr13/ size,scrnfr,plotar,pfac,qfac,vfac,xwind,ywind,xpage,ypage,xmarg,ymarg,ch,chg,chq,xofair,yofair,facair,xofa,yofa,faca,uprwt,cpmin,cpmax,cpdel,cpolplf,xcdwid,xalwid,xocwid
+            common /cr18/ xsf,ysf,xoff,yoff,xgmin,xgmax,ygmin,ygmax,dxyg,xcmin,xcmax,ycmin,ycmax,dxyc,dyoffc,xpmin,xpmax,ypmin,ypmax,dxyp,dyoffp,ysfp,gtick
+            common /qmat/ q,dq,dzdg,dzdn,dzdm,dqdg,dqdm,qtan1,qtan2,z_qinf,z_alfa,z_qdof0,z_qdof1,z_qdof2,z_qdof3
+            common /vmat/ va,vb,vdel,vm,vz
+        end subroutine xfoil
+        subroutine oper
+        end subroutine oper
+        subroutine setnaca(id)
+          integer, intent(in) :: id
+        end subroutine setnaca
+        subroutine naca(camber,position,thickness,xreturn,yreturn)
+          double complex, intent(in) :: camber
+          double complex, intent(in) :: position
+          double complex, intent(in) :: thickness
+          double complex, dimension(189),intent(out) :: xreturn
+          double complex, dimension(189),intent(out) :: yreturn
+        end subroutine naca
+        subroutine ijsect(n,x,y,pex,area,slen_bn,xc,xmin,xmax,xexint,yc,ymin,ymax,yexint,aixx,aixxt,aiyy,aiyyt,aj,ajt) ! in :test:xgeom_test.f90
+            integer  intent(in) :: n
+            double complex dimension(n), intent(in) :: x
+            double complex dimension(n), intent(in) :: y
+            double complex intent(in):: pex
+            double complex intent(out):: area
+            double complex intent(out):: slen_bn
+            double complex intent(out):: xc
+            double complex intent(out):: xmin
+            double complex intent(out):: xmax
+            double complex intent(out):: xexint
+            double complex intent(out):: yc
+            double complex intent(out):: ymin
+            double complex intent(out):: ymax
+            double complex intent(out):: yexint
+            double complex intent(out):: aixx
+            double complex intent(out):: aixxt
+            double complex intent(out):: aiyy
+            double complex intent(out):: aiyyt
+            double complex intent(out):: aj
+            double complex intent(out):: ajt
+        end subroutine ijsect
+    end interface 
+end python module pyxlight_cs
+
+! This file was auto-generated with f2py (version:2.39.235_1700).
+! See http://cens.ioc.ee/projects/f2py2e/
