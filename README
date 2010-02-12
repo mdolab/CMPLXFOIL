@@ -1,20 +1,15 @@
 Readme for pyXLIGHT
 
 pyXLIGHT is a stripped down version of Mark Drela's XFOIL code. To
-compile the code the user must do two things:
+compile the code the user must first extract the config.tar.gz archive
+in the config directory. 
 
-Open f2pyit.sh in the root directory and select which compiler you
-will be using:
+Two configurations have been tested:
 
-Two have been tested on linux-intel boxes:
-
-    Intel Fortran Compiler 10.1
+    Intel Fortran Compiler
     Gfortan compiler
 
-Comment out the version you are not using. 
+To compile and wrap type:
 
-Second, open src/Makefile and comment out the section coorsponding to
-the compiler you are not using. Again, select Intel or Gfortran
-
-Note: Both REAL and COMPLEX versions are included. Comment out a
-the complex section if you only want the real version.
+make intel  OR
+make gfortran

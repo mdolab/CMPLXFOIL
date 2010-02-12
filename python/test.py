@@ -10,7 +10,7 @@ airfoil.iter = 100
 
 print '----------------- Real Results ----------------'
 print 'Angle      Cl         Cd         Cm'
-for angle in linspace(0,100,11):
+for angle in linspace(0,10,11):
     cl,cd,cm,lexitflag = airfoil.solveAlpha(angle)
     print '%8f   %8f   %8f   %8f   '%(angle,cl,cd,cm)
 
