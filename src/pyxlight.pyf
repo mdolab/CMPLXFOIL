@@ -431,6 +431,14 @@ python module pyxlight ! in
         subroutine bendump
         end subroutine bendump
 
+        subroutine xdriver(x_coor,y_coor,ncoor,ccl,ccd) ! in :test:xdriver.f
+            real*8,intent(in), dimension(ncoor) :: x_coor
+            real*8,intent(in), dimension(ncoor),depend(ncoor) :: y_coor
+            integer optional,check(len(x_coor)>=ncoor),depend(x_coor) :: ncoor=len(x_coor)
+            real*8, intent(out) :: ccl
+            real*8, intent(out) :: ccd
+          end subroutine xdriver
+
     end interface 
 end python module pyxlight
 

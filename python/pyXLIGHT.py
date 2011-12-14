@@ -155,3 +155,8 @@ class xfoilAnalysis():
             print 'Either %s or %s does not exist'%(common_block,variable)
         # end if
         return
+
+
+    def xdriver(self):
+        cl,cd = xfoil.xdriver(self.x,self.y)
+        print 'Cl=',cl,'Cd=',cd
