@@ -3,7 +3,7 @@
 from numpy import linspace,real
 import pyXLIGHT
 
-airfoil = pyXLIGHT.xfoilAnalysis('naca0012.dat')
+airfoil = pyXLIGHT.xfoilAnalysis('naca2412.dat')
 airfoil.re = 100000
 airfoil.mach = 0.0
 airfoil.iter = 100

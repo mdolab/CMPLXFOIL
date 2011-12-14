@@ -19,7 +19,8 @@ OBJ =	xfoil.o\
 	 aread.o\
 	 userio.o\
 	 spline.o\
-	 naca.o
+	 naca.o\
+	 xdriver.o\
 
 default: libxfoil
 

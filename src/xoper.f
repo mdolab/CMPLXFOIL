@@ -20,6 +20,9 @@ C***********************************************************************
 C
       SUBROUTINE OPER
       INCLUDE 'XFOIL.INC'
+
+
+
       CHARACTER*1 ANS
       CHARACTER*4 COMAND, COMOLD
       LOGICAL LRECALC, LCPX, LCONV
