@@ -83,14 +83,14 @@ c        write(*,*) 'Y',Y
       END ! XFOIL
 C---------------------------------------------------
 
-      SUBROUTINE setNACA(ID)
+      SUBROUTINE setNACA(camber,position,thickness)
       ! This function is wrapped
 	use complexify 
 	implicit complex(a-h, o-z) 
       include 'c_XFOIL.INC'
-      integer ID
+      complex camber,position, thickness
       complex*16 Xreturn (NB),Yreturn(NB)
-      call NACA(ID,XB,YB)
+      call NACA(camber,position,thickness,XB,YB)
       END
 
       SUBROUTINE NACA(camber,position,thickness,Xreturn,Yreturn)
@@ -480,7 +480,7 @@ C---- MSES domain parameters (not used in XFOIL)
       ISPARS = ' -2.0  3.0  -2.5  3.5'
 C
 C---- set MINF, REINF, based on current CL-dependence
-      CALL MRCL(1.0,MINF_CL,REINF_CL)
+      CALL MRCL((1.0,0.0),MINF_CL,REINF_CL)
 C
 C---- set various compressibility parameters from MINF
       CALL COMSET
@@ -657,7 +657,7 @@ C
       REINF1 = RMILL * 1.0E6
 C
 C---- set MINF, REINF
-      CALL MRCL(1.0,MINF_CL,REINF_CL)
+      CALL MRCL((1.0,0.0),MINF_CL,REINF_CL)
 C
 C---- set various compressibility parameters from new MINF
       CALL COMSET
