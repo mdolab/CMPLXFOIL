@@ -20,7 +20,7 @@ __version__ = '$Revision: $'
 # Standard Python modules
 # =============================================================================
 
-import os, sys, string, copy, pdb, time
+import os, sys, copy, pdb, time
 
 # =============================================================================
 # External Python modules
@@ -40,7 +40,7 @@ class xfoilAnalysis():
         try:
             f = open(airfoil_file,'r')
         except:
-            print 'There was an error opening the airfoil file %s'%(airfoil_file)
+            print('There was an error opening the airfoil file %s'%(airfoil_file))
             sys.exit(1)
         # end if
 
@@ -52,8 +52,8 @@ class xfoilAnalysis():
         x = []
         y = []
         for line in f:
-            x.append(float(string.split(line)[0]))
-            y.append(float(string.split(line)[1]))
+            x.append(float(line.split()[0]))
+            y.append(float(line.split()[1]))
         # end if
         self.x = array(x)
         self.y = array(y)
@@ -132,8 +132,8 @@ class xfoilAnalysis():
             # Now we can set it
             exec('xfoil.%s.%s = value'%(common_block,variable))
         else:
-            print 'There was an error in setValue'
-            print 'Either %s or %s does not exist'%(common_block,variable)
+            print('There was an error in setValue')
+            print('Either %s or %s does not exist'%(common_block,variable))
         # end if
         return
         
@@ -151,12 +151,12 @@ class xfoilAnalysis():
             # Now we can set it
             exec('xfoil_cs.%s.%s = value'%(common_block,variable))
         else:
-            print 'There was an error in setValueComplex'
-            print 'Either %s or %s does not exist'%(common_block,variable)
+            print('There was an error in setValueComplex')
+            print('Either %s or %s does not exist'%(common_block,variable))
         # end if
         return
 
 
     def xdriver(self):
         cl,cd = xfoil.xdriver(self.x,self.y)
-        print 'Cl=',cl,'Cd=',cd
+        print('Cl=',cl,'Cd=',cd)
