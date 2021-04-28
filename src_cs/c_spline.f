@@ -571,13 +571,15 @@ C
       DO 10 ISEG=2, N-2
         IF(S(ISEG).ceq.S(ISEG+1)) THEN
          NSEG = ISEG - ISEG0 + 1
-         CALL SPLIND(X(ISEG0),XS(ISEG0),S(ISEG0),NSEG,-999.0,-999.0)
+         CALL SPLIND(X(ISEG0),XS(ISEG0),S(ISEG0),NSEG,
+     &              (-999.0,0.0),(-999.0,0.0))
          ISEG0 = ISEG+1
         ENDIF
    10 CONTINUE
 C
       NSEG = N - ISEG0 + 1
-      CALL SPLIND(X(ISEG0),XS(ISEG0),S(ISEG0),NSEG,-999.0,-999.0)
+      CALL SPLIND(X(ISEG0),XS(ISEG0),S(ISEG0),NSEG,
+     &           (-999.0,0.0),(-999.0,0.0))
 C
       RETURN
       END ! SEGSPL

@@ -70,7 +70,7 @@ fudge_format_statement = 0
 def main():
     global fix_relationals, fudge_format_statement
     bad = 0
-    print header_string
+    print(header_string)
     if not sys.argv[1:]: # No arguments
         err('usage: \n\t' + sys.argv[0]
             + ' [-lucky_logic|-MIPS_logic|-fudge_format] file-pattern \t\n' + \
@@ -139,8 +139,8 @@ patt_blankline = re.compile(r'^\s*$')
 def fix_file(filename):
     try:
         f = open(filename, 'r')
-    except IOError, msg:
-        err(filename + ': cannot open: ' + `msg` + '\n')
+    except IOError as msg:
+        err(filename + ': cannot open: ' + repr(msg) + '\n')
         return 1
     rep(filename + ':\n')
     # Read file to memory
@@ -152,7 +152,7 @@ def fix_file(filename):
     while 1:
         if (i_line >= len(lines)): break
         if is_routine(lines[i_line]):
-            print i_line, 'routine found'
+            print(i_line, 'routine found')
             routine_found = 1
             break
         i_line = i_line + 1
@@ -160,7 +160,7 @@ def fix_file(filename):
         i_line = 0
         i_line, is_EOF = fix_routine(i_line, lines)
         if is_EOF:
-            print 'EOF'
+            print('EOF')
     else:                  # routine file
         while 1:
             if (i_line >= len(lines)): break
@@ -179,14 +179,14 @@ def fix_routine(i_line, lines):
     # fix type declaration of functions
     newline, implicit_found = fix_line(lines[i_line], implicit_found)
     if newline != lines[i_line]:
-        rep(`i_line-1` + '\n')
+        rep(repr(i_line-1) + '\n')
         rep('< ' + lines[i_line])
         rep('> ' + newline)
         lines[i_line] = newline
     i_line = i_line + 1
     i_line = skip_continuation(i_line, lines)
     lines.insert(i_line, use_module_line)            
-    rep(`i_line+1`+'\n'+'>'+use_module_line) 
+    rep(repr(i_line+1)+'\n'+'>'+use_module_line) 
     i_line_use = i_line
     i_line = i_line + 1
     lines = join_lines(i_line, lines)
@@ -200,14 +200,14 @@ def fix_routine(i_line, lines):
         newline, implicit_found = fix_line(lines[i_line], implicit_found)
         #newline=lines[i_line]
         if newline != lines[i_line]:
-            rep(`i_line-1` + '\n')
+            rep(repr(i_line-1) + '\n')
             rep('< ' + lines[i_line])
             rep('> ' + newline)
             lines[i_line] = newline
         i_line = i_line + 1
     if not implicit_found:
         lines.insert(i_line_use+1, implicit_complex_line)
-        rep(`i_line_use+1`+'\n'+'>'+implicit_complex_line) 
+        rep(repr(i_line_use+1)+'\n'+'>'+implicit_complex_line) 
         i_line = i_line + 1
     return i_line, is_EOF
 
@@ -217,10 +217,10 @@ def write_output(filename, lines):
     newname = os.path.join(head, 'c_' + tail)
     try:
         g = open(newname, 'w')
-    except IOError, msg:
+    except IOError as msg:
         f.close()
         err(newname+': cannot create: '+\
-            `msg`+'\n')
+            repr(msg)+'\n')
         return 1
     for line in lines: g.write(line)
     g.close()
