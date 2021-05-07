@@ -15,8 +15,8 @@ intel:
 	ln -s ./config/config.LINUX_INTEL.mk common.mk
 	( cd src && make) || exit 1; 
 	( cd src_cs && make) || exit 1;
-	f2py  --fcompiler=intel --f90flags=-r8 -c -m pyxlight src/pyxlight.pyf src/libxfoil.a
-	f2py  --fcompiler=intel --f90flags=-r8 -c -m pyxlight_cs src_cs/pyxlight_cs.pyf src_cs/libxfoil_cs.a
+	f2py  --fcompiler=intel --f90flags=-r8 -c -m libpyxlight src/libpyxlight.pyf src/libxfoil.a
+	f2py  --fcompiler=intel --f90flags=-r8 -c -m libpyxlight_cs src_cs/libpyxlight_cs.pyf src_cs/libxfoil_cs.a
 	mv *.so ./pyxlight
 	-rm common.mk
 
@@ -26,8 +26,8 @@ gfortran:
 	ln -s ./config/config.LINUX_GFORTRAN.mk common.mk
 	( cd src && make) || exit 1; 
 	( cd src_cs && make) || exit 1;
-	f2py  --fcompiler=gfortran --f90flags=-fdefault-real8 -c -m pyxlight src/pyxlight.pyf src/libxfoil.a
-	f2py  --fcompiler=gfortran --f90flags=-fdefault-real8 -c -m pyxlight_cs src_cs/pyxlight_cs.pyf src_cs/libxfoil_cs.a
+	f2py  --fcompiler=gfortran --f90flags=-fdefault-real8 -c -m libpyxlight src/libpyxlight.pyf src/libxfoil.a
+	f2py  --fcompiler=gfortran --f90flags=-fdefault-real8 -c -m libpyxlight_cs src_cs/libpyxlight_cs.pyf src_cs/libxfoil_cs.a
 	mv *.so ./pyxlight
 	-rm common.mk
 
