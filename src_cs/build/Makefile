@@ -39,10 +39,10 @@ OFILES=$(f90Files:%.f90=%.o) $(F90Files:%.F90=%.o) $(f77FilesNoDir:%.f=%.o)
 
 .PHONY: sources lib
 
-default: lib ../f2py/libpyxlight.pyf
-	f2py  --fcompiler=$(FF90) --f90flags='$(FFLAGS)' -c -m libpyxlight ../f2py/libpyxlight.pyf libxfoil.a
+default: lib ../f2py/libpyxlight_cs.pyf
+	f2py  --fcompiler=$(FF90) --f90flags='$(FFLAGS)' -c -m libpyxlight_cs ../f2py/libpyxlight_cs.pyf libxfoil_cs.a
 
 sources: $(OFILES)
 
 lib: sources
-	$(AR) $(AR_FLAGS) libxfoil.a $(OFILES)
+	$(AR) $(AR_FLAGS) libxfoil_cs.a $(OFILES)

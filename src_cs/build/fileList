@@ -1,0 +1,15 @@
+fortranFiles = complexify.f90
+
+f77Files = c_xfoil.f\
+           c_xpanel.f\
+           c_xoper.f\
+           c_xsolve.f\
+           c_xgdes.f\
+           c_xbl.f\
+           c_xblsys.f\
+           c_xgeom.f\
+           c_xutils.f\
+           c_aread.f\
+           c_userio.f\
+           c_spline.f\
+           c_naca.f\
