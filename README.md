@@ -6,17 +6,18 @@ Gradient computation is implemented with the complex-step method.
 
 Installation
 ------------
-To install pyXLIGHT, the XFOIL components must be compiled first.
-The package has configuration files for GFortran and Intel compilers, which can be used to build the Fortran components:
+To install pyXLIGHT, the XFOIL components must be compiled and wrapped with f2py.
+The package has configuration files for Linux using GFortran and Intel compilers, located in the `config/defaults/` directory.
+Copy one of the defaults to the base `config/` directory and adjust it as needed:
 
-Intel:
 ```
-make intel
+cp config/defaults/config.LINUX_GFORTRAN.mk config/config.mk
 ```
 
-GFortran:
+Then, build the Fortran code and f2py wrapper using the provided Makefile.
+In the root directory, use the `make` command:
 ```
-make gfortran
+make
 ```
 
 This will build both the real and complex version of the code, copying one Python library for each to the `pyxlight/` directory.
