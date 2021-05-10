@@ -1,8 +1,3 @@
-#*********************************************************
-# Makefile for XFOIL V6.93 programs
-# H.Youngren 4/24/01
-# M.Drela
-#*********************************************************
 # Include user supplied configuration file
 include ../../config/config.mk
 
@@ -41,6 +36,7 @@ OFILES=$(f90Files:%.f90=%.o) $(F90Files:%.F90=%.o) $(f77FilesNoDir:%.f=%.o)
 
 default: lib ../f2py/libpyxlight.pyf
 	f2py  --fcompiler=$(FF90) --f90flags='$(FFLAGS)' -c -m libpyxlight ../f2py/libpyxlight.pyf libxfoil.a
+	mv *.so ../../pyxlight
 
 sources: $(OFILES)
 

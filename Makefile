@@ -1,43 +1,33 @@
-#*********************************************************
-# Makefile for pyXLIGHT and pyXLIGHT Complex
-# G. Kenway Feb 7, 2010
-#*********************************************************
+# Master makefile for pyXLIGHT. The actual makefile you want is:
+# src/build/Makefile
+# src_cs/build/Makefile
 
-default: 
-	@echo "Please select one of the following configurations"
-	@echo "Also ensure that config.tar.gz is extracted in config/"
-	@echo "make intel       -> for linux pcs with intel compiler"
-	@echo "make gfortran    -> for linux pcs with gfortran compiler"
-
-intel:
-	@echo "Linux - Intel"
-	-rm common.mk
-	ln -s ./config/config.LINUX_INTEL.mk common.mk
-	( cd src && make) || exit 1; 
-	( cd src_cs && make) || exit 1;
-	f2py  --fcompiler=intel --f90flags=-r8 -c -m libpyxlight src/libpyxlight.pyf src/libxfoil.a
-	f2py  --fcompiler=intel --f90flags=-r8 -c -m libpyxlight_cs src_cs/libpyxlight_cs.pyf src_cs/libxfoil_cs.a
-	mv *.so ./pyxlight
-	-rm common.mk
-
-gfortran:
-	@echo "Linux - Gfortran"
-	-rm common.mk
-	ln -s ./config/config.LINUX_GFORTRAN.mk common.mk
-	( cd src && make) || exit 1; 
-	( cd src_cs && make) || exit 1;
-	f2py  --fcompiler=gfortran --f90flags=-fdefault-real8 -c -m libpyxlight src/libpyxlight.pyf src/libxfoil.a
-	f2py  --fcompiler=gfortran --f90flags=-fdefault-real8 -c -m libpyxlight_cs src_cs/libpyxlight_cs.pyf src_cs/libxfoil_cs.a
-	mv *.so ./pyxlight
-	-rm common.mk
+default:
+# Check if the config.mk file is in the config dir.
+	@if [ ! -f "config/config.mk" ]; then \
+	echo "Before compiling, copy an existing config file from the "; \
+	echo "config/defaults/ directory to the config/ directory and  "; \
+	echo "rename to config.mk. For example:"; \
+	echo " ";\
+	echo "  cp config/defaults/config.LINUX_GFORTRAN.mk config/config.mk"; \
+	echo " ";\
+	echo "The modify this config file as required. With the config file"; \
+	echo " specified, rerun 'make' and the build will start"; \
+	else make pyxlight_build;\
+	fi;
 
 clean:
-	-rm common.mk
-	ln -s ./config/config.LINUX_INTEL.mk common.mk || exit 1;# Doesn't matter which 
-	-(cd python && rm *.so)
-	(cd src && $(MAKE) $@) || exit 1;
-	(cd src_cs && $(MAKE) $@) || exit 1;
-	-rm common.mk
+	rm -fr src/build/*.mod
+	rm -fr src/build/*.o
+	rm -fr src/build/*.a
+	rm -fr src/build/*.so
+	rm -fr src_cs/build/*.mod
+	rm -fr src_cs/build/*.o
+	rm -fr src_cs/build/*.a
+	rm -fr src_cs/build/*.so
+	rm -f *~ config.mk;
 
-# Note we have to copy a dummy config file to common.mk so it doesn't complain
-# about the file not existing
+pyxlight_build:
+	ln -sf config/config.mk config.mk;
+	(cd src/build/ && make)
+	(cd src_cs/build/ && make)
