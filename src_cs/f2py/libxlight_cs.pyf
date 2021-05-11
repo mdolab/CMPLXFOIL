@@ -1,5 +1,5 @@
 !    -*- f90 -*-
-python module libpyxlight_cs ! in 
+python module libxlight_cs ! in 
     interface  ! in :xfoil
         subroutine xfoil ! in :xfoil:XFOIL.INC
             logical :: ok
@@ -445,7 +445,7 @@ python module libpyxlight_cs ! in
             double complex intent(out):: ajt
         end subroutine ijsect
     end interface 
-end python module libpyxlight_cs
+end python module libxlight_cs
 
 ! This file was auto-generated with f2py (version:2.39.235_1700).
 ! See http://cens.ioc.ee/projects/f2py2e/
