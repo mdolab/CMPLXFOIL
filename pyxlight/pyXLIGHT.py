@@ -11,7 +11,7 @@ Developers:
 
 History
 -------
-	v. 1.0 - Initial Class Creation (GKK, 2009)
+    v. 1.0 - Initial Class Creation (GKK, 2009)
 """
 
 __version__ = "$Revision: $"
@@ -20,7 +20,7 @@ __version__ = "$Revision: $"
 # Standard Python modules
 # =============================================================================
 
-import os, sys, copy, pdb, time
+import sys
 
 # =============================================================================
 # External Python modules
@@ -40,9 +40,8 @@ class xfoilAnalysis:
     def __init__(self, airfoil_file, re=1e5, mach=0.0, iter=50):
         try:
             f = open(airfoil_file, "r")
-        except:
-            print("There was an error opening the airfoil file %s" % (airfoil_file))
-            sys.exit(1)
+        except OSError:
+            raise OSError("There was an error opening the airfoil file %s" % (airfoil_file))
         # end if
 
         self.re = re
@@ -129,7 +128,7 @@ class xfoilAnalysis:
         # dynamically create new attributes thus if the varibale
         # doesn't exist it is just created...which is not what we want
         exec("has_attribute = hasattr(xfoil.%s,'%s')" % (common_block, variable))
-        if has_attribute:
+        if has_attribute:  # NOQA: F821
             # Now we can set it
             exec("xfoil.%s.%s = value" % (common_block, variable))
         else:
@@ -148,7 +147,7 @@ class xfoilAnalysis:
         # dynamically create new attributes thus if the varibale
         # doesn't exist it is just created...which is not what we want
         exec("has_attribute = hasattr(xfoil_cs.%s,'%s')" % (common_block, variable))
-        if has_attribute:
+        if has_attribute:  # NOQA: F821
             # Now we can set it
             exec("xfoil_cs.%s.%s = value" % (common_block, variable))
         else:
