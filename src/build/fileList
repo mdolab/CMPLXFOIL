@@ -1,0 +1,16 @@
+fortranFiles =
+
+f77Files = xfoil.f\
+               xpanel.f\
+               xoper.f\
+               xsolve.f\
+               xgdes.f\
+               xbl.f\
+               xblsys.f\
+               xgeom.f\
+               xutils.f\
+               aread.f\
+               userio.f\
+               spline.f\
+               naca.f\
+               xdriver.f\

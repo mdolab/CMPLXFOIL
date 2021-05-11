@@ -4,13 +4,25 @@ pyXLIGHT
 pyXLIGHT is a version of Mark Drela's XFOIL code with the GUI features removed.
 Gradient computation is implemented with the complex-step method.
 
+Installation
+------------
+To install pyXLIGHT, the XFOIL components must be compiled and wrapped with f2py.
+The package has configuration files for Linux using GFortran and Intel compilers, located in the `config/defaults/` directory.
+Copy one of the defaults to the base `config/` directory and adjust it as needed:
 
-Two configurations have been tested:
+```
+cp config/defaults/config.LINUX_GFORTRAN.mk config/config.mk
+```
 
-    Intel Fortran Compiler
-    Gfortan compiler
+Then, build the Fortran code and f2py wrapper using the provided Makefile.
+In the root directory, use the `make` command:
+```
+make
+```
 
-To compile the code type:
+This will build both the real and complex version of the code, copying one Python library for each to the `pyxlight/` directory.
+The Python package can then be installed as:
 
-    make intel  OR
-    make gfortran
+```
+pip install .
+```

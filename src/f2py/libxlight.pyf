@@ -1,5 +1,5 @@
 !    -*- f90 -*-
-python module pyxlight ! in 
+python module libxlight ! in 
     interface  ! in :xfoil
         subroutine xfoil ! in :xfoil:XFOIL.INC
             logical :: ok
@@ -440,7 +440,7 @@ python module pyxlight ! in
           end subroutine xdriver
 
     end interface 
-end python module pyxlight
+end python module libxlight
 
 ! This file was auto-generated with f2py (version:2.39.235_1700).
 ! See http://cens.ioc.ee/projects/f2py2e/

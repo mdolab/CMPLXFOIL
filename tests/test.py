@@ -1,7 +1,7 @@
 # Test script to test pyXLIGHT
 
 from numpy import linspace,real
-import pyXLIGHT
+from pyxlight import pyXLIGHT
 
 airfoil = pyXLIGHT.xfoilAnalysis('naca2412.dat')
 airfoil.re = 100000

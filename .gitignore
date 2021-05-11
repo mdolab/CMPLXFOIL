@@ -1,0 +1,8 @@
+*.mod
+*.o
+*.a
+*.so
+*.pyc
+*.autogen
+config.mk
+config/config*

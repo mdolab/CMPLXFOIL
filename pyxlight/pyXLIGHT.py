@@ -32,8 +32,8 @@ from numpy import zeros,array
 # Extension modules
 # =============================================================================
 
-import pyxlight as xfoil
-import pyxlight_cs as xfoil_cs
+from . import libxlight as xfoil
+from . import libxlight_cs as xfoil_cs
 
 class xfoilAnalysis():
     def __init__(self, airfoil_file, re=1e5,mach=0.0,iter=50):
