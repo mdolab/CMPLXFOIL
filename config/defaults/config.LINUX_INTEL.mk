@@ -2,5 +2,5 @@
 AR       = ar
 AR_FLAGS = -rvs
 
-FC       = ifort
+FF90     = ifort
 FFLAGS   = -O2 -r8 -fPIC

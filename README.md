@@ -1,5 +1,6 @@
 pyXLIGHT
 ========
+[![Build Status](https://dev.azure.com/mdolab/Public/_apis/build/status/mdolab.pyXLIGHT?repoName=mdolab%2FpyXLIGHT&branchName=master)](https://dev.azure.com/mdolab/Public/_build/latest?definitionId=40&repoName=mdolab%2FpyXLIGHT&branchName=master)
 
 pyXLIGHT is a version of Mark Drela's XFOIL code with the GUI features removed.
 Gradient computation is implemented with the complex-step method.
