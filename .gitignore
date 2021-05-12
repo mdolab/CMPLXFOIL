@@ -6,3 +6,4 @@
 *.autogen
 config.mk
 config/config*
+*.out
