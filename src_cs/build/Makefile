@@ -2,7 +2,7 @@
 include ../../config/config.mk
 
 # Group Fortran compiler flags
-FF_ALL_FLAGS = $(FFLAGS)
+FF90_ALL_FLAGS = $(FF90_FLAGS)
 
 # Include full list of files
 include fileList
@@ -35,7 +35,7 @@ OFILES=$(f90Files:%.f90=%.o) $(F90Files:%.F90=%.o) $(f77FilesNoDir:%.f=%.o)
 .PHONY: sources lib
 
 default: lib ../f2py/libxlight_cs.pyf
-	f2py  --fcompiler=$(FF90) --f90flags='$(FFLAGS)' -c -m libxlight_cs ../f2py/libxlight_cs.pyf libxfoil_cs.a
+	f2py  --fcompiler=$(FF90) --f90flags='$(FF90_ALL_FLAGS)' -c -m libxlight_cs ../f2py/libxlight_cs.pyf libxfoil_cs.a
 	mv *.so ../../pyxlight
 
 sources: $(OFILES)

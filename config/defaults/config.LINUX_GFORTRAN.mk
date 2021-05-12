@@ -2,5 +2,5 @@
 AR       = ar
 AR_FLAGS = -rvs
 
-FF90     = gfortran
-FFLAGS   = -O2 -fdefault-real-8 -fPIC
+FF90       = gfortran
+FF90_FLAGS = -O2 -fdefault-real-8 -fPIC
