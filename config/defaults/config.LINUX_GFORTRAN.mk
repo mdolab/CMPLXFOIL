@@ -2,5 +2,8 @@
 AR       = ar
 AR_FLAGS = -rvs
 
-FC       = gfortran
-FFLAGS   = -O2 -fdefault-real-8 -fPIC
+FF90       = gfortran
+FF90_FLAGS = -O2 -fdefault-real-8 -fPIC
+
+F2PY = f2py
+F2PY_FF90 = gnu95

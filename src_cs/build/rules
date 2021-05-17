@@ -18,7 +18,7 @@
 	@echo
 
 %.o: %.f
-	$(FF90) $(FFLAGS) -c $< -o $*.o
+	$(FF90) $(FF90_ALL_FLAGS) -c $< -o $*.o
 	@echo
 	@echo "        --- Compiled $*.f successfully ---"
 	@echo
