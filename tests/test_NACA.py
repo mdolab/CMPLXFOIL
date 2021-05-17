@@ -54,3 +54,7 @@ class Test_NACA(unittest.TestCase):
         for angle in linspace(0,10,11):
             cl,cd,cm,lexitflag = airfoil.solveAlphaComplex(angle)
             print('%8f   %8f   %8f   %8f   '%(angle,real(cl),real(cd),real(cm)))
+
+
+if __name__ == '__main__':
+    unittest.main()
