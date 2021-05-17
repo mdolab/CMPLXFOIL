@@ -23,7 +23,7 @@ __version__ = "$Revision: $"
 # =============================================================================
 # External Python modules
 # =============================================================================
-from numpy import zeros, array
+import numpy as np
 
 # =============================================================================
 # Extension modules
@@ -51,8 +51,8 @@ class xfoilAnalysis:
             x.append(float(line.split()[0]))
             y.append(float(line.split()[1]))
         # end if
-        self.x = array(x)
-        self.y = array(y)
+        self.x = np.array(x)
+        self.y = np.array(y)
 
         self.setCoordinates(self.x, self.y)
         self.setCoordinatesComplex(self.x, self.y)
@@ -66,10 +66,10 @@ class xfoilAnalysis:
         # FIXED length of 572. Simply set the coordinates up
         # to NB and leave the remainder as zeros
         NB = len(x)
-        x_input = zeros(N)
-        y_input = zeros(N)
-        x_input[:NB] = array(x).copy()
-        y_input[:NB] = array(y).copy()
+        x_input = np.zeros(N)
+        y_input = np.zeros(N)
+        x_input[:NB] = np.array(x).copy()
+        y_input[:NB] = np.array(y).copy()
         xfoil.ci04.nb = NB
         xfoil.cr14.xb = x_input
         xfoil.cr14.yb = y_input
@@ -83,10 +83,10 @@ class xfoilAnalysis:
         # FIXED length of 572. Simply set the coordinates up
         # to NB and leave the remainder as zeros
         NB = len(x)
-        x_input = zeros(N, "D")
-        y_input = zeros(N, "D")
-        x_input[:NB] = array(x).copy()
-        y_input[:NB] = array(y).copy()
+        x_input = np.zeros(N, "D")
+        y_input = np.zeros(N, "D")
+        x_input[:NB] = np.array(x).copy()
+        y_input[:NB] = np.array(y).copy()
         xfoil_cs.ci04.nb = NB
         xfoil_cs.cr14.xb = x_input
         xfoil_cs.cr14.yb = y_input
