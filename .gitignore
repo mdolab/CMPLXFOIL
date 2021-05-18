@@ -7,3 +7,7 @@
 config.mk
 config/config*
 *.out
+
+# Documentation Ignores
+doc/_build/*
+doc/_static/*
