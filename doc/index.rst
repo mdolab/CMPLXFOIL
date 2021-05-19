@@ -1,20 +1,10 @@
-.. pyXLIGHT documentation master file, created by
-   sphinx-quickstart on Tue May 18 17:00:05 2021.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
-
-Welcome to pyXLIGHT's documentation!
+pyXLIGHT
 ====================================
+pyXLIGHT is a version of Mark Drela's XFOIL code with the GUI features removed. Gradient computation is implemented with the complex-step method.
 
 .. toctree::
    :maxdepth: 2
-   :caption: Contents:
 
-
-
-Indices and tables
-==================
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
+   install
+   user-guide
+   citation
