@@ -7,6 +7,7 @@
 config.mk
 config/config*
 *.out
+*.egg-info
 
 # Documentation Ignores
 doc/_build/*
