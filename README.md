@@ -15,7 +15,7 @@ You can then view the built documentation in the ``doc/_build/html/`` by opening
 
 Citing pyXLIGHT
 ---------------
-If you use pyXLIGHT, please [see this page](https://mdolab-pyxlight.readthedocs-hosted.com/en/latest/citation.html) for citation information.
+If you use pyXLIGHT, please see [this page](https://mdolab-pyxlight.readthedocs-hosted.com/en/latest/citation.html) for citation information.
 
 License
 -------
