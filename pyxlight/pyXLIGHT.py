@@ -33,7 +33,7 @@ from . import libxlight_cs as xfoil_cs
 
 
 class xfoilAnalysis:
-    def __init__(self, airfoil_file, re=1e5, mach=0.0, iter=50):
+    def __init__(self, airfoil_file, re=1e5, mach=0.0, iter=50):  # noqa: A002
         try:
             f = open(airfoil_file, "r")
         except OSError:
