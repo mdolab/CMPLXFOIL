@@ -1,29 +1,24 @@
 pyXLIGHT
 ========
 [![Build Status](https://dev.azure.com/mdolab/Public/_apis/build/status/mdolab.pyXLIGHT?repoName=mdolab%2FpyXLIGHT&branchName=master)](https://dev.azure.com/mdolab/Public/_build/latest?definitionId=40&repoName=mdolab%2FpyXLIGHT&branchName=master)
+[![Documentation Status](https://readthedocs.com/projects/mdolab-pyxlight/badge/?version=latest&token=7a9e7987d2288b741e09686619f4cd425b1a7348ebbcca59c0d20b2ad5a003f6)](https://mdolab-pyxlight.readthedocs-hosted.com/en/latest/?badge=latest)
 
 pyXLIGHT is a version of Mark Drela's XFOIL code with the GUI features removed.
 Gradient computation is implemented with the complex-step method.
 
-Installation
-------------
-To install pyXLIGHT, the XFOIL components must be compiled and wrapped with f2py.
-The package has configuration files for Linux using GFortran and Intel compilers, located in the `config/defaults/` directory.
-Copy one of the defaults to the base `config/` directory and adjust it as needed:
+Documentation
+-------------
+Please see the [documentation](https://mdolab-pyxlight.readthedocs-hosted.com/en/latest/) for installation and usage details.
 
-```
-cp config/defaults/config.LINUX_GFORTRAN.mk config/config.mk
-```
+To locally build the documentation, enter the ``doc`` folder and run ``make html`` in the command line prompt.
+You can then view the built documentation in the ``doc/_build/html/`` by opening ``index.html``.
 
-Then, build the Fortran code and f2py wrapper using the provided Makefile.
-In the root directory, use the `make` command:
-```
-make
-```
+Citing pyXLIGHT
+---------------
+If you use pyXLIGHT, please see [this page](https://mdolab-pyxlight.readthedocs-hosted.com/en/latest/citation.html) for citation information.
 
-This will build both the real and complex version of the code, copying one Python library for each to the `pyxlight/` directory.
-The Python package can then be installed as:
+License
+-------
+Copyright 2021 MDO Lab
 
-```
-pip install .
-```
+Distributed using the GNU General Public License (GPL), version 2.0; see the LICENSE.md file for details.
