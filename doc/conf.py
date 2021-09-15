@@ -23,7 +23,7 @@ project = "pyXLIGHT"
 # Built-in Sphinx extensions are already contained in the imported variable
 # here we add external extensions, which must also be added to requirements.txt
 # so that RTD can import and use them
-extensions.extend(["numpydoc"])
+extensions.extend([])
 
 # mock import for autodoc
 # autodoc_mock_imports = ["numpy", "mpi4py", "petsc4py", "baseclasses", "adflow.om_adflow"]

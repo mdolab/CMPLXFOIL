@@ -17,15 +17,13 @@ Package             Version
 =================== =======
 Python              3.X.X
 NumPy               ---
-Sphinx              ---
-sphinx-mdolab-theme ---
 =================== =======
 
 With the exception of Python, which must be installed on your system, these packages can be installed using:
 
 .. code-block:: bash
 
-    $ pip install numpy sphinx sphinx-mdolab-theme
+    $ pip install numpy
 
 Build and Installation
 ----------------------
