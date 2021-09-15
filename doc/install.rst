@@ -21,9 +21,9 @@ NumPy               ---
 
 With the exception of Python, which must be installed on your system, these packages can be installed using:
 
-.. code-block:: bash
+.. prompt:: bash
 
-    $ pip install numpy
+    pip install numpy
 
 Build and Installation
 ----------------------
@@ -32,30 +32,30 @@ These Makefiles require configuration files which specify machine-specific param
 Default configuration files for Linux GCC and Linux Intel are included in the ``config/defaults`` directory.
 Copy a configuration file to the main ``config/`` folder using the command below and modify its contents for your system and installation.
 
-.. code-block:: bash
+.. prompt:: bash
 
-    $ cp config/defaults/config.<version>.mk config/config.mk
+    cp config/defaults/config.<version>.mk config/config.mk
 
 Once the configuration file is adjusted as needed, pyXLIGHT can be built by running ``make`` in the root directory:
 
-.. code-block:: bash
+.. prompt:: bash
 
-    $ make
+    make
 
 This will compile both the real and complex versions of pyXLIGHT, generating Python libraries which reference the XFOIL Fortran modules.
 These will be automatically copied to the ``pyxlight/`` directory.
 
 Once the Python libraries are generated, install pyXLIGHT by running pip install in the root directory:
 
-.. code-block:: bash
+.. prompt:: bash
 
-    $ pip install .
+    pip install .
 
 Verification
 ------------
 pyXLIGHT has a single functionality test, which can be run to ensure that the code can be run and executed.
 This test is located in the ``tests/`` directory and can be run with the command:
 
-.. code-block:: bash
+.. prompt:: bash
 
-    $ testflo -v .
+    testflo -v .
