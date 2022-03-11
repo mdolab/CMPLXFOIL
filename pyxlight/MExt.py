@@ -8,7 +8,6 @@ from pathlib import Path
 import os
 import shutil
 import sys
-import time
 
 
 def _tmp_pkg(tempDir):
