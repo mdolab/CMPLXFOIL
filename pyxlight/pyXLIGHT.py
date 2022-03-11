@@ -52,6 +52,7 @@ class xfoilAnalysis:
         debugger. The MExt module deletes the copied .so file when not
         required which causes issues debugging, by default False
     """
+
     def __init__(self, airfoil_file, re=1e5, mach=0.0, iter=50, debug=False):  # noqa: A002
         try:
             f = open(airfoil_file, "r")
@@ -61,9 +62,9 @@ class xfoilAnalysis:
 
         # Load the compiled module using MExt, allowing multiple imports
         curDir = os.path.basename(os.path.dirname(os.path.realpath(__file__)))
-        time.sleep(.1)  # BOTH of these sleeps are necessary for some reason!
+        time.sleep(0.1)  # BOTH of these sleeps are necessary for some reason!
         self.xfoil = MExt.MExt("libxlight", curDir, debug=debug)._module
-        time.sleep(.1)  # BOTH of these sleeps are necessary for some reason!
+        time.sleep(0.1)  # BOTH of these sleeps are necessary for some reason!
         self.xfoil_cs = MExt.MExt("libxlight_cs", curDir, debug=debug)._module
 
         self.re = re
@@ -128,8 +129,7 @@ class xfoilAnalysis:
         self.xfoil.ci04.itmax = self.iter  # Iterations Limit Set
         self.xfoil.cr09.adeg = angle
         self.xfoil.oper()
-        return self.xfoil.cr09.cl, self.xfoil.cr09.cd, \
-               self.xfoil.cr09.cm, self.xfoil.cl01.lexitflag
+        return self.xfoil.cr09.cl, self.xfoil.cr09.cd, self.xfoil.cr09.cm, self.xfoil.cl01.lexitflag
 
     def solveAlphaComplex(self, angle):
         """Compute the flow solution at and angle of attack angle"""
@@ -139,8 +139,7 @@ class xfoilAnalysis:
         self.xfoil_cs.ci04.itmax = self.iter  # Iterations Limit Set
         self.xfoil_cs.cr09.adeg = angle
         self.xfoil_cs.oper()
-        return self.xfoil_cs.cr09.cl, self.xfoil_cs.cr09.cd, \
-               self.xfoil_cs.cr09.cm, self.xfoil_cs.cl01.lexitflag
+        return self.xfoil_cs.cr09.cl, self.xfoil_cs.cr09.cd, self.xfoil_cs.cr09.cm, self.xfoil_cs.cl01.lexitflag
 
     def setValue(self, common_block, variable, value):
         """
