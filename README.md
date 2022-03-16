@@ -1,6 +1,6 @@
 pyXLIGHT
 ========
-[![Build Status](https://dev.azure.com/mdolab/Public/_apis/build/status/mdolab.pyXLIGHT?repoName=mdolab%2FpyXLIGHT&branchName=master)](https://dev.azure.com/mdolab/Public/_build/latest?definitionId=40&repoName=mdolab%2FpyXLIGHT&branchName=master)
+[![Build Status](https://dev.azure.com/mdolab/Public/_apis/build/status/mdolab.pyXLIGHT?repoName=mdolab%2FpyXLIGHT&branchName=main)](https://dev.azure.com/mdolab/Public/_build/latest?definitionId=40&repoName=mdolab%2FpyXLIGHT&branchName=main)
 [![Documentation Status](https://readthedocs.com/projects/mdolab-pyxlight/badge/?version=latest&token=7a9e7987d2288b741e09686619f4cd425b1a7348ebbcca59c0d20b2ad5a003f6)](https://mdolab-pyxlight.readthedocs-hosted.com/en/latest/?badge=latest)
 
 pyXLIGHT is a version of Mark Drela's XFOIL code with the GUI features removed.
