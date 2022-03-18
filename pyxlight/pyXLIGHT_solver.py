@@ -310,6 +310,10 @@ class PYXLIGHT(BaseSolver, xfoilAnalysis):
             else:
                 returnFuncs[aeroProblem.name + "_" + f] = self.funcs[aeroProblem.name][f]
         funcs.update(returnFuncs)
+
+        # Set the AeroProblem's function names
+        for name in evalFuncs:
+            self.curAP.funcNames[name] = self.curAP.name + "_" + name
     
     def evalFunctionsSens(self, aeroProblem, funcsSens, evalFuncs=None, mode="CS", h=None):
         """
