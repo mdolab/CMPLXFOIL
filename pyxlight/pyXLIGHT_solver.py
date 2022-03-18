@@ -23,7 +23,7 @@ History
 # =============================================================================
 import os
 import time
-from copy import copy
+from copy import copy, deepcopy
 
 # =============================================================================
 # External Python modules
@@ -31,6 +31,7 @@ from copy import copy
 import numpy as np
 from baseclasses import BaseSolver
 from prefoil.preFoil import readCoordFile
+from pygeo.pyGeo import pyGeo
 
 # =============================================================================
 # Extension modules
@@ -68,6 +69,7 @@ class PYXLIGHT(BaseSolver, xfoilAnalysis):
 
         # Read in DAT file and create coordinates. DVGeo needs 3D coordinates
         # so keep the third dimension as dummy coordinates.
+        self.DATFileName = fileName
         self.coords = readCoordFile(fileName)
         self.coords = np.hstack((self.coords, np.zeros((self.coords.shape[0], 1))))
         self.coords0 = self.coords.copy()  # initial coordinates (never changes)
@@ -78,7 +80,11 @@ class PYXLIGHT(BaseSolver, xfoilAnalysis):
 
         # Dictionary with dictionary of functions for each aero problem
         self.funcs = {}
+        self.funcsComplex = {}
         self.functionList = ["cl", "cd", "cm"]  # available functions
+
+        # Possible AeroProblem design variables (only alpha for pyXLIGHT)
+        self.possibleAeroDVs = ["alpha"]
 
     def setDVGeo(self, DVGeo, pointSetKwargs=None):
         """
@@ -159,7 +165,18 @@ class PYXLIGHT(BaseSolver, xfoilAnalysis):
         """
         return self.coords.copy()
 
-    def __call__(self, aeroProblem):
+    def setCoordinatesComplex(self, coords):
+        """
+        Update the complex airfoil coordinates and associated point sets.
+
+        Parameters
+        ----------
+        coords : ndarray
+            New airfoil coordinates (either 2 or 3 columns)
+        """
+        super().setCoordinatesComplex(coords[:, 0].astype(complex), coords[:, 1].astype(complex))
+
+    def __call__(self, aeroProblem, useComplex=False):
         """
         Evaluate XFOIL with the current coordinates and flight conditions (from aeroProblem).
 
@@ -167,27 +184,37 @@ class PYXLIGHT(BaseSolver, xfoilAnalysis):
         ----------
         aeroProblem : :class:`AeroProblem <baseclasses.problems.pyAero_problem.AeroProblem>` instance
             Aero problem to set (gives flight conditions)
+        useComplex : bool
+            Run XFOIL in complex mode
         """
+        xfoil = self.xfoil
+        funcs = self.funcs
+        var_type = float
+        if useComplex:
+            var_type = complex
+            xfoil = self.xfoil_cs
+            funcs = self.funcsComplex
+
         self.setAeroProblem(aeroProblem)
 
         # Set flight condition and options
-        self.xfoil.cr15.reinf1 = aeroProblem.re  # Reynolds number
-        self.xfoil.cr09.minf1 = aeroProblem.mach  # Mach Number set
-        self.xfoil.cr09.adeg = aeroProblem.alpha
-        self.xfoil.ci04.itmax = self.getOption("maxIters")  # Iterations Limit Set
+        xfoil.cr15.reinf1 = aeroProblem.re  # Reynolds number
+        xfoil.cr09.minf1 = aeroProblem.mach  # Mach Number set
+        xfoil.cr09.adeg = aeroProblem.alpha
+        xfoil.ci04.itmax = self.getOption("maxIters")  # Iterations Limit Set
 
         # Call XFOIL
-        self.xfoil.oper()
+        xfoil.oper()
 
         # Store results in dictionary for current aero problem
-        self.funcs[aeroProblem.name] = {
-            "cl": float(self.xfoil.cr09.cl),
-            "cd": float(self.xfoil.cr09.cd),
-            "cm": float(self.xfoil.cr09.cm),
+        funcs[aeroProblem.name] = {
+            "cl": var_type(xfoil.cr09.cl),
+            "cd": var_type(xfoil.cr09.cd),
+            "cm": var_type(xfoil.cr09.cm),
         }
 
         # Check for failure
-        self.curAP.solveFailed = self.curAP.fatalFail = self.xfoil.cl01.lexitflag != 0
+        self.curAP.solveFailed = self.curAP.fatalFail = xfoil.cl01.lexitflag != 0
 
     def checkSolutionFailure(self, aeroProblem, funcs):
         """Take in a an aeroProblem and check for failure.
@@ -218,6 +245,33 @@ class PYXLIGHT(BaseSolver, xfoilAnalysis):
             funcs["fail"] = funcs["fail"] or failFlag
         else:
             funcs["fail"] = failFlag
+    
+    def checkAdjointFailure(self, aeroProblem, funcsSens):
+        """
+        Pass through to checkSolutionFailure to maintain the same interface as ADFLOW.
+
+        Take in an aeroProblem and check for adjoint failure, Then append the
+        fail flag in funcsSens. Information regarding whether or not the
+        last analysis with the aeroProblem was sucessful is
+        included. This information is included as "funcsSens['fail']". If
+        the 'fail' entry already exits in the dictionary the following
+        operation is performed:
+
+        funcsSens['fail'] = funcsSens['fail'] or <did this problem fail>
+
+        In other words, if any one problem fails, the funcsSens['fail']
+        entry will be True. This information can then be used
+        directly in multiPointSparse. For direct interface with pyOptSparse
+        the fail flag needs to be returned separately from the funcs.
+
+        Parameters
+        ----------
+        aeroProblem : pyAero_problem class
+            The aerodynamic problem to to get the solution for
+        funcsSens : dict
+            Dictionary into which the functions are saved.
+        """
+        self.checkSolutionFailure(aeroProblem, funcsSens)
 
     def evalFunctions(self, aeroProblem, funcs, evalFuncs=None, ignoreMissing=False):
         """
@@ -256,6 +310,197 @@ class PYXLIGHT(BaseSolver, xfoilAnalysis):
             else:
                 returnFuncs[aeroProblem.name + "_" + f] = self.funcs[aeroProblem.name][f]
         funcs.update(returnFuncs)
+    
+    def evalFunctionsSens(self, aeroProblem, funcsSens, evalFuncs=None, mode="CS", h=None):
+        """
+        Evaluate the sensitivity of the desired functions given in
+        iterable object, 'evalFuncs' and add them to the dictionary
+        'funcSens'. The keys in the 'funcsSens' dictionary will be have an
+        ``<ap.name>_`` prepended to them.
+
+        Parameters
+        ----------
+        funcsSens : dict
+            Dictionary into which the function derivatives are saved
+        evalFuncs : iterable object containing strings
+            The additional functions the user wants returned that are
+            not already defined in the aeroProblem
+        mode : str ["FD" or "CS"]
+            Specifies how the jacobian vector products will be computed
+        h : float
+            Step sized used when the mode is "FD" or "CS" (must be complex
+            if mode="CS")
+        """
+        # This is the one and only gateway to the getting derivatives
+        # out of xfoil. If you want a derivative, it should come from
+        # here. Thank you.
+        self.setAeroProblem(aeroProblem)
+        if evalFuncs is None:
+            evalFuncs = sorted(list(self.curAP.evalFuncs))
+        else:
+            evalFuncs = sorted(list(evalFuncs))
+
+        # Make the functions lower case
+        evalFuncs = [s.lower() for s in evalFuncs]
+
+        # Get design variables
+        DVs = self.DVGeo.getValues() + self.curAP.DVs
+
+        # Preallocate the funcsSens dictionary with zeros for the desired sensitivities
+        for f in evalFuncs:
+            funcsSens[self.curAP.name + "_" + f] = {}
+            for DV_name, DV_val in DVs.items():
+                if isinstance(DV_val, np.ndarray):
+                    funcsSens[self.curAP.name + "_" + f][DV_name] = np.zeros_like(DV_val)
+                else:
+                    funcsSens[self.curAP.name + "_" + f][DV_name] = np.zeros(1)
+
+        # Loop over design variables and compute derivatives of each
+        for DV_name, DV_val in DVs.items():
+            len_DV = 1 if not isinstance(DV_val, np.ndarray) else len(DV_val)
+            for i in range(len_DV):
+                # Compute the seed for the finite difference/complex step
+                seed = {DV_name: np.zeros_like(DV_val)}
+                seed[DV_name][i] = 1.
+
+                # Compute the sensitivity
+                sens = self.computeJacobianVectorProductFwd(xDvDot=seed, mode=mode, h=h)
+                for f, val in sens.items():
+                    funcsSens[self.curAP.name + "_" + f][DV_name][i] = val
+
+                # Check that the solution converged
+                self.checkSolutionFailure(self.curAP, funcsSens)
+
+    def computeJacobianVectorProductFwd(self, xDvDot=None, xSDot=None, mode="CS", h=None):
+        """This the main python gateway for producing forward mode jacobian
+        vector products. It is not generally called by the user by
+        rather internally or from another solver. A DVGeo object and a
+        mesh object must both be set for this routine.
+        Parameters
+        ----------
+        xDvDot : dict
+            Perturbation on the design variables
+        xSDot : numpy array
+            Perturbation on the surface
+        mode : str ["FD" or "CS"]
+            Specifies how the jacobian vector products will be computed
+        h : float
+            Step sized used when the mode is "FD" or "CS" (must be complex
+            if mode="CS")
+        Returns
+        -------
+        dict
+            Jacobian vector product of evalFuncs given perturbation
+        """
+        if xDvDot is None and xSDot is None:
+            raise ValueError("xDvDot and xSDot cannot both be None")
+        
+        if mode not in ["FD", "CS"]:
+            raise ValueError(f"Jacobian vector product mode \"{mode}\" invalid. Must be either \"FD\" or \"CS\"")
+        
+        possibleDVs = self.possibleAeroDVs + self.DVGeo.getValues().keys()
+        for DV in xDvDot.keys():
+            if DV not in possibleDVs:
+                raise ValueError(f"Perturbed design variable \"{DV}\" is not valid")
+
+        if h is None:
+            if mode == "FD":
+                h = 1e-6
+                orig_funcs = deepcopy(self.funcs[self.curAP.name])
+            elif mode == "CS":
+                h = 1e-100j
+
+        # Process the Xs perturbation
+        if xSDot is None:
+            xsdot = np.zeros_like(self.coords0)
+        else:
+            xsdot = xSDot
+
+        # For the geometric xDvDot perturbation we accumulate into the
+        # already existing (and possibly nonzero) xsdot and xvdot
+        if xDvDot is not None and self.DVGeo is not None:
+            xsdot += self.DVGeo.totalSensitivityProd(
+                xDvDot, self.curAP.ptSetName, config=self.curAP.name
+            ).reshape(xsdot.shape)
+
+        # Perturb the coordinates
+        orig_coords = self.getCoordinates()
+        if mode == "FD":
+            self.setCoordinates(orig_coords + xsdot * h)
+        else:
+            self.setCoordinatesComplex(orig_coords + xsdot * h)
+
+        orig_alpha = copy(self.curAP.alpha)
+        if "alpha" in xDvDot.keys():
+            self.curAP.alpha += xDvDot["alpha"] * h
+        
+        self.__call__(self.curAP, useComplex=mode=="CS")
+
+        # Compute the Jacobian vector products
+        jacVecProd = {}
+        for f in self.functionList:
+            if mode == "FD":
+                jacVecProd[f] = (self.funcs[self.curAP.name][f] - orig_funcs) / h
+            else:
+                jacVecProd[f] = np.imag(self.funcsComplex[self.curAP.name][f]) / np.imag(h)
+
+        # Reset the perturbed variables
+        self.curAP.alpha = orig_alpha
+        if mode == "FD":
+            self.setCoordinates(orig_coords)
+            self.funcs[self.curAP.name] = orig_funcs
+        else:
+            self.setCoordinatesComplex(orig_coords)
+
+        return jacVecProd
+
+    def getTriangulatedMeshSurface(self, offsetDist=1.):
+        """
+        This function returns a pyGeo surface. The intent is
+        to use this for DVConstraints.
+
+        Parameters
+        ----------
+        offsetDist : float
+            Distance to extrude airfoil (same units as airfoil coordinates)
+
+        Returns
+        -------
+        pyGeo surface
+            Extruded airfoil surface
+        """
+        airfoil_list = [self.DATFileName] * 2
+        naf = len(airfoil_list)
+
+        # Airfoil leading edge positions
+        x = [0.0, 0.0]
+        y = [0.0, 0.0]
+        z = [0.0, offsetDist]
+        offset = np.zeros((naf, 2))  # x-y offset applied to airfoil position before scaling
+
+        # Airfoil rotations
+        rot_x = [0.0, 0.0]
+        rot_y = [0.0, 0.0]
+        rot_z = [0.0, 0.0]
+
+        # Airfoil scaling
+        scale = [1.0, 1.0]  # scaling factor on chord lengths
+
+        return pyGeo(
+            "liftingSurface",
+            xsections=airfoil_list,
+            scale=scale,
+            offset=offset,
+            x=x,
+            y=y,
+            z=z,
+            rotX=rot_x,
+            rotY=rot_y,
+            rotZ=rot_z,
+            bluntTe=True,
+            squareTeTip=True,
+            teHeight=0.25 * 0.0254,
+        )
 
     @staticmethod
     def _getDefaultOptions():
