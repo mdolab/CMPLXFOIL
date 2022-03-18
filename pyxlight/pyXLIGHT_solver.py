@@ -74,6 +74,7 @@ class PYXLIGHT(BaseSolver, xfoilAnalysis):
         self.coords = np.hstack((self.coords, np.zeros((self.coords.shape[0], 1))))
         self.coords0 = self.coords.copy()  # initial coordinates (never changes)
         self.setCoordinates(self.coords0)  # set the initial coordinates
+        self.pointSetKwargs = {}
 
         self.curAP = None
         self.DVGeo = None
