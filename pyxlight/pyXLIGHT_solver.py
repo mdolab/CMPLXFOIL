@@ -98,7 +98,7 @@ class PYXLIGHT(BaseSolver, xfoilAnalysis):
         # Save kwargs for addPointSet
         if pointSetKwargs is not None:
             self.pointSetKwargs = pointSetKwargs
-    
+
     def setAeroProblem(self, aeroProblem):
         """
         Sets the aeroProblem to by used by PYXLIGHT.
@@ -127,7 +127,7 @@ class PYXLIGHT(BaseSolver, xfoilAnalysis):
                 coords = self.DVGeo.update(ptSetName, config=aeroProblem.name)
 
                 self.setCoordinates(coords)
-        
+
         self.curAP = aeroProblem
 
     def setCoordinates(self, coords):
@@ -153,7 +153,7 @@ class PYXLIGHT(BaseSolver, xfoilAnalysis):
             where z is a dummy value.
         """
         return self.coords.copy()
-    
+
     def __call__(self, aeroProblem):
         """
         Evaluate XFOIL with the current coordinates and flight conditions (from aeroProblem).
@@ -179,8 +179,40 @@ class PYXLIGHT(BaseSolver, xfoilAnalysis):
             "cl": self.xfoil.cr09.cl,
             "cd": self.xfoil.cr09.cd,
             "cm": self.xfoil.cr09.cm,
-            "exitFlag": self.xfoil.cl01.lexitflag
         }
+
+        # CHeck for failure
+        self.curAP.solveFailed = self.curAP.fatalFail = self.xfoil.cl01.lexitflag[0] != 0
+
+    def checkSolutionFailure(self, aeroProblem, funcs):
+        """Take in a an aeroProblem and check for failure.
+
+        Then append the fail flag in funcs. Information regarding whether or not the last analysis with the aeroProblem
+        was sucessful is included. This information is included as "funcs['fail']". If the 'fail' entry already exits in
+        the dictionary the following operation is performed:
+
+        funcs['fail'] = funcs['fail'] or <did this problem fail>
+
+        In other words, if any one problem fails, the funcs['fail'] entry will be True. This information can then be
+        used directly in multiPointSparse. For direct interface with pyOptSparse the fail flag needs to be returned
+        separately from the funcs.
+
+        Parameters
+        ----------
+        aeroProblem : pyAero_problem class
+            The aerodynamic problem to to get the solution for
+        funcs : dict
+            Dictionary into which the functions are saved.
+        """
+
+        self.setAeroProblem(aeroProblem)
+        # We also add the fail flag into the funcs dictionary. If fail is already there, we just logically 'or' what was
+        # there. Otherwise we add a new entry.
+        failFlag = self.curAP.solveFailed or self.curAP.fatalFail
+        if "fail" in funcs:
+            funcs["fail"] = funcs["fail"] or failFlag
+        else:
+            funcs["fail"] = failFlag
 
     def evalFunctions(self, aeroProblem, funcs, evalFuncs=None, ignoreMissing=False):
         """
