@@ -22,3 +22,17 @@ License
 Copyright 2021 MDO Lab
 
 Distributed using the GNU General Public License (GPL), version 2.0; see the LICENSE.md file for details.
+
+## Methods to implement for pyXLIGHT `AeroSolver` class
+- [ ] `addSlices`: Not exactly sure what this one is needed for
+- [x] `setDVGeo`: Add `DVGeo` object to class
+- [x] `setAeroProblem`: Do that
+- [x] `setCoordinates`: yaaa
+- [x] `getCoordinates`: also that
+- [ ] `getTriangulatedMeshSurface`: Return triangulated surface for `DVCon` use
+- [ ] `setMesh`: Set mesh to be warped (I think this would work the same way with CST?)
+- [x] `__call__`: Take in aero problem and run the solver
+- [x] `evalFunctions`: Evaluate desired functions
+- [x] `checkSolutionFailure`: Check for solution failure so optimizer knows about solver convergence
+- [ ] `evalFunctionSens`: Evaluate gradients of desired functions
+- [ ] `checkAdjointFailure`: Should we return a failure if pyXLIGHT doesn't converge one of the complex step evaluations?
