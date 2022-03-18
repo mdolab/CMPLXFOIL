@@ -23,6 +23,7 @@ History
 # =============================================================================
 import os
 import time
+from copy import copy
 
 # =============================================================================
 # External Python modules
@@ -35,7 +36,8 @@ from prefoil.preFoil import readCoordFile
 # Extension modules
 # =============================================================================
 from . import MExt
-from pyXLIGHT import xfoilAnalysis
+from .pyXLIGHT import xfoilAnalysis
+
 
 class PYXLIGHT(BaseSolver, xfoilAnalysis):
     """
@@ -53,6 +55,7 @@ class PYXLIGHT(BaseSolver, xfoilAnalysis):
         debugger. The MExt module deletes the copied .so file when not
         required which causes issues debugging, by default False
     """
+
     def __init__(self, fileName, options={}, debug=False):
         # Load the compiled module using MExt, allowing multiple imports
         curDir = os.path.basename(os.path.dirname(os.path.realpath(__file__)))
@@ -68,8 +71,10 @@ class PYXLIGHT(BaseSolver, xfoilAnalysis):
         self.coords = readCoordFile(fileName)
         self.coords = np.hstack((self.coords, np.zeros((self.coords.shape[0], 1))))
         self.coords0 = self.coords.copy()  # initial coordinates (never changes)
+        self.setCoordinates(self.coords0)  # set the initial coordinates
 
         self.curAP = None
+        self.DVGeo = None
 
         # Dictionary with dictionary of functions for each aero problem
         self.funcs = {}
@@ -166,7 +171,7 @@ class PYXLIGHT(BaseSolver, xfoilAnalysis):
         self.setAeroProblem(aeroProblem)
 
         # Set flight condition and options
-        self.xfoil.cr15.reinf1 = aeroProblem.reynolds  # Reynolds number
+        self.xfoil.cr15.reinf1 = aeroProblem.re  # Reynolds number
         self.xfoil.cr09.minf1 = aeroProblem.mach  # Mach Number set
         self.xfoil.cr09.adeg = aeroProblem.alpha
         self.xfoil.ci04.itmax = self.getOption("maxIters")  # Iterations Limit Set
@@ -176,13 +181,13 @@ class PYXLIGHT(BaseSolver, xfoilAnalysis):
 
         # Store results in dictionary for current aero problem
         self.funcs[aeroProblem.name] = {
-            "cl": self.xfoil.cr09.cl,
-            "cd": self.xfoil.cr09.cd,
-            "cm": self.xfoil.cr09.cm,
+            "cl": float(self.xfoil.cr09.cl),
+            "cd": float(self.xfoil.cr09.cd),
+            "cm": float(self.xfoil.cr09.cm),
         }
 
-        # CHeck for failure
-        self.curAP.solveFailed = self.curAP.fatalFail = self.xfoil.cl01.lexitflag[0] != 0
+        # Check for failure
+        self.curAP.solveFailed = self.curAP.fatalFail = self.xfoil.cl01.lexitflag != 0
 
     def checkSolutionFailure(self, aeroProblem, funcs):
         """Take in a an aeroProblem and check for failure.
@@ -235,7 +240,7 @@ class PYXLIGHT(BaseSolver, xfoilAnalysis):
         self.setAeroProblem(aeroProblem)
         if evalFuncs is None:
             evalFuncs = sorted(list(self.curAP.evalFuncs))
-        else:o
+        else:
             evalFuncs = sorted(list(evalFuncs))
 
         # Make the functions lower case
@@ -247,7 +252,7 @@ class PYXLIGHT(BaseSolver, xfoilAnalysis):
             if f not in self.functionList:
                 # Either throw an error (if requested) or skip it
                 if not ignoreMissing:
-                    raise ValueError(f"Supplied function \"{f}\" is not in the available functions {self.functionList}.")
+                    raise ValueError(f'Supplied function "{f}" is not in the available functions {self.functionList}.')
             else:
                 returnFuncs[aeroProblem.name + "_" + f] = self.funcs[aeroProblem.name][f]
         funcs.update(returnFuncs)
