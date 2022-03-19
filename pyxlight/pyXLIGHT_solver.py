@@ -532,7 +532,7 @@ class PYXLIGHT(BaseSolver, xfoilAnalysis):
         if "alpha" in xDvDot.keys():
             self.curAP.alpha += xDvDot["alpha"] * h
 
-        self.__call__(self.curAP, useComplex=mode == "CS", deriv=True, writeSolution=False)
+        self.__call__(self.curAP, useComplex=mode == "CS", deriv=True)
 
         # Compute the Jacobian vector products
         jacVecProd = {}
@@ -645,7 +645,7 @@ class PYXLIGHT(BaseSolver, xfoilAnalysis):
         if fileName is not None:
             self.airfoilFig.savefig(fileName)
 
-        return fig
+        return self.airfoilFig
 
     def updateAirfoilPlot(self):
         """
@@ -659,7 +659,7 @@ class PYXLIGHT(BaseSolver, xfoilAnalysis):
 
         self.airfoilAx.lines.pop(0)
         self.airfoilAx.plot(x, y, color=color)
-        self.airfoilAx.ylim([min(y) - 0.01, max(y) + 0.01])
+        self.airfoilAx.set_ylim([min(y) - 0.01, max(y) + 0.01])
         plt.pause(0.5)
 
     @staticmethod
