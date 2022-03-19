@@ -30,8 +30,18 @@ from copy import copy, deepcopy
 # =============================================================================
 import numpy as np
 from baseclasses import BaseSolver
-from prefoil.preFoil import readCoordFile
+from prefoil.preFoil import readCoordFile, _writeDat
 from pygeo.pyGeo import pyGeo
+import matplotlib.pyplot as plt
+try:
+    import niceplots as nice
+    nice.setRCParams()
+    plt.rcParams["font.size"] = 12
+    colors = nice.get_niceColors()
+    color = colors["Blue"]
+except ImportError:
+    print("Install niceplots for nice looking airfoil figures")
+    color = "b"
 
 # =============================================================================
 # Extension modules
@@ -139,6 +149,12 @@ class PYXLIGHT(BaseSolver, xfoilAnalysis):
                 coords = self.DVGeo.update(ptSetName, config=aeroProblem.name)
 
                 self.setCoordinates(coords)
+        
+        # Initialize the callCounter if it's not already an attribute
+        try:
+            aeroProblem.callCounter
+        except AttributeError:
+            aeroProblem.callCounter = 0
 
         self.curAP = aeroProblem
 
@@ -177,7 +193,7 @@ class PYXLIGHT(BaseSolver, xfoilAnalysis):
         """
         super().setCoordinatesComplex(coords[:, 0].astype(complex), coords[:, 1].astype(complex))
 
-    def __call__(self, aeroProblem, useComplex=False):
+    def __call__(self, aeroProblem, useComplex=False, deriv=False, writeSolution=False):
         """
         Evaluate XFOIL with the current coordinates and flight conditions (from aeroProblem).
 
@@ -187,6 +203,15 @@ class PYXLIGHT(BaseSolver, xfoilAnalysis):
             Aero problem to set (gives flight conditions)
         useComplex : bool
             Run XFOIL in complex mode
+        deriv : bool
+            Set to True if the call is associated with the derivative calculation.
+            callCounter will be incremented only if this is False
+        writeSolution : bool or str
+            If True, will write a dat file with the file name
+            (current aeroProblem name) + "_" + (call count) + ".dat".
+            If string, will write a dat file to file with string as file
+            name (".dat" will be automatically appended).
+            If False, will not write dat file.
         """
         xfoil = self.xfoil
         funcs = self.funcs
@@ -216,6 +241,32 @@ class PYXLIGHT(BaseSolver, xfoilAnalysis):
 
         # Check for failure
         self.curAP.solveFailed = self.curAP.fatalFail = xfoil.cl01.lexitflag != 0
+
+        # If not a derivative call, increment callCounter
+        if not deriv:
+            self.curAP.callCounter += 1
+        
+        # Write dat file if desired
+        if isinstance(writeSolution, bool):
+            if writeSolution:
+                self.writeSolution()
+        elif isinstance(writeSolution, str):
+            self.writeSolution(filename=writeSolution)
+        else:
+            raise ValueError(f"writeSolution value of {writeSolution} is not valid")
+    
+    def writeSolution(self, filename=None):
+        """
+        Write dat file with the current coordinates.
+
+        Parameters
+        ----------
+        filename : str
+            File name for saved dat file (".dat" will be automatically appended).
+        """
+        if filename is None:
+            filename = f"{self.curAP.name}_{self.curAP.callCounter}"
+        _writeDat(filename, self.coords[:, 0], self.coords[:, 1])
 
     def checkSolutionFailure(self, aeroProblem, funcs):
         """Take in a an aeroProblem and check for failure.
@@ -439,7 +490,7 @@ class PYXLIGHT(BaseSolver, xfoilAnalysis):
         if "alpha" in xDvDot.keys():
             self.curAP.alpha += xDvDot["alpha"] * h
         
-        self.__call__(self.curAP, useComplex=mode=="CS")
+        self.__call__(self.curAP, useComplex=mode=="CS", deriv=True, writeSolution=False)
 
         # Compute the Jacobian vector products
         jacVecProd = {}
@@ -506,6 +557,61 @@ class PYXLIGHT(BaseSolver, xfoilAnalysis):
             squareTeTip=True,
             teHeight=0.25 * 0.0254,
         )
+    
+    def plotAirfoil(self, filename=None):
+        """
+        Plots the current airfoil and returns the figure.
+
+        Parameters
+        ----------
+        filename : str, optional
+            Filename to save to, if none specified it will
+            show the plot with plt.show()
+        
+        Returns
+        -------
+        matplotlib figure
+            Figure with airfoil plotted to it
+        """
+        # Get coordinates
+        x = self.coords[:, 0]
+        y = self.coords[:, 1]
+
+        fig = plt.figure(figsize=[10, 5])
+        plt.ion()
+        plt.show()
+        plt.plot(x, y, color=color)
+        plt.xlim([min(x) - 0.01, max(x) + 0.01])
+        plt.ylim([min(y) - 0.01, max(y) + 0.01])
+        plt.xlabel('x/c')
+        plt.ylabel('y/c')
+        plt.gca().set_aspect('equal')
+        plt.gca().spines['right'].set_visible(False)
+        plt.gca().spines['top'].set_visible(False)
+        plt.gca().yaxis.set_ticks_position('left')
+        plt.gca().xaxis.set_ticks_position('bottom')
+
+        if filename is None:
+            plt.pause(0.5)
+        else:
+            plt.savefig(filename)
+        
+        return fig
+    
+    def updateAirfoilPlot(self):
+        """
+        Updates the airfoil plot with current airfoil shape.
+        Assumes that the current figure is the one with the
+        airfoil on it and it was the most recently plotted line.
+        """
+        # Get coordinates
+        x = self.coords[:, 0]
+        y = self.coords[:, 1]
+
+        plt.gca().lines.pop(0)
+        plt.plot(x, y, color=color)
+        plt.ylim([min(y) - 0.01, max(y) + 0.01])
+        plt.pause(0.5)
 
     @staticmethod
     def _getDefaultOptions():
