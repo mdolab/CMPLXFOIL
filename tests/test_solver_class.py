@@ -29,7 +29,7 @@ class Test_NACA(unittest.TestCase):
         solver = PYXLIGHT(os.path.join(baseDir, "naca0012.dat"))
         funcs = {}
         alphas = np.linspace(-10, 10, 5)
-        for i, alpha in enumerate(alphas):
+        for _, alpha in enumerate(alphas):
             self.ap.name = f"polar_{alpha}deg"
             self.ap.alpha = alpha
             solver(self.ap)
