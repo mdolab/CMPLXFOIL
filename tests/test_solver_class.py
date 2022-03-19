@@ -51,7 +51,8 @@ class Test_NACA(unittest.TestCase):
             "polar_10.0deg_cl": 1.1589444225017087,
             "polar_10.0deg_cm": 0.0012188640029523216,
         }
-        self.assertDictEqual(funcs, true_funcs)
+        for key, true_val in true_funcs.items():
+            self.assertAlmostEqual(true_val, funcs[key])
 
 
 if __name__ == "__main__":
