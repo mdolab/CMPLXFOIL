@@ -15,7 +15,7 @@ Developers:
 
 History
 -------
-    v. 1.0 - Initial Class Creation (EA, 2022)
+    v. 1.0 - Initial Class Creation (EA + AG, 2022)
 """
 
 # =============================================================================
@@ -98,6 +98,10 @@ class PYXLIGHT(BaseSolver, xfoilAnalysis):
 
         # Possible AeroProblem design variables (only alpha for pyXLIGHT)
         self.possibleAeroDVs = ["alpha"]
+
+        # Figure and axes used by self.plotAirfoil and self.updateAirfoilPlot
+        self.airfoilFig = None
+        self.airfoilAx = None
 
     def setDVGeo(self, DVGeo, pointSetKwargs=None):
         """
@@ -196,7 +200,7 @@ class PYXLIGHT(BaseSolver, xfoilAnalysis):
         """
         super().setCoordinatesComplex(coords[:, 0].astype(complex), coords[:, 1].astype(complex))
 
-    def __call__(self, aeroProblem, useComplex=False, deriv=False, writeSolution=False):
+    def __call__(self, aeroProblem, useComplex=False, deriv=False):
         """
         Evaluate XFOIL with the current coordinates and flight conditions (from aeroProblem).
 
@@ -207,14 +211,8 @@ class PYXLIGHT(BaseSolver, xfoilAnalysis):
         useComplex : bool
             Run XFOIL in complex mode
         deriv : bool
-            Set to True if the call is associated with the derivative calculation.
-            callCounter will be incremented only if this is False
-        writeSolution : bool or str
-            If True, will write a dat file with the file name
-            (current aeroProblem name) + "_" + (call count) + ".dat".
-            If string, will write a dat file to file with string as file
-            name (".dat" will be automatically appended).
-            If False, will not write dat file.
+            Set to True if the call is associated with the derivative calculation. callCounter will be incremented and
+            writeSolution called only if this is False
         """
         xfoil = self.xfoil
         funcs = self.funcs
@@ -249,27 +247,64 @@ class PYXLIGHT(BaseSolver, xfoilAnalysis):
         if not deriv:
             self.curAP.callCounter += 1
 
-        # Write dat file if desired
-        if isinstance(writeSolution, bool):
-            if writeSolution:
-                self.writeSolution()
-        elif isinstance(writeSolution, str):
-            self.writeSolution(filename=writeSolution)
-        else:
-            raise ValueError(f"writeSolution value of {writeSolution} is not valid")
+        # Write solution files if desired
+        if not deriv:
+            self.writeSolution()
 
-    def writeSolution(self, filename=None):
-        """
-        Write dat file with the current coordinates.
+    def writeSolution(self, outputDir=None, baseName=None, number=None):
+        """This is a generic shell function that potentially writes the various output files. The intent is that the
+        user or calling program can call this file and ADflow write all the files that the user has defined. It is
+        recommended that this function is used along with the associated logical flags in  the options to determine the
+        desired writing procedure.
 
         Parameters
         ----------
-        filename : str
+        outputDir : str
+            Use the supplied output directory
+        baseName : str
+            Use this supplied string for the base filename. Typically only used from an external solver.
+        number : int
+            Use the user supplied number to index solution. Again, only typically used from an external solver.
+        """
+        if outputDir is None:
+            outputDir = self.getOption("outputDirectory")
+
+        if baseName is None:
+            baseName = self.curAP.name
+
+        # If we are numbering solution, it saving the sequence of
+        # calls, add the call number
+        if number is not None:
+            # We need number based on the provided number:
+            baseName = baseName + "_%3.3d" % number
+        else:
+            # if number is none, i.e. standalone, but we need to
+            # number solutions, use internal counter
+            if self.getOption("numberSolutions"):
+                baseName = baseName + "_%3.3d" % self.curAP.callCounter
+
+        # Join to get the actual filename root
+        base = os.path.join(outputDir, baseName)
+
+        if self.getOption("writeCoordinates"):
+            self.writeCoordinates(base)
+
+        if self.getOption("plotAirfoil"):
+            self.plotAirfoil()
+
+        # --- Output methods to be added ---
+        # if self.getOption("writeSliceFile"):
+        #     self.writeSlice()
+
+    def writeCoordinates(self, fileName):
+        """Write dat file with the current coordinates.
+
+        Parameters
+        ----------
+        fileName : str
             File name for saved dat file (".dat" will be automatically appended).
         """
-        if filename is None:
-            filename = f"{self.curAP.name}_{self.curAP.callCounter}"
-        _writeDat(filename, self.coords[:, 0], self.coords[:, 1])
+        _writeDat(fileName, self.coords[:, 0], self.coords[:, 1])
 
     def checkSolutionFailure(self, aeroProblem, funcs):
         """Take in a an aeroProblem and check for failure.
@@ -565,14 +600,14 @@ class PYXLIGHT(BaseSolver, xfoilAnalysis):
             teHeight=0.25 * 0.0254,
         )
 
-    def plotAirfoil(self, filename=None):
+    def plotAirfoil(self, fileName=None):
         """
         Plots the current airfoil and returns the figure.
 
         Parameters
         ----------
-        filename : str, optional
-            Filename to save to, if none specified it will
+        fileName : str, optional
+            FileName to save to, if none specified it will
             show the plot with plt.show()
 
         Returns
@@ -580,28 +615,35 @@ class PYXLIGHT(BaseSolver, xfoilAnalysis):
         matplotlib figure
             Figure with airfoil plotted to it
         """
-        # Get coordinates
-        x = self.coords[:, 0]
-        y = self.coords[:, 1]
 
-        fig = plt.figure(figsize=[10, 5])
-        plt.ion()
-        plt.show()
-        plt.plot(x, y, color=color)
-        plt.xlim([min(x) - 0.01, max(x) + 0.01])
-        plt.ylim([min(y) - 0.01, max(y) + 0.01])
-        plt.xlabel("x/c")
-        plt.ylabel("y/c")
-        plt.gca().set_aspect("equal")
-        plt.gca().spines["right"].set_visible(False)
-        plt.gca().spines["top"].set_visible(False)
-        plt.gca().yaxis.set_ticks_position("left")
-        plt.gca().xaxis.set_ticks_position("bottom")
+        if self.airfoilFig is None:
+            # Get coordinates
+            x = self.coords[:, 0]
+            y = self.coords[:, 1]
 
-        if filename is None:
-            plt.pause(0.5)
+            fig = plt.figure(figsize=[10, 5])
+            plt.ion()
+            plt.show()
+            plt.plot(x, y, color=color)
+            plt.xlim([min(x) - 0.01, max(x) + 0.01])
+            plt.ylim([min(y) - 0.01, max(y) + 0.01])
+            plt.xlabel("x/c")
+            plt.ylabel("y/c")
+            plt.gca().set_aspect("equal")
+            plt.gca().spines["right"].set_visible(False)
+            plt.gca().spines["top"].set_visible(False)
+            plt.gca().yaxis.set_ticks_position("left")
+            plt.gca().xaxis.set_ticks_position("bottom")
+
+            if fileName is None:
+                plt.pause(0.5)
+            self.airfoilFig = fig
+            self.airfoilAx = plt.gca()
         else:
-            plt.savefig(filename)
+            self.updateAirfoilPlot()
+
+        if fileName is not None:
+            self.airfoilFig.savefig(fileName)
 
         return fig
 
@@ -615,13 +657,17 @@ class PYXLIGHT(BaseSolver, xfoilAnalysis):
         x = self.coords[:, 0]
         y = self.coords[:, 1]
 
-        plt.gca().lines.pop(0)
-        plt.plot(x, y, color=color)
-        plt.ylim([min(y) - 0.01, max(y) + 0.01])
+        self.airfoilAx.lines.pop(0)
+        self.airfoilAx.plot(x, y, color=color)
+        self.airfoilAx.ylim([min(y) - 0.01, max(y) + 0.01])
         plt.pause(0.5)
 
     @staticmethod
     def _getDefaultOptions():
         return {
             "maxIters": [int, 100],  # maximum iterations for XFOIL solver
+            "writeCoordinates": [bool, True],  # Whether to write coordinates to .dat file when `writeSolution` called
+            "plotAirfoil": [bool, False],  # Whether to plot airfoil while running
+            "outputDirectory": [str, "."],  # Where to put output files
+            "numberSolutions": [bool, True], # Whether to add call counter to output file names
         }
