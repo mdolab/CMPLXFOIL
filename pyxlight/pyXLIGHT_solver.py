@@ -133,6 +133,7 @@ class PYXLIGHT(BaseSolver, xfoilAnalysis):
             # DVGeo appeared and we have not embedded points!
             if ptSetName not in self.DVGeo.points:
                 self.DVGeo.addPointSet(self.coords0, ptSetName, **self.pointSetKwargs)
+                aeroProblem.ptSetName = ptSetName
 
             # Check if our point-set is up to date:
             if not self.DVGeo.pointSetUpToDate(ptSetName):
@@ -246,7 +247,7 @@ class PYXLIGHT(BaseSolver, xfoilAnalysis):
             funcs["fail"] = funcs["fail"] or failFlag
         else:
             funcs["fail"] = failFlag
-    
+
     def checkAdjointFailure(self, aeroProblem, funcsSens):
         """
         Pass through to checkSolutionFailure to maintain the same interface as ADFLOW.
@@ -315,7 +316,7 @@ class PYXLIGHT(BaseSolver, xfoilAnalysis):
         # Set the AeroProblem's function names
         for name in evalFuncs:
             self.curAP.funcNames[name] = self.curAP.name + "_" + name
-    
+
     def evalFunctionsSens(self, aeroProblem, funcsSens, evalFuncs=None, mode="CS", h=None):
         """
         Evaluate the sensitivity of the desired functions given in
@@ -349,14 +350,16 @@ class PYXLIGHT(BaseSolver, xfoilAnalysis):
         evalFuncs = [s.lower() for s in evalFuncs]
 
         # Get design variables
-        DVs = self.DVGeo.getValues() + self.curAP.DVs
+        DVs = self.DVGeo.getValues()
+        for dv in self.curAP.DVs.values():
+            DVs[dv.key] = np.atleast_1d(dv.value)
 
         # Preallocate the funcsSens dictionary with zeros for the desired sensitivities
         for f in evalFuncs:
             funcsSens[self.curAP.name + "_" + f] = {}
             for DV_name, DV_val in DVs.items():
                 if isinstance(DV_val, np.ndarray):
-                    funcsSens[self.curAP.name + "_" + f][DV_name] = np.zeros_like(DV_val)
+                    funcsSens[self.curAP.name + "_" + f][DV_name] = np.zeros(DV_val.shape, dtype=float)
                 else:
                     funcsSens[self.curAP.name + "_" + f][DV_name] = np.zeros(1)
 
@@ -370,8 +373,8 @@ class PYXLIGHT(BaseSolver, xfoilAnalysis):
 
                 # Compute the sensitivity
                 sens = self.computeJacobianVectorProductFwd(xDvDot=seed, mode=mode, h=h)
-                for f, val in sens.items():
-                    funcsSens[self.curAP.name + "_" + f][DV_name][i] = val
+                for f in evalFuncs:
+                    funcsSens[self.curAP.name + "_" + f][DV_name][i] = sens[f]
 
                 # Check that the solution converged
                 self.checkSolutionFailure(self.curAP, funcsSens)
@@ -399,14 +402,16 @@ class PYXLIGHT(BaseSolver, xfoilAnalysis):
         """
         if xDvDot is None and xSDot is None:
             raise ValueError("xDvDot and xSDot cannot both be None")
-        
+
         if mode not in ["FD", "CS"]:
             raise ValueError(f"Jacobian vector product mode \"{mode}\" invalid. Must be either \"FD\" or \"CS\"")
-        
-        possibleDVs = self.possibleAeroDVs + self.DVGeo.getValues().keys()
+
+        geoDVs = list(self.DVGeo.getValues().keys())
+        possibleDVs = self.possibleAeroDVs + geoDVs
         for DV in xDvDot.keys():
             if DV not in possibleDVs:
                 raise ValueError(f"Perturbed design variable \"{DV}\" is not valid")
+
 
         if h is None:
             if mode == "FD":
@@ -423,9 +428,10 @@ class PYXLIGHT(BaseSolver, xfoilAnalysis):
 
         # For the geometric xDvDot perturbation we accumulate into the
         # already existing (and possibly nonzero) xsdot and xvdot
+        geoxDvDot = {k: xDvDot[k] for k in geoDVs if k in xDvDot}
         if xDvDot is not None and self.DVGeo is not None:
             xsdot += self.DVGeo.totalSensitivityProd(
-                xDvDot, self.curAP.ptSetName, config=self.curAP.name
+                geoxDvDot, self.curAP.ptSetName, config=self.curAP.name
             ).reshape(xsdot.shape)
 
         # Perturb the coordinates
@@ -438,7 +444,7 @@ class PYXLIGHT(BaseSolver, xfoilAnalysis):
         orig_alpha = copy(self.curAP.alpha)
         if "alpha" in xDvDot.keys():
             self.curAP.alpha += xDvDot["alpha"] * h
-        
+
         self.__call__(self.curAP, useComplex=mode=="CS")
 
         # Compute the Jacobian vector products
