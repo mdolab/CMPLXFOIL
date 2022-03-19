@@ -369,7 +369,7 @@ class PYXLIGHT(BaseSolver, xfoilAnalysis):
             for i in range(len_DV):
                 # Compute the seed for the finite difference/complex step
                 seed = {DV_name: np.zeros_like(DV_val)}
-                seed[DV_name][i] = 1.
+                seed[DV_name][i] = 1.0
 
                 # Compute the sensitivity
                 sens = self.computeJacobianVectorProductFwd(xDvDot=seed, mode=mode, h=h)
@@ -404,14 +404,13 @@ class PYXLIGHT(BaseSolver, xfoilAnalysis):
             raise ValueError("xDvDot and xSDot cannot both be None")
 
         if mode not in ["FD", "CS"]:
-            raise ValueError(f"Jacobian vector product mode \"{mode}\" invalid. Must be either \"FD\" or \"CS\"")
+            raise ValueError(f'Jacobian vector product mode "{mode}" invalid. Must be either "FD" or "CS"')
 
         geoDVs = list(self.DVGeo.getValues().keys())
         possibleDVs = self.possibleAeroDVs + geoDVs
         for DV in xDvDot.keys():
             if DV not in possibleDVs:
-                raise ValueError(f"Perturbed design variable \"{DV}\" is not valid")
-
+                raise ValueError(f'Perturbed design variable "{DV}" is not valid')
 
         if h is None:
             if mode == "FD":
@@ -430,9 +429,9 @@ class PYXLIGHT(BaseSolver, xfoilAnalysis):
         # already existing (and possibly nonzero) xsdot and xvdot
         geoxDvDot = {k: xDvDot[k] for k in geoDVs if k in xDvDot}
         if xDvDot is not None and self.DVGeo is not None:
-            xsdot += self.DVGeo.totalSensitivityProd(
-                geoxDvDot, self.curAP.ptSetName, config=self.curAP.name
-            ).reshape(xsdot.shape)
+            xsdot += self.DVGeo.totalSensitivityProd(geoxDvDot, self.curAP.ptSetName, config=self.curAP.name).reshape(
+                xsdot.shape
+            )
 
         # Perturb the coordinates
         orig_coords = self.getCoordinates()
@@ -445,7 +444,7 @@ class PYXLIGHT(BaseSolver, xfoilAnalysis):
         if "alpha" in xDvDot.keys():
             self.curAP.alpha += xDvDot["alpha"] * h
 
-        self.__call__(self.curAP, useComplex=mode=="CS")
+        self.__call__(self.curAP, useComplex=mode == "CS")
 
         # Compute the Jacobian vector products
         jacVecProd = {}
@@ -465,7 +464,7 @@ class PYXLIGHT(BaseSolver, xfoilAnalysis):
 
         return jacVecProd
 
-    def getTriangulatedMeshSurface(self, offsetDist=1.):
+    def getTriangulatedMeshSurface(self, offsetDist=1.0):
         """
         This function returns a pyGeo surface. The intent is
         to use this for DVConstraints.
