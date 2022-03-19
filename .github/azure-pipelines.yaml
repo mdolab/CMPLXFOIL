@@ -17,3 +17,4 @@ extends:
     REPO_NAME: pyXLIGHT
     GCC_CONFIG: config/defaults/config.LINUX_GFORTRAN.mk
     INTEL_CONFIG: config/defaults/config.LINUX_INTEL.mk
+    COVERAGE: true
