@@ -624,6 +624,7 @@ class PYXLIGHT(BaseSolver, xfoilAnalysis):
             fig = plt.figure(figsize=[10, 5])
             plt.ion()
             plt.show()
+            plt.plot(x, y, color="k", zorder=-1, alpha=0.15)
             plt.plot(x, y, color=color)
             plt.xlim([min(x) - 0.01, max(x) + 0.01])
             plt.ylim([min(y) - 0.01, max(y) + 0.01])
@@ -654,12 +655,13 @@ class PYXLIGHT(BaseSolver, xfoilAnalysis):
         airfoil on it and it was the most recently plotted line.
         """
         # Get coordinates
+        y0 = self.coords0[:, 1]
         x = self.coords[:, 0]
         y = self.coords[:, 1]
 
-        self.airfoilAx.lines.pop(0)
+        self.airfoilAx.lines.pop(-1)
         self.airfoilAx.plot(x, y, color=color)
-        self.airfoilAx.set_ylim([min(y) - 0.01, max(y) + 0.01])
+        self.airfoilAx.set_ylim([min(min(y), min(y0)) - 0.01, max(max(y), max(y0)) + 0.01])
         plt.pause(0.5)
 
     @staticmethod
