@@ -445,27 +445,35 @@ class PYXLIGHT(BaseSolver, xfoilAnalysis):
         # Preallocate the funcsSens dictionary with zeros for the desired sensitivities
         for f in evalFuncs:
             funcsSens[self.curAP.name + "_" + f] = {}
-            for DV_name, DV_val in DVs.items():
-                if isinstance(DV_val, np.ndarray):
-                    funcsSens[self.curAP.name + "_" + f][DV_name] = np.zeros(DV_val.shape, dtype=float)
+            for dvName, dvVal in DVs.items():
+                if isinstance(dvVal, np.ndarray):
+                    funcsSens[self.curAP.name + "_" + f][dvName] = np.zeros(dvVal.shape, dtype=float)
                 else:
-                    funcsSens[self.curAP.name + "_" + f][DV_name] = np.zeros(1)
+                    funcsSens[self.curAP.name + "_" + f][dvName] = np.zeros(1)
 
         # Loop over design variables and compute derivatives of each
-        for DV_name, DV_val in DVs.items():
-            len_DV = 1 if not isinstance(DV_val, np.ndarray) else len(DV_val)
-            for i in range(len_DV):
+        for dvName, dvVal in DVs.items():
+            lenDV = 1 if not isinstance(dvVal, np.ndarray) else len(dvVal)
+            for i in range(lenDV):
                 # Compute the seed for the finite difference/complex step
-                seed = {DV_name: np.zeros_like(DV_val)}
-                seed[DV_name][i] = 1.0
+                seed = {dvName: np.zeros_like(dvVal)}
+                seed[dvName][i] = 1.0
 
                 # Compute the sensitivity
                 sens = self.computeJacobianVectorProductFwd(xDvDot=seed, mode=mode, h=h)
                 for f in evalFuncs:
-                    funcsSens[self.curAP.name + "_" + f][DV_name][i] = sens[f]
+                    funcsSens[self.curAP.name + "_" + f][dvName][i] = sens[f]
 
                 # Check that the solution converged
                 self.checkSolutionFailure(self.curAP, funcsSens)
+
+        # Append "_" + (current aero problem name) to any design variables associated with the aero problem
+        for f in evalFuncs:
+            func = self.curAP.name + "_" + f
+            for dvName in DVs.keys():
+                if dvName in self.possibleAeroDVs and dvName in funcsSens[func]:
+                    funcsSens[func][dvName + "_" + self.curAP.name] = funcsSens[func][dvName]
+                    del funcsSens[func][dvName]
 
     def computeJacobianVectorProductFwd(self, xDvDot=None, xSDot=None, mode="CS", h=None):
         """This the main python gateway for producing forward mode jacobian
