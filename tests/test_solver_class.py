@@ -19,6 +19,7 @@ from pyxlight.pyXLIGHT_solver import PYXLIGHT
 
 baseDir = os.path.dirname(os.path.abspath(__file__))  # Path to current folder
 
+
 def assertRelTol(x, y, tol=1e-6):
     """
     Throws AssertionError if abs((x - y) / x) is not less than or equal to tol.
@@ -37,7 +38,7 @@ def assertRelTol(x, y, tol=1e-6):
         relTol = abs(y)
     else:
         relTol = abs((x - y) / x)
-    
+
     if relTol > tol:
         raise AssertionError(f"{x} and {y} not within rel tol of {tol:e} (rel tol = {relTol:e})")
 
