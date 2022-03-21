@@ -136,7 +136,7 @@ class PYXLIGHT(BaseSolver, xfoilAnalysis):
         aeroProblem : :class:`AeroProblem <baseclasses.problems.pyAero_problem.AeroProblem>` instance
             Aero problem to set (gives flight conditions)
         """
-        ptSetName = "adflow_%s_coords" % aeroProblem.name
+        ptSetName = "pyxlight_%s_coords" % aeroProblem.name
 
         # Tell the user if we are switching aeroProblems
         if self.curAP != aeroProblem:
@@ -546,7 +546,7 @@ class PYXLIGHT(BaseSolver, xfoilAnalysis):
         jacVecProd = {}
         for f in self.functionList:
             if mode == "FD":
-                jacVecProd[f] = (self.funcs[self.curAP.name][f] - orig_funcs) / h
+                jacVecProd[f] = (self.funcs[self.curAP.name][f] - orig_funcs[f]) / h
             else:
                 jacVecProd[f] = np.imag(self.funcsComplex[self.curAP.name][f]) / np.imag(h)
 
