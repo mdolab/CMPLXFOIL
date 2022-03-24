@@ -688,10 +688,10 @@ class PYXLIGHT(BaseSolver, xfoilAnalysis):
             x = self.coords[:, 0]
             y = self.coords[:, 1]
             CPUpper = self.sliceData[self.curAP.name]["cp_visc_upper"]
-            CPUpper_invisc = self.sliceData[self.curAP.name]["cp_invisc_upper"]
+            CPUpperInvisc = self.sliceData[self.curAP.name]["cp_invisc_upper"]
             xUpper = self.sliceData[self.curAP.name]["x_upper"]
             CPLower = self.sliceData[self.curAP.name]["cp_visc_lower"]
-            CPLower_invisc = self.sliceData[self.curAP.name]["cp_invisc_lower"]
+            CPLowerInvisc = self.sliceData[self.curAP.name]["cp_invisc_lower"]
             xLower = self.sliceData[self.curAP.name]["x_lower"]
 
             fig, axs = plt.subplots(nrows=2, ncols=1, sharex=True, figsize=[10, 10])
@@ -703,8 +703,8 @@ class PYXLIGHT(BaseSolver, xfoilAnalysis):
             axs[0].plot(xLower, CPLower, color="k", zorder=-1, alpha=0.15)
             axs[0].plot(xUpper, CPUpper, color=cp_up_color)
             axs[0].plot(xLower, CPLower, color=cp_low_color)
-            axs[0].plot(xUpper, CPUpper_invisc, "--", color=cp_up_color, linewidth=1.)
-            axs[0].plot(xLower, CPLower_invisc, "--", color=cp_low_color, linewidth=1.)
+            axs[0].plot(xUpper, CPUpperInvisc, "--", color=cp_up_color, linewidth=1.)
+            axs[0].plot(xLower, CPLowerInvisc, "--", color=cp_low_color, linewidth=1.)
             axs[0].invert_yaxis()
             axs[0].set_ylabel("$c_p$", rotation="horizontal", ha="right", va="center")
 
@@ -749,10 +749,10 @@ class PYXLIGHT(BaseSolver, xfoilAnalysis):
         x = self.coords[:, 0]
         y = self.coords[:, 1]
         CPUpper = self.sliceData[self.curAP.name]["cp_visc_upper"]
-        CPUpper_invisc = self.sliceData[self.curAP.name]["cp_invisc_upper"]
+        CPUpperInvisc = self.sliceData[self.curAP.name]["cp_invisc_upper"]
         xUpper = self.sliceData[self.curAP.name]["x_upper"]
         CPLower = self.sliceData[self.curAP.name]["cp_visc_lower"]
-        CPLower_invisc = self.sliceData[self.curAP.name]["cp_invisc_lower"]
+        CPLowerInvisc = self.sliceData[self.curAP.name]["cp_invisc_lower"]
         xLower = self.sliceData[self.curAP.name]["x_lower"]
 
         # CP plot
@@ -762,8 +762,8 @@ class PYXLIGHT(BaseSolver, xfoilAnalysis):
         self.airfoilAxs[0].lines.pop(-1)
         self.airfoilAxs[0].plot(xUpper, CPUpper, color=cp_up_color)
         self.airfoilAxs[0].plot(xLower, CPLower, color=cp_low_color)
-        self.airfoilAxs[0].plot(xUpper, CPUpper_invisc, "--", color=cp_up_color, linewidth=1.)
-        self.airfoilAxs[0].plot(xLower, CPLower_invisc, "--", color=cp_low_color, linewidth=1.)
+        self.airfoilAxs[0].plot(xUpper, CPUpperInvisc, "--", color=cp_up_color, linewidth=1.)
+        self.airfoilAxs[0].plot(xLower, CPLowerInvisc, "--", color=cp_low_color, linewidth=1.)
 
         self.airfoilAxs[1].lines.pop(-1)
         self.airfoilAxs[1].plot(x, y, color=color)
