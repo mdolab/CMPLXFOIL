@@ -1,7 +1,7 @@
 """
 pyXLIGHT
 
-pyXLIGHT is a wrapper for Mark Drela's Xfoil code. The purpose of this
+pyXLIGHT is a wrapper for Mark Drela's XFOIL code. The purpose of this
 class is to provide an easy to use wrapper for xfoil for intergration
 into other projects. Both real and complex versions of xfoil can be used.
 
@@ -24,6 +24,7 @@ History
 import os
 import time
 from copy import copy, deepcopy
+import pickle as pkl
 
 # =============================================================================
 # External Python modules
@@ -33,17 +34,22 @@ from baseclasses import BaseSolver
 from prefoil.preFoil import readCoordFile, _writeDat
 from pygeo.pyGeo import pyGeo
 import matplotlib.pyplot as plt
+from matplotlib.lines import Line2D
 
 try:
     import niceplots as nice
 
     nice.setRCParams()
-    plt.rcParams["font.size"] = 12
+    plt.rcParams["font.size"] = 18
     colors = nice.get_niceColors()
     color = colors["Blue"]
+    cp_up_color = colors["Blue"]
+    cp_low_color = colors["Red"]
 except ImportError:
     print("Install niceplots for nice looking airfoil figures")
     color = "b"
+    cp_up_color = "b"
+    cp_low_color = "r"
 
 # =============================================================================
 # Extension modules
@@ -96,17 +102,30 @@ class PYXLIGHT(BaseSolver, xfoilAnalysis):
         self.funcsComplex = {}
         self.functionList = ["cl", "cd", "cm"]  # available functions
 
+        # When the XFOIL solver is called, slice data is saved (key is the current
+        # AeroProblem name). In the associated value is a dictionary containing
+        #       "cp_visc_upper": viscous CP on the airfoil's upper surface
+        #       "cp_invisc_upper": inviscid CP on the airfoil's upper surface
+        #       "x_upper": x coordinates of the upper surface CP data
+        #       "y_upper": y coordinates of the upper surface CP data
+        #       "cp_visc_lower": viscous CP on the airfoil's lower surface
+        #       "cp_invisc_lower": inviscid CP on the airfoil's lower surface
+        #       "x_lower": x coordinates of the lower surface CP data
+        #       "y_lower": y coordinates of the lower surface CP data
+        self.sliceData = {}
+        self.sliceDataComplex = {}
+
         # Possible AeroProblem design variables (only alpha for pyXLIGHT)
         self.possibleAeroDVs = ["alpha"]
 
         # Figure and axes used by self.plotAirfoil and self.updateAirfoilPlot
         self.airfoilFig = None
-        self.airfoilAx = None
+        self.airfoilAxs = None
 
     def setDVGeo(self, DVGeo, pointSetKwargs=None):
         """
         Set the DVGeometry object that will manipulate 'geometry' in
-        this object. Note that PYXLIGHT doe not **strictly** need a
+        this object. Note that PYXLIGHT does not **strictly** need a
         DVGeometry object, but if optimization with geometric
         changes is desired, then it is required.
 
@@ -216,11 +235,13 @@ class PYXLIGHT(BaseSolver, xfoilAnalysis):
         """
         xfoil = self.xfoil
         funcs = self.funcs
+        sliceData = self.sliceData
         var_type = float
         if useComplex:
             var_type = complex
             xfoil = self.xfoil_cs
             funcs = self.funcsComplex
+            sliceData = self.sliceDataComplex
 
         self.setAeroProblem(aeroProblem)
 
@@ -240,6 +261,24 @@ class PYXLIGHT(BaseSolver, xfoilAnalysis):
             "cm": var_type(xfoil.cr09.cm),
         }
 
+        # Pull out and process the pressure coefficient data
+        cpv = xfoil.cr04.cpv  # viscous
+        cpi = xfoil.cr04.cpi  # inviscid
+        x = xfoil.cr05.x
+        y = xfoil.cr05.y
+        end_foil_idx = np.argmax(x > self.coords[0, 0]) + 1  # XFOIL includes wake panels, which we don't want
+        idx_lower_start = end_foil_idx // 2  # first half of data is upper surface
+        sliceData[aeroProblem.name] = {
+            "cp_visc_upper": cpv[:idx_lower_start].copy().astype(var_type),
+            "cp_invisc_upper": cpi[:idx_lower_start].copy().astype(var_type),
+            "x_upper": x[:idx_lower_start].copy().astype(var_type),
+            "y_upper": y[:idx_lower_start].copy().astype(var_type),
+            "cp_visc_lower": cpv[idx_lower_start:end_foil_idx].copy().astype(var_type),
+            "cp_invisc_lower": cpi[idx_lower_start:end_foil_idx].copy().astype(var_type),
+            "x_lower": x[idx_lower_start:end_foil_idx].copy().astype(var_type),
+            "y_lower": y[idx_lower_start:end_foil_idx].copy().astype(var_type),
+        }
+
         # Check for failure
         self.curAP.solveFailed = self.curAP.fatalFail = xfoil.cl01.lexitflag != 0
 
@@ -248,7 +287,7 @@ class PYXLIGHT(BaseSolver, xfoilAnalysis):
             self.curAP.callCounter += 1
 
         # Write solution files if desired
-        if not deriv:
+        if not deriv and self.getOption("writeSolution"):
             self.writeSolution()
 
     def writeSolution(self, outputDir=None, baseName=None, number=None):
@@ -289,12 +328,11 @@ class PYXLIGHT(BaseSolver, xfoilAnalysis):
         if self.getOption("writeCoordinates"):
             self.writeCoordinates(base)
 
+        if self.getOption("writeSliceFile"):
+            self.writeSlice(base)
+
         if self.getOption("plotAirfoil"):
             self.plotAirfoil()
-
-        # --- Output methods to be added ---
-        # if self.getOption("writeSliceFile"):
-        #     self.writeSlice()
 
     def writeCoordinates(self, fileName):
         """Write dat file with the current coordinates.
@@ -305,6 +343,27 @@ class PYXLIGHT(BaseSolver, xfoilAnalysis):
             File name for saved dat file (".dat" will be automatically appended).
         """
         _writeDat(fileName, self.coords[:, 0], self.coords[:, 1])
+
+    def writeSlice(self, fileName):
+        """Write pickle file containing the sliceData dictionary. The data can be
+        accessed using the AeroProblem name as the key. Within that is a dictionary containing:
+            "cp_visc_upper": viscous CP on the airfoil's upper surface
+            "cp_invisc_upper": inviscid CP on the airfoil's upper surface
+            "x_upper": x coordinates of the upper surface CP data
+            "y_upper": y coordinates of the upper surface CP data
+            "cp_visc_lower": viscous CP on the airfoil's lower surface
+            "cp_invisc_lower": inviscid CP on the airfoil's lower surface
+            "x_lower": x coordinates of the lower surface CP data
+            "y_lower": y coordinates of the lower surface CP data
+
+        Parameters
+        ----------
+        fileName : str
+            File name for saved pkl file (".pkl" will be automatically appended).
+        """
+        fileName += ".pkl"
+        with open(fileName, "wb") as f:
+            pkl.dump(self.sliceData, f, protocol=pkl.HIGHEST_PROTOCOL)
 
     def checkSolutionFailure(self, aeroProblem, funcs):
         """Take in a an aeroProblem and check for failure.
@@ -456,7 +515,7 @@ class PYXLIGHT(BaseSolver, xfoilAnalysis):
             lenDV = 1 if not isinstance(dvVal, np.ndarray) else len(dvVal)
             for i in range(lenDV):
                 # Compute the seed for the finite difference/complex step
-                seed = {dvName: np.zeros_like(dvVal)}
+                seed = {dvName: np.zeros(dvVal.shape, dtype=float)}
                 seed[dvName][i] = 1.0
 
                 # Compute the sensitivity
@@ -625,29 +684,52 @@ class PYXLIGHT(BaseSolver, xfoilAnalysis):
         """
 
         if self.airfoilFig is None:
-            # Get coordinates
+            # Get data to plot
             x = self.coords[:, 0]
             y = self.coords[:, 1]
+            CPUpper = self.sliceData[self.curAP.name]["cp_visc_upper"]
+            CPUpper_invisc = self.sliceData[self.curAP.name]["cp_invisc_upper"]
+            xUpper = self.sliceData[self.curAP.name]["x_upper"]
+            CPLower = self.sliceData[self.curAP.name]["cp_visc_lower"]
+            CPLower_invisc = self.sliceData[self.curAP.name]["cp_invisc_lower"]
+            xLower = self.sliceData[self.curAP.name]["x_lower"]
 
-            fig = plt.figure(figsize=[10, 5])
+            fig, axs = plt.subplots(nrows=2, ncols=1, sharex=True, figsize=[10, 10])
             plt.ion()
             plt.show()
-            plt.plot(x, y, color="k", zorder=-1, alpha=0.15)
-            plt.plot(x, y, color=color)
-            plt.xlim([min(x) - 0.01, max(x) + 0.01])
-            plt.ylim([min(y) - 0.01, max(y) + 0.01])
-            plt.xlabel("x/c")
-            plt.ylabel("y/c")
-            plt.gca().set_aspect("equal")
-            plt.gca().spines["right"].set_visible(False)
-            plt.gca().spines["top"].set_visible(False)
-            plt.gca().yaxis.set_ticks_position("left")
-            plt.gca().xaxis.set_ticks_position("bottom")
+
+            # Plot the CP on the upper axis
+            axs[0].plot(xUpper, CPUpper, color="k", zorder=-1, alpha=0.15)
+            axs[0].plot(xLower, CPLower, color="k", zorder=-1, alpha=0.15)
+            axs[0].plot(xUpper, CPUpper, color=cp_up_color)
+            axs[0].plot(xLower, CPLower, color=cp_low_color)
+            axs[0].plot(xUpper, CPUpper_invisc, "--", color=cp_up_color, linewidth=1.)
+            axs[0].plot(xLower, CPLower_invisc, "--", color=cp_low_color, linewidth=1.)
+            axs[0].invert_yaxis()
+            axs[0].set_ylabel("$c_p$", rotation="horizontal", ha="right", va="center")
+
+            # Make legend for viscous vs. inviscid
+            customLines = [Line2D([0], [0], linestyle="-", color="k"),
+                            Line2D([0], [0], linestyle="--", color="k", linewidth=1.)]
+            axs[0].legend(customLines, ["Viscous", "Inviscid"])
+
+            # Plot the airfoil on the lower axis
+            axs[1].plot(x, y, color="k", zorder=-1, alpha=0.15)
+            axs[1].plot(x, y, color=color)
+            axs[1].set_xlim([min(x) - 0.01, max(x) + 0.01])
+            axs[1].set_ylim([min(y) - 0.01, max(y) + 0.01])
+            axs[1].set_xlabel("x/c")
+            axs[1].set_ylabel("y/c", rotation="horizontal", ha="right", va="center")
+            axs[1].set_aspect("equal")
+            axs[1].spines["right"].set_visible(False)
+            axs[1].spines["top"].set_visible(False)
+            axs[1].yaxis.set_ticks_position("left")
+            axs[1].xaxis.set_ticks_position("bottom")
 
             if fileName is None:
                 plt.pause(0.5)
             self.airfoilFig = fig
-            self.airfoilAx = plt.gca()
+            self.airfoilAxs = axs
         else:
             self.updateAirfoilPlot()
 
@@ -662,14 +744,30 @@ class PYXLIGHT(BaseSolver, xfoilAnalysis):
         Assumes that the current figure is the one with the
         airfoil on it and it was the most recently plotted line.
         """
-        # Get coordinates
+        # Get data to plot
         y0 = self.coords0[:, 1]
         x = self.coords[:, 0]
         y = self.coords[:, 1]
+        CPUpper = self.sliceData[self.curAP.name]["cp_visc_upper"]
+        CPUpper_invisc = self.sliceData[self.curAP.name]["cp_invisc_upper"]
+        xUpper = self.sliceData[self.curAP.name]["x_upper"]
+        CPLower = self.sliceData[self.curAP.name]["cp_visc_lower"]
+        CPLower_invisc = self.sliceData[self.curAP.name]["cp_invisc_lower"]
+        xLower = self.sliceData[self.curAP.name]["x_lower"]
 
-        self.airfoilAx.lines.pop(-1)
-        self.airfoilAx.plot(x, y, color=color)
-        self.airfoilAx.set_ylim([min(min(y), min(y0)) - 0.01, max(max(y), max(y0)) + 0.01])
+        # CP plot
+        self.airfoilAxs[0].lines.pop(-1)
+        self.airfoilAxs[0].lines.pop(-1)
+        self.airfoilAxs[0].lines.pop(-1)
+        self.airfoilAxs[0].lines.pop(-1)
+        self.airfoilAxs[0].plot(xUpper, CPUpper, color=cp_up_color)
+        self.airfoilAxs[0].plot(xLower, CPLower, color=cp_low_color)
+        self.airfoilAxs[0].plot(xUpper, CPUpper_invisc, "--", color=cp_up_color, linewidth=1.)
+        self.airfoilAxs[0].plot(xLower, CPLower_invisc, "--", color=cp_low_color, linewidth=1.)
+
+        self.airfoilAxs[1].lines.pop(-1)
+        self.airfoilAxs[1].plot(x, y, color=color)
+        self.airfoilAxs[1].set_ylim([min(min(y), min(y0)) - 0.01, max(max(y), max(y0)) + 0.01])
         plt.pause(0.5)
 
     @staticmethod
@@ -677,6 +775,8 @@ class PYXLIGHT(BaseSolver, xfoilAnalysis):
         return {
             "maxIters": [int, 100],  # maximum iterations for XFOIL solver
             "writeCoordinates": [bool, True],  # Whether to write coordinates to .dat file when `writeSolution` called
+            "writeSliceFile": [bool, True],  # Whether or not to save chordwise data
+            "writeSolution": [bool, False],  # Whether or not to call writeSolution after each call to XFOIL
             "plotAirfoil": [bool, False],  # Whether to plot airfoil while running
             "outputDirectory": [str, "."],  # Where to put output files
             "numberSolutions": [bool, True], # Whether to add call counter to output file names
