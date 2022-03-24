@@ -43,13 +43,13 @@ try:
     plt.rcParams["font.size"] = 18
     colors = nice.get_niceColors()
     color = colors["Blue"]
-    cp_up_color = colors["Blue"]
-    cp_low_color = colors["Red"]
+    cpUpColor = colors["Blue"]
+    cpLowColor = colors["Red"]
 except ImportError:
     print("Install niceplots for nice looking airfoil figures")
     color = "b"
-    cp_up_color = "b"
-    cp_low_color = "r"
+    cpUpColor = "b"
+    cpLowColor = "r"
 
 # =============================================================================
 # Extension modules
@@ -701,10 +701,10 @@ class PYXLIGHT(BaseSolver, xfoilAnalysis):
             # Plot the CP on the upper axis
             axs[0].plot(xUpper, CPUpper, color="k", zorder=-1, alpha=0.15)
             axs[0].plot(xLower, CPLower, color="k", zorder=-1, alpha=0.15)
-            axs[0].plot(xUpper, CPUpper, color=cp_up_color)
-            axs[0].plot(xLower, CPLower, color=cp_low_color)
-            axs[0].plot(xUpper, CPUpperInvisc, "--", color=cp_up_color, linewidth=1.)
-            axs[0].plot(xLower, CPLowerInvisc, "--", color=cp_low_color, linewidth=1.)
+            axs[0].plot(xUpper, CPUpper, color=cpUpColor)
+            axs[0].plot(xLower, CPLower, color=cpLowColor)
+            axs[0].plot(xUpper, CPUpperInvisc, "--", color=cpUpColor, linewidth=1.)
+            axs[0].plot(xLower, CPLowerInvisc, "--", color=cpLowColor, linewidth=1.)
             axs[0].invert_yaxis()
             axs[0].set_ylabel("$c_p$", rotation="horizontal", ha="right", va="center")
 
@@ -760,10 +760,10 @@ class PYXLIGHT(BaseSolver, xfoilAnalysis):
         self.airfoilAxs[0].lines.pop(-1)
         self.airfoilAxs[0].lines.pop(-1)
         self.airfoilAxs[0].lines.pop(-1)
-        self.airfoilAxs[0].plot(xUpper, CPUpper, color=cp_up_color)
-        self.airfoilAxs[0].plot(xLower, CPLower, color=cp_low_color)
-        self.airfoilAxs[0].plot(xUpper, CPUpperInvisc, "--", color=cp_up_color, linewidth=1.)
-        self.airfoilAxs[0].plot(xLower, CPLowerInvisc, "--", color=cp_low_color, linewidth=1.)
+        self.airfoilAxs[0].plot(xUpper, CPUpper, color=cpUpColor)
+        self.airfoilAxs[0].plot(xLower, CPLower, color=cpLowColor)
+        self.airfoilAxs[0].plot(xUpper, CPUpperInvisc, "--", color=cpUpColor, linewidth=1.)
+        self.airfoilAxs[0].plot(xLower, CPLowerInvisc, "--", color=cpLowColor, linewidth=1.)
 
         self.airfoilAxs[1].lines.pop(-1)
         self.airfoilAxs[1].plot(x, y, color=color)
