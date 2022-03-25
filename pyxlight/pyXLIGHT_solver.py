@@ -121,6 +121,7 @@ class PYXLIGHT(BaseSolver, xfoilAnalysis):
         # Figure and axes used by self.plotAirfoil and self.updateAirfoilPlot
         self.airfoilFig = None
         self.airfoilAxs = None
+        self.CPlim = None  # y limits on the CP plot
 
     def setDVGeo(self, DVGeo, pointSetKwargs=None):
         """
@@ -681,6 +682,8 @@ class PYXLIGHT(BaseSolver, xfoilAnalysis):
         -------
         matplotlib figure
             Figure with airfoil plotted to it
+        list of matplotlib axes
+            List of matplotlib axes for CP and airfoil plots (in that order)
         """
 
         if self.airfoilFig is None:
@@ -694,6 +697,9 @@ class PYXLIGHT(BaseSolver, xfoilAnalysis):
             CPLowerInvisc = self.sliceData[self.curAP.name]["cp_invisc_lower"]
             xLower = self.sliceData[self.curAP.name]["x_lower"]
 
+            self.CPlim = [min(np.hstack((CPUpper, CPUpperInvisc, CPLower, CPLowerInvisc))) - 0.2,
+                          max(np.hstack((CPUpper, CPUpperInvisc, CPLower, CPLowerInvisc))) + 0.2]
+
             fig, axs = plt.subplots(nrows=2, ncols=1, sharex=True, figsize=[10, 10])
             plt.ion()
             plt.show()
@@ -705,6 +711,7 @@ class PYXLIGHT(BaseSolver, xfoilAnalysis):
             axs[0].plot(xLower, CPLower, color=cpLowColor)
             axs[0].plot(xUpper, CPUpperInvisc, "--", color=cpUpColor, linewidth=1.)
             axs[0].plot(xLower, CPLowerInvisc, "--", color=cpLowColor, linewidth=1.)
+            axs[0].set_ylim(self.CPlim)
             axs[0].invert_yaxis()
             axs[0].set_ylabel("$c_p$", rotation="horizontal", ha="right", va="center")
 
@@ -736,7 +743,7 @@ class PYXLIGHT(BaseSolver, xfoilAnalysis):
         if fileName is not None:
             self.airfoilFig.savefig(fileName)
 
-        return self.airfoilFig
+        return self.airfoilFig, self.airfoilAxs
 
     def updateAirfoilPlot(self):
         """
@@ -755,6 +762,10 @@ class PYXLIGHT(BaseSolver, xfoilAnalysis):
         CPLowerInvisc = self.sliceData[self.curAP.name]["cp_invisc_lower"]
         xLower = self.sliceData[self.curAP.name]["x_lower"]
 
+        CPlim = [min(np.hstack((CPUpper, CPUpperInvisc, CPLower, CPLowerInvisc))) - 0.2,
+                 max(np.hstack((CPUpper, CPUpperInvisc, CPLower, CPLowerInvisc))) + 0.2]
+        CPlim = [min(CPlim[0], self.CPlim[0]), max(CPlim[1], self.CPlim[1])]
+
         # CP plot
         self.airfoilAxs[0].lines.pop(-1)
         self.airfoilAxs[0].lines.pop(-1)
@@ -764,11 +775,12 @@ class PYXLIGHT(BaseSolver, xfoilAnalysis):
         self.airfoilAxs[0].plot(xLower, CPLower, color=cpLowColor)
         self.airfoilAxs[0].plot(xUpper, CPUpperInvisc, "--", color=cpUpColor, linewidth=1.)
         self.airfoilAxs[0].plot(xLower, CPLowerInvisc, "--", color=cpLowColor, linewidth=1.)
+        self.airfoilAxs[0].set_ylim(CPlim)
 
         self.airfoilAxs[1].lines.pop(-1)
         self.airfoilAxs[1].plot(x, y, color=color)
         self.airfoilAxs[1].set_ylim([min(min(y), min(y0)) - 0.01, max(max(y), max(y0)) + 0.01])
-        plt.pause(0.5)
+        time.sleep(0.01)
 
     @staticmethod
     def _getDefaultOptions():
