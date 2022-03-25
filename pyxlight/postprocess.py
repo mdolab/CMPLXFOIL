@@ -16,7 +16,7 @@ History
 # =============================================================================
 import os
 import pickle as pkl
-import time
+from glob import glob
 
 # =============================================================================
 # External Python modules
@@ -54,54 +54,18 @@ class AnimateAirfoilOpt():
         self.dirName = dirName
         self.APName = APName
 
-        # Figure out how many iterations there are to plot
-        # This is a pretty bad algorithm for checking (N^2), but it is robust
-        # to the way the iteration number is printed in the file and fast
-        # compared to the animation.
-        i = 0
-        datExists = True
-        pklExists = True
-        while datExists and pklExists:
-            i += 1
-            datExists = False
-            pklExists = False
+        # Get the list of file names and figure out how many iterations there are to plot
+        self.fileList = glob(os.path.join(self.dirName, f"{self.APName}_*.dat"))
+        for i in range(len(self.fileList)):
+            self.fileList[i] = self.fileList[i][:-4]
+        self.fileList.sort()
+        self.iters = len(self.fileList)
 
-            if self.findFile(i, 'dat') is not None:
-                datExists = True
-            
-            if self.findFile(i, 'pkl') is not None:
-                pklExists = True
+        # Make sure pickle files are also available
+        if len(glob(os.path.join(self.dirName, f"{self.APName}_*.pkl"))) != self.iters:
+            raise FileNotFoundError("There must be a pickle file and dat file for each iteration")
 
-        self.iters = i - 1
         print(f"Found dat and pkl files for {self.iters} iterations")
-    
-    def findFile(self, nIter, ext):
-        """
-        Find the file name associated with a given iteration.
-        If the file is not found, returns None.
-
-        Parameters
-        ----------
-        nIter : int
-            Iteration number
-        ext : str
-            Extension (either "dat" or "pkl")
-        """
-        # See if the file is in the directory
-        files = os.listdir(self.dirName)
-        for f in files:
-            # Get the iteration number and file type
-            try:
-                i = int(f.split('_')[-1].split('.')[0])
-            except ValueError:
-                continue
-            fType = f.split('_')[-1].split('.')[1]
-            AP = '_'.join(f.split('_')[:-1])
-
-            if nIter == i and fType == ext and AP == self.APName:
-                return os.path.join(self.dirName, f)
-
-        return None
 
     def animate(self, outputFileName="airfoil_opt", ext="mp4", **animKwargs):
         """
@@ -124,30 +88,30 @@ class AnimateAirfoilOpt():
                 animKwargs["extra_args"] = ['-vcodec', 'libx264']
 
         # Create initial plot
-        foil = PYXLIGHT(self.findFile(1, 'dat'))
+        foil = PYXLIGHT(self.fileList[0] + ".dat")
         foil.curAP = AeroProblem(self.APName, mach=0.5, altitude=0.)
-        with open(self.findFile(1, 'pkl'), "rb") as f:
+        with open(self.fileList[0] + ".pkl", "rb") as f:
             foil.sliceData = pkl.load(f)
         fig, axs = foil.plotAirfoil()
         CPlim = foil.CPlim
+        CFlim = foil.CFlim
         coords0 = foil.coords0
 
         def animateFrame(i):
             """
             Function to be called by FuncAnimation
             """
-            print(f"Rendering frame {i} of {self.iters}.....{i/self.iters * 100:0.2f}% done", end="\r")
-            i += 1  # the files are 1 indexed
-            foil = PYXLIGHT(self.findFile(i, 'dat'))
+            print(f"Rendering frame {i} of {self.iters}.....{(i + 1)/self.iters * 100:0.2f}% done", end="\r")
+            foil = PYXLIGHT(self.fileList[i] + ".dat")
             foil.curAP = AeroProblem(self.APName, mach=0.5, altitude=0.)
             foil.CPlim = CPlim
+            foil.CFlim = CFlim
             foil.coords0 = coords0
-            with open(self.findFile(i, 'pkl'), "rb") as f:
+            with open(self.fileList[i] + ".pkl", "rb") as f:
                 foil.sliceData = pkl.load(f)
             foil.airfoilFig = fig
             foil.airfoilAxs = axs
-            foil.updateAirfoilPlot()
-            axs[0].invert_yaxis()
+            foil.updateAirfoilPlot(pause=False)
         
         # Call the animator and save the result as a movie file
         anim = FuncAnimation(fig, animateFrame,

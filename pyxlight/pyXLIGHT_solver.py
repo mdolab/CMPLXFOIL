@@ -112,6 +112,12 @@ class PYXLIGHT(BaseSolver, xfoilAnalysis):
         #       "cp_invisc_lower": inviscid CP on the airfoil's lower surface
         #       "x_lower": x coordinates of the lower surface CP data
         #       "y_lower": y coordinates of the lower surface CP data
+        #       "cf_upper": skin friction coefficient on the upper surface
+        #       "x_cf_upper": x coordinates of upper surface skin friction coefficient
+        #       "y_cf_upper": y coordinates of upper surface skin friction coefficient
+        #       "cf_lower": skin friction coefficient on the lower surface
+        #       "x_cf_lower": x coordinates of lower surface skin friction coefficient
+        #       "y_cf_lower": y coordinates of lower surface skin friction coefficient
         self.sliceData = {}
         self.sliceDataComplex = {}
 
@@ -122,6 +128,7 @@ class PYXLIGHT(BaseSolver, xfoilAnalysis):
         self.airfoilFig = None
         self.airfoilAxs = None
         self.CPlim = None  # y limits on the CP plot
+        self.CFlim = None  # y limits on the CF plot
 
     def setDVGeo(self, DVGeo, pointSetKwargs=None):
         """
@@ -262,13 +269,27 @@ class PYXLIGHT(BaseSolver, xfoilAnalysis):
             "cm": var_type(xfoil.cr09.cm),
         }
 
-        # Pull out and process the pressure coefficient data
+        # Pull out and process the pressure and skin friction coefficient data
         cpv = xfoil.cr04.cpv  # viscous
         cpi = xfoil.cr04.cpi  # inviscid
         x = xfoil.cr05.x
         y = xfoil.cr05.y
         end_foil_idx = np.argmax(x > self.coords[0, 0]) + 1  # XFOIL includes wake panels, which we don't want
         idx_lower_start = end_foil_idx // 2  # first half of data is upper surface
+
+        # tau_upper = xfoil.cr15.tau[]
+        idxUpper = np.argwhere(xfoil.cr15.tau[:, 0] != 0).flatten()
+        idxLower = np.argwhere(xfoil.cr15.tau[:, 1] != 0).flatten()
+        iPanUpper = xfoil.ci05.ipan[idxUpper, 0] - 1  # FORTRAN uses 1-based indexing, need to adjust
+        iPanLower = xfoil.ci05.ipan[idxLower, 1] - 1  # FORTRAN uses 1-based indexing, need to adjust
+        tauUpper = xfoil.cr15.tau[idxUpper, 0].copy().astype(var_type)
+        tauLower = xfoil.cr15.tau[idxLower, 1].copy().astype(var_type)
+        uInf = xfoil.cr09.qinf
+        xCfUpper = x[iPanUpper].copy().astype(var_type)
+        yCfUpper = y[iPanUpper].copy().astype(var_type)
+        xCfLower = x[iPanLower].copy().astype(var_type)
+        yCfLower = y[iPanLower].copy().astype(var_type)
+
         sliceData[aeroProblem.name] = {
             "cp_visc_upper": cpv[:idx_lower_start].copy().astype(var_type),
             "cp_invisc_upper": cpi[:idx_lower_start].copy().astype(var_type),
@@ -278,6 +299,12 @@ class PYXLIGHT(BaseSolver, xfoilAnalysis):
             "cp_invisc_lower": cpi[idx_lower_start:end_foil_idx].copy().astype(var_type),
             "x_lower": x[idx_lower_start:end_foil_idx].copy().astype(var_type),
             "y_lower": y[idx_lower_start:end_foil_idx].copy().astype(var_type),
+            "cf_upper": tauUpper / (0.5 * uInf**2),
+            "x_cf_upper": xCfUpper,
+            "y_cf_upper": yCfUpper,
+            "cf_lower": tauLower / (0.5 * uInf**2),
+            "x_cf_lower": xCfLower,
+            "y_cf_lower": yCfLower,
         }
 
         # Check for failure
@@ -696,42 +723,60 @@ class PYXLIGHT(BaseSolver, xfoilAnalysis):
             CPLower = self.sliceData[self.curAP.name]["cp_visc_lower"]
             CPLowerInvisc = self.sliceData[self.curAP.name]["cp_invisc_lower"]
             xLower = self.sliceData[self.curAP.name]["x_lower"]
+            CFUpper = self.sliceData[self.curAP.name]["cf_upper"]
+            xCFUpper = self.sliceData[self.curAP.name]["x_cf_upper"]
+            CFLower = self.sliceData[self.curAP.name]["cf_lower"]
+            xCFLower = self.sliceData[self.curAP.name]["x_cf_lower"]
 
-            self.CPlim = [min(np.hstack((CPUpper, CPUpperInvisc, CPLower, CPLowerInvisc))) - 0.2,
-                          max(np.hstack((CPUpper, CPUpperInvisc, CPLower, CPLowerInvisc))) + 0.2]
+            # Inverted CP axis
+            self.CPlim = [max(np.hstack((CPUpper, CPUpperInvisc, CPLower, CPLowerInvisc))) + 0.2,
+                          min(np.hstack((CPUpper, CPUpperInvisc, CPLower, CPLowerInvisc))) - 0.2]
+            self.CFlim = [min(np.hstack((CFUpper, CFLower))) - 0.002,
+                          max(np.hstack((CFUpper, CFLower))) + 0.002]
 
-            fig, axs = plt.subplots(nrows=2, ncols=1, sharex=True, figsize=[10, 10])
+            fig, axs = plt.subplots(nrows=3, ncols=1, sharex=True, figsize=[10, 13])
+            iAxsCP = 0
+            iAxsCF = 1
+            iAxsFoil = 2
             plt.ion()
             plt.show()
 
             # Plot the CP on the upper axis
-            axs[0].plot(xUpper, CPUpper, color="k", zorder=-1, alpha=0.15)
-            axs[0].plot(xLower, CPLower, color="k", zorder=-1, alpha=0.15)
-            axs[0].plot(xUpper, CPUpper, color=cpUpColor)
-            axs[0].plot(xLower, CPLower, color=cpLowColor)
-            axs[0].plot(xUpper, CPUpperInvisc, "--", color=cpUpColor, linewidth=1.)
-            axs[0].plot(xLower, CPLowerInvisc, "--", color=cpLowColor, linewidth=1.)
-            axs[0].set_ylim(self.CPlim)
-            axs[0].invert_yaxis()
-            axs[0].set_ylabel("$c_p$", rotation="horizontal", ha="right", va="center")
+            axs[iAxsCP].plot(xUpper, CPUpper, color="k", zorder=-1, alpha=0.15)
+            axs[iAxsCP].plot(xLower, CPLower, color="k", zorder=-1, alpha=0.15)
+            axs[iAxsCP].plot(xUpper, CPUpper, color=cpUpColor)
+            axs[iAxsCP].plot(xLower, CPLower, color=cpLowColor)
+            axs[iAxsCP].plot(xUpper, CPUpperInvisc, "--", color=cpUpColor, linewidth=1.)
+            axs[iAxsCP].plot(xLower, CPLowerInvisc, "--", color=cpLowColor, linewidth=1.)
+            axs[iAxsCP].set_ylim(self.CPlim)
+            axs[iAxsCP].set_ylabel("$c_p$", rotation="horizontal", ha="right", va="center")
 
             # Make legend for viscous vs. inviscid
             customLines = [Line2D([0], [0], linestyle="-", color="k"),
                             Line2D([0], [0], linestyle="--", color="k", linewidth=1.)]
-            axs[0].legend(customLines, ["Viscous", "Inviscid"])
+            axs[iAxsCP].legend(customLines, ["Viscous", "Inviscid"])
+
+            # Plot the skin friction coefficient
+            axs[iAxsCF].plot([min(x) - 1, max(x) + 1], [0., 0.], zorder=-2, color="k", linewidth=0.7, alpha=0.3)
+            axs[iAxsCF].plot(xCFUpper, CFUpper, color="k", zorder=-1, alpha=0.15)
+            axs[iAxsCF].plot(xCFLower, CFLower, color="k", zorder=-1, alpha=0.15)
+            axs[iAxsCF].plot(xCFUpper, CFUpper, color=cpUpColor)
+            axs[iAxsCF].plot(xCFLower, CFLower, color=cpLowColor)
+            axs[iAxsCF].set_ylim(self.CFlim)
+            axs[iAxsCF].set_ylabel("$c_f$", rotation="horizontal", ha="right", va="center")
 
             # Plot the airfoil on the lower axis
-            axs[1].plot(x, y, color="k", zorder=-1, alpha=0.15)
-            axs[1].plot(x, y, color=color)
-            axs[1].set_xlim([min(x) - 0.01, max(x) + 0.01])
-            axs[1].set_ylim([min(y) - 0.01, max(y) + 0.01])
-            axs[1].set_xlabel("x/c")
-            axs[1].set_ylabel("y/c", rotation="horizontal", ha="right", va="center")
-            axs[1].set_aspect("equal")
-            axs[1].spines["right"].set_visible(False)
-            axs[1].spines["top"].set_visible(False)
-            axs[1].yaxis.set_ticks_position("left")
-            axs[1].xaxis.set_ticks_position("bottom")
+            axs[iAxsFoil].plot(x, y, color="k", zorder=-1, alpha=0.15)
+            axs[iAxsFoil].plot(x, y, color=color)
+            axs[iAxsFoil].set_xlim([min(x) - 0.01, max(x) + 0.01])
+            axs[iAxsFoil].set_ylim([min(y) - 0.01, max(y) + 0.01])
+            axs[iAxsFoil].set_xlabel("x/c")
+            axs[iAxsFoil].set_ylabel("y/c", rotation="horizontal", ha="right", va="center")
+            axs[iAxsFoil].set_aspect("equal")
+            axs[iAxsFoil].spines["right"].set_visible(False)
+            axs[iAxsFoil].spines["top"].set_visible(False)
+            axs[iAxsFoil].yaxis.set_ticks_position("left")
+            axs[iAxsFoil].xaxis.set_ticks_position("bottom")
 
             if fileName is None:
                 plt.pause(0.5)
@@ -745,11 +790,17 @@ class PYXLIGHT(BaseSolver, xfoilAnalysis):
 
         return self.airfoilFig, self.airfoilAxs
 
-    def updateAirfoilPlot(self):
+    def updateAirfoilPlot(self, pause=True):
         """
         Updates the airfoil plot with current airfoil shape.
         Assumes that the current figure is the one with the
         airfoil on it and it was the most recently plotted line.
+
+        Parameters
+        ----------
+        pause : bool
+            If true, pauses after updating plot for 0.5 sec. This is necessary
+            when updating a live plot, but breaks the animation in postprocess.
         """
         # Get data to plot
         y0 = self.coords0[:, 1]
@@ -761,26 +812,47 @@ class PYXLIGHT(BaseSolver, xfoilAnalysis):
         CPLower = self.sliceData[self.curAP.name]["cp_visc_lower"]
         CPLowerInvisc = self.sliceData[self.curAP.name]["cp_invisc_lower"]
         xLower = self.sliceData[self.curAP.name]["x_lower"]
+        CFUpper = self.sliceData[self.curAP.name]["cf_upper"]
+        xCFUpper = self.sliceData[self.curAP.name]["x_cf_upper"]
+        CFLower = self.sliceData[self.curAP.name]["cf_lower"]
+        xCFLower = self.sliceData[self.curAP.name]["x_cf_lower"]
 
-        CPlim = [min(np.hstack((CPUpper, CPUpperInvisc, CPLower, CPLowerInvisc))) - 0.2,
-                 max(np.hstack((CPUpper, CPUpperInvisc, CPLower, CPLowerInvisc))) + 0.2]
-        CPlim = [min(CPlim[0], self.CPlim[0]), max(CPlim[1], self.CPlim[1])]
+        iAxsCP = 0
+        iAxsCF = 1
+        iAxsFoil = 2
+
+        CPlim = [max(np.hstack((CPUpper, CPUpperInvisc, CPLower, CPLowerInvisc))) + 0.2,
+                 min(np.hstack((CPUpper, CPUpperInvisc, CPLower, CPLowerInvisc))) - 0.2]
+        CPlim = [max(CPlim[0], self.CPlim[0]), min(CPlim[1], self.CPlim[1])]  # inverted axis
+
+        CFlim = [min(np.hstack((CFUpper, CFLower))) - 0.002,
+                 max(np.hstack((CFUpper, CFLower))) + 0.002]
+        CFlim = [min(CFlim[0], self.CFlim[0]), max(CFlim[1], self.CFlim[1])]
 
         # CP plot
-        self.airfoilAxs[0].lines.pop(-1)
-        self.airfoilAxs[0].lines.pop(-1)
-        self.airfoilAxs[0].lines.pop(-1)
-        self.airfoilAxs[0].lines.pop(-1)
-        self.airfoilAxs[0].plot(xUpper, CPUpper, color=cpUpColor)
-        self.airfoilAxs[0].plot(xLower, CPLower, color=cpLowColor)
-        self.airfoilAxs[0].plot(xUpper, CPUpperInvisc, "--", color=cpUpColor, linewidth=1.)
-        self.airfoilAxs[0].plot(xLower, CPLowerInvisc, "--", color=cpLowColor, linewidth=1.)
-        self.airfoilAxs[0].set_ylim(CPlim)
+        self.airfoilAxs[iAxsCP].lines.pop(-1)
+        self.airfoilAxs[iAxsCP].lines.pop(-1)
+        self.airfoilAxs[iAxsCP].lines.pop(-1)
+        self.airfoilAxs[iAxsCP].lines.pop(-1)
+        self.airfoilAxs[iAxsCP].plot(xUpper, CPUpper, color=cpUpColor)
+        self.airfoilAxs[iAxsCP].plot(xLower, CPLower, color=cpLowColor)
+        self.airfoilAxs[iAxsCP].plot(xUpper, CPUpperInvisc, "--", color=cpUpColor, linewidth=1.)
+        self.airfoilAxs[iAxsCP].plot(xLower, CPLowerInvisc, "--", color=cpLowColor, linewidth=1.)
+        self.airfoilAxs[iAxsCP].set_ylim(CPlim)
 
-        self.airfoilAxs[1].lines.pop(-1)
-        self.airfoilAxs[1].plot(x, y, color=color)
-        self.airfoilAxs[1].set_ylim([min(min(y), min(y0)) - 0.01, max(max(y), max(y0)) + 0.01])
-        time.sleep(0.01)
+        # CF plot
+        self.airfoilAxs[iAxsCF].lines.pop(-1)
+        self.airfoilAxs[iAxsCF].lines.pop(-1)
+        self.airfoilAxs[iAxsCF].plot(xCFUpper, CFUpper, color=cpUpColor)
+        self.airfoilAxs[iAxsCF].plot(xCFLower, CFLower, color=cpLowColor)
+        self.airfoilAxs[iAxsCF].set_ylim(CFlim)
+
+        self.airfoilAxs[iAxsFoil].lines.pop(-1)
+        self.airfoilAxs[iAxsFoil].plot(x, y, color=color)
+        self.airfoilAxs[iAxsFoil].set_ylim([min(min(y), min(y0)) - 0.01, max(max(y), max(y0)) + 0.01])
+
+        if pause:
+            plt.pause(1e-6)
 
     @staticmethod
     def _getDefaultOptions():
