@@ -116,7 +116,7 @@ class AnimateAirfoilOpt():
         # Call the animator and save the result as a movie file
         anim = FuncAnimation(fig, animateFrame,
                              frames=self.iters, interval=66, blit=False)
-        anim.save(outputFileName + ".mp4", **animKwargs)
+        anim.save(outputFileName + "." + ext, **animKwargs)
 
         # Save the last frame
         animateFrame(self.iters - 1)
