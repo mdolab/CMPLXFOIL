@@ -29,6 +29,6 @@ setup(
     install_requires=[
         "numpy",
     ],
-    extras_require={"testing": ["testflo"]},
+    extras_require={"testing": ["testflo"], "docs": ["sphinx-mdolab-theme"]},
     classifiers=["Operating System :: Linux", "Programming Language :: Python, Fortran"],
 )
