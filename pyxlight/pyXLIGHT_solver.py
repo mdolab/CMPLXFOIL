@@ -729,12 +729,18 @@ class PYXLIGHT(BaseSolver, xfoilAnalysis):
             xCFLower = self.sliceData[self.curAP.name]["x_cf_lower"]
 
             # Inverted CP axis
-            self.CPlim = [max(np.hstack((CPUpper, CPUpperInvisc, CPLower, CPLowerInvisc))) + 0.2,
-                          min(np.hstack((CPUpper, CPUpperInvisc, CPLower, CPLowerInvisc))) - 0.2]
-            self.CFlim = [min(np.hstack((CFUpper, CFLower))) - 0.002,
-                          max(np.hstack((CFUpper, CFLower))) + 0.002]
+            stackedCP = np.hstack((CPUpper, CPUpperInvisc, CPLower, CPLowerInvisc))
+            stackedCP = stackedCP[np.isfinite(stackedCP)]
+            stackedCF = np.hstack((CFUpper, CFLower))
+            stackedCF = stackedCF[np.isfinite(stackedCF)]
+            self.CPlim = [max(stackedCP) + 0.2,
+                          min(stackedCP) - 0.2]
+            self.CFlim = [min(stackedCF) - 0.002,
+                          max(stackedCF) + 0.002]
+            self.xlimFoil = [min(x) - 0.01, max(x) + 0.01]
+            self.ylimFoil = [min(y) - 0.01, max(y) + 0.01]
 
-            fig, axs = plt.subplots(nrows=3, ncols=1, sharex=True, figsize=[10, 13])
+            fig, axs = plt.subplots(nrows=3, ncols=1, sharex=True, figsize=[7, 9])
             iAxsCP = 0
             iAxsCF = 1
             iAxsFoil = 2
@@ -768,8 +774,8 @@ class PYXLIGHT(BaseSolver, xfoilAnalysis):
             # Plot the airfoil on the lower axis
             axs[iAxsFoil].plot(x, y, color="k", zorder=-1, alpha=0.15)
             axs[iAxsFoil].plot(x, y, color=color)
-            axs[iAxsFoil].set_xlim([min(x) - 0.01, max(x) + 0.01])
-            axs[iAxsFoil].set_ylim([min(y) - 0.01, max(y) + 0.01])
+            axs[iAxsFoil].set_xlim(self.xlimFoil)
+            axs[iAxsFoil].set_ylim(self.ylimFoil)
             axs[iAxsFoil].set_xlabel("x/c")
             axs[iAxsFoil].set_ylabel("y/c", rotation="horizontal", ha="right", va="center")
             axs[iAxsFoil].set_aspect("equal")
@@ -803,7 +809,6 @@ class PYXLIGHT(BaseSolver, xfoilAnalysis):
             when updating a live plot, but breaks the animation in postprocess.
         """
         # Get data to plot
-        y0 = self.coords0[:, 1]
         x = self.coords[:, 0]
         y = self.coords[:, 1]
         CPUpper = self.sliceData[self.curAP.name]["cp_visc_upper"]
@@ -821,13 +826,24 @@ class PYXLIGHT(BaseSolver, xfoilAnalysis):
         iAxsCF = 1
         iAxsFoil = 2
 
-        CPlim = [max(np.hstack((CPUpper, CPUpperInvisc, CPLower, CPLowerInvisc))) + 0.2,
-                 min(np.hstack((CPUpper, CPUpperInvisc, CPLower, CPLowerInvisc))) - 0.2]
+        # Compute new plot limits
+        stackedCP = np.hstack((CPUpper, CPUpperInvisc, CPLower, CPLowerInvisc))
+        stackedCP = stackedCP[np.isfinite(stackedCP)]
+        stackedCF = np.hstack((CFUpper, CFLower))
+        stackedCF = stackedCF[np.isfinite(stackedCF)]
+
+        CPlim = [max(stackedCP) + 0.2,
+                 min(stackedCP) - 0.2]
         CPlim = [max(CPlim[0], self.CPlim[0]), min(CPlim[1], self.CPlim[1])]  # inverted axis
 
-        CFlim = [min(np.hstack((CFUpper, CFLower))) - 0.002,
-                 max(np.hstack((CFUpper, CFLower))) + 0.002]
+        CFlim = [min(stackedCF) - 0.002,
+                 max(stackedCF) + 0.002]
         CFlim = [min(CFlim[0], self.CFlim[0]), max(CFlim[1], self.CFlim[1])]
+
+        xlimFoil = [min(x) - 0.01, max(x) + 0.01]
+        ylimFoil = [min(y) - 0.01, max(y) + 0.01]
+        xlimFoil = [min(xlimFoil[0], self.xlimFoil[0]), max(xlimFoil[1], self.xlimFoil[1])]
+        ylimFoil = [min(ylimFoil[0], self.ylimFoil[0]), max(ylimFoil[1], self.ylimFoil[1])]
 
         # CP plot
         self.airfoilAxs[iAxsCP].lines.pop(-1)
@@ -849,7 +865,8 @@ class PYXLIGHT(BaseSolver, xfoilAnalysis):
 
         self.airfoilAxs[iAxsFoil].lines.pop(-1)
         self.airfoilAxs[iAxsFoil].plot(x, y, color=color)
-        self.airfoilAxs[iAxsFoil].set_ylim([min(min(y), min(y0)) - 0.01, max(max(y), max(y0)) + 0.01])
+        self.airfoilAxs[iAxsFoil].set_xlim(xlimFoil)
+        self.airfoilAxs[iAxsFoil].set_ylim(ylimFoil)
 
         if pause:
             plt.pause(1e-6)
