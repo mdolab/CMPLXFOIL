@@ -567,6 +567,7 @@ class PYXLIGHT(BaseSolver, xfoilAnalysis):
         vector products. It is not generally called by the user by
         rather internally or from another solver. A DVGeo object and a
         mesh object must both be set for this routine.
+
         Parameters
         ----------
         xDvDot : dict
@@ -578,6 +579,7 @@ class PYXLIGHT(BaseSolver, xfoilAnalysis):
         h : float
             Step sized used when the mode is "FD" or "CS" (must be complex
             if mode="CS")
+
         Returns
         -------
         dict
