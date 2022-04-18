@@ -95,6 +95,8 @@ class AnimateAirfoilOpt():
         fig, axs = foil.plotAirfoil()
         CPlim = foil.CPlim
         CFlim = foil.CFlim
+        xlimFoil = foil.xlimFoil
+        ylimFoil = foil.ylimFoil
         coords0 = foil.coords0
 
         def animateFrame(i):
@@ -106,6 +108,8 @@ class AnimateAirfoilOpt():
             foil.curAP = AeroProblem(self.APName, mach=0.5, altitude=0.)
             foil.CPlim = CPlim
             foil.CFlim = CFlim
+            foil.xlimFoil = xlimFoil
+            foil.ylimFoil = ylimFoil
             foil.coords0 = coords0
             with open(self.fileList[i] + ".pkl", "rb") as f:
                 foil.sliceData = pkl.load(f)
