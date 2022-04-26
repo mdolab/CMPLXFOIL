@@ -742,7 +742,7 @@ class PYXLIGHT(BaseSolver, xfoilAnalysis):
             self.xlimFoil = [min(x) - 0.01, max(x) + 0.01]
             self.ylimFoil = [min(y) - 0.01, max(y) + 0.01]
 
-            fig, axs = plt.subplots(nrows=3, ncols=1, sharex=True, figsize=[7, 9])
+            fig, axs = plt.subplots(nrows=3, ncols=1, sharex=True, figsize=[10, 13])
             iAxsCP = 0
             iAxsCF = 1
             iAxsFoil = 2
