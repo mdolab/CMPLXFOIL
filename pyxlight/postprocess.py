@@ -32,10 +32,11 @@ from matplotlib.animation import FuncAnimation
 from .pyXLIGHT_solver import PYXLIGHT
 
 
-class AnimateAirfoilOpt():
+class AnimateAirfoilOpt:
     """
     Class for generating animations of airfoil optimization
     """
+
     def __init__(self, dirName, APName):
         """
         Initialize the object with the directory and AeroProblem name.
@@ -85,11 +86,11 @@ class AnimateAirfoilOpt():
         if not animKwargs:
             animKwargs = {"fps": 15, "dpi": 200}
             if ext.lower() == "mp4":
-                animKwargs["extra_args"] = ['-vcodec', 'libx264']
+                animKwargs["extra_args"] = ["-vcodec", "libx264"]
 
         # Create initial plot
         foil = PYXLIGHT(self.fileList[0] + ".dat")
-        foil.curAP = AeroProblem(self.APName, mach=0.5, altitude=0.)
+        foil.curAP = AeroProblem(self.APName, mach=0.5, altitude=0.0)
         with open(self.fileList[0] + ".pkl", "rb") as f:
             foil.sliceData = pkl.load(f)
         fig, axs = foil.plotAirfoil()
@@ -105,7 +106,7 @@ class AnimateAirfoilOpt():
             """
             print(f"Rendering frame {i} of {self.iters}.....{(i + 1)/self.iters * 100:0.2f}% done", end="\r")
             foil = PYXLIGHT(self.fileList[i] + ".dat")
-            foil.curAP = AeroProblem(self.APName, mach=0.5, altitude=0.)
+            foil.curAP = AeroProblem(self.APName, mach=0.5, altitude=0.0)
             foil.CPlim = CPlim
             foil.CFlim = CFlim
             foil.xlimFoil = xlimFoil
@@ -116,10 +117,9 @@ class AnimateAirfoilOpt():
             foil.airfoilFig = fig
             foil.airfoilAxs = axs
             foil.updateAirfoilPlot(pause=False)
-        
+
         # Call the animator and save the result as a movie file
-        anim = FuncAnimation(fig, animateFrame,
-                             frames=self.iters, interval=66, blit=False)
+        anim = FuncAnimation(fig, animateFrame, frames=self.iters, interval=66, blit=False)
         anim.save(outputFileName + "." + ext, **animKwargs)
 
         # Save the last frame
