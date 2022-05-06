@@ -31,7 +31,8 @@ import pickle as pkl
 # =============================================================================
 import numpy as np
 from baseclasses import BaseSolver
-from prefoil.utils import readCoordFile, _writeDat
+from prefoil.utils import readCoordFile
+from prefoil.utils.io import _writeDat
 from pygeo.pyGeo import pyGeo
 import matplotlib.pyplot as plt
 from matplotlib.lines import Line2D
