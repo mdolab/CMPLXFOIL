@@ -48,16 +48,35 @@ class Test_NACA(unittest.TestCase):
         self.ap = AeroProblem(
             name="fc", alpha=3, mach=0.2, altitude=1e3, areaRef=1.0, chordRef=1.0, evalFuncs=["cl", "cd", "cm"]
         )
+        self.CFDSolver = PYXLIGHT(os.path.join(baseDir, "naca0012.dat"))
 
-    def test_NACA0012(self):
-        solver = PYXLIGHT(os.path.join(baseDir, "naca0012.dat"))
+    def test_cl_solve(self):
+        """Test that SolveCL works correctly"""
+        tol = 1e-5
+        for CLTarget in np.linspace(-0.5, 0.5, 11):
+            # Default settings
+            self.ap.alpha = 0.0
+            self.CFDSolver.solveCL(self.ap, CLTarget, tol=tol)
+            self.assertAlmostEqual(float(self.CFDSolver.xfoil.cr09.cl), CLTarget, delta=tol)
+
+            # Using secant with CLalphaGuess
+            self.ap.alpha = 0.0
+            self.CFDSolver.solveCL(self.ap, CLTarget, tol=tol, useNewton=False, CLalphaGuess=0.11)
+            self.assertAlmostEqual(float(self.CFDSolver.xfoil.cr09.cl), CLTarget, delta=tol)
+
+            # Using Newton
+            self.ap.alpha = 0.0
+            self.CFDSolver.solveCL(self.ap, CLTarget, tol=tol, useNewton=True)
+            self.assertAlmostEqual(float(self.CFDSolver.xfoil.cr09.cl), CLTarget, delta=tol)
+
+    def test_function_values(self):
         funcs = {}
         alphas = np.linspace(-10, 10, 5)
         for _, alpha in enumerate(alphas):
             self.ap.name = f"polar_{alpha}deg"
             self.ap.alpha = alpha
-            solver(self.ap)
-            solver.evalFunctions(self.ap, funcs)
+            self.CFDSolver(self.ap)
+            self.CFDSolver.evalFunctions(self.ap, funcs)
         true_funcs = {
             "polar_-10.0deg_cd": 0.01101993462628528,
             "polar_-10.0deg_cl": -1.159084142777055,

@@ -93,6 +93,7 @@ class PYXLIGHT(BaseSolver, xfoilAnalysis):
         self.coords = np.hstack((self.coords, np.zeros((self.coords.shape[0], 1))))
         self.coords0 = self.coords.copy()  # initial coordinates (never changes)
         self.setCoordinates(self.coords0)  # set the initial coordinates
+        self.setCoordinatesComplex(self.coords0)  # set the initial complex coordinates
         self.pointSetKwargs = {}
 
         self.curAP = None
@@ -318,6 +319,99 @@ class PYXLIGHT(BaseSolver, xfoilAnalysis):
         # Write solution files if desired
         if not deriv and self.getOption("writeSolution"):
             self.writeSolution()
+
+    def solveCL(
+        self,
+        aeroProblem,
+        CLStar,
+        alpha0=None,
+        delta=0.5,
+        tol=1e-3,
+        CLalphaGuess=None,
+        maxIter=20,
+        useNewton=False,
+    ):
+        """Find the angle of attack that gives a target lift coefficient.
+
+        _extended_summary_
+
+        Parameters
+        ----------
+        aeroProblem : pyAero_problem class
+            The aerodynamic problem to solve
+        CLStar : float
+            The desired CL
+        alpha0 : float, optional
+            Initial guess for secant search (deg). If None, use the value in the aeroProblem, by default None
+        delta : float, optional
+            Initial step direction for secant search, by default 0.5
+        tol : _type_, optional
+            Desired tolerance for CL, by default 1e-3
+        CLalphaGuess : float, optional
+            The user can provide an estimate for the lift curve slope in order to accelerate convergence. If the user
+            supply a value to this option, it will not use the delta value anymore to select the angle of attack of the
+            second run. The value should be in 1/deg., by default None
+        maxIter : int, optional
+            Maximum number of iterations, by default 20
+        nReset : int, optional
+            _description_, by default 25
+        useNewton : bool, optional
+            If True, Newton's method will be used where the dCL/dAlpha is computed using complex-step, otherwise the
+            secant method is used, by default False
+
+        Returns
+        -------
+        None, but the correct alpha is stored in the aeroProblem
+        """
+        self.setAeroProblem(aeroProblem)
+        if alpha0 is not None:
+            aeroProblem.alpha = alpha0
+        else:
+            alpha0 = aeroProblem.alpha
+
+        dCLdAlpha = CLalphaGuess
+        resPrev = None
+        alphaPrev = None
+        hasConverged = False
+        maxRes = 1e2
+
+        for _ in range(maxIter):
+
+            # Call the solver and compute the "residual"
+            self.__call__(aeroProblem, deriv=True)
+            cl = float(self.xfoil.cr09.cl)
+            print(f"Alpha: {aeroProblem.alpha:>6.3f}, CL: {cl:>7.6f}")
+            res = cl - CLStar
+
+            # Check for convergence and divergence
+            hasConverged = abs(res) < tol
+            if hasConverged:
+                print("Converged!")
+                break
+            elif abs(res > maxRes):
+                break
+
+            # If not converged, compute the next alpha
+            if useNewton:
+                aeroProblem.alpha += 1e-200 * 1j
+                self.__call__(aeroProblem, useComplex=True, deriv=True)
+                dCLdAlpha = np.imag(complex(self.xfoil_cs.cr09.cl)) * 1e200
+                aeroProblem.alpha = np.real(aeroProblem.alpha)
+            else:
+                # If using secant, we can only compute dCLdAlpha from the second iteration onwards
+                if resPrev is not None:
+                    dCLdAlpha = (res - resPrev) / (aeroProblem.alpha - alphaPrev)
+            resPrev = res
+            alphaPrev = aeroProblem.alpha
+
+            # Update the alpha either using dCLdAlpha or delta
+            if dCLdAlpha is not None:
+                aeroProblem.alpha = aeroProblem.alpha - res / dCLdAlpha
+            else:
+                aeroProblem.alpha = aeroProblem.alpha + 0.5
+        if not hasConverged:
+            print("Did not converge :(")
+        return hasConverged
 
     def writeSolution(self, outputDir=None, baseName=None, number=None):
         """This is a generic shell function that potentially writes the various output files. The intent is that the
@@ -736,10 +830,8 @@ class PYXLIGHT(BaseSolver, xfoilAnalysis):
             stackedCP = stackedCP[np.isfinite(stackedCP)]
             stackedCF = np.hstack((CFUpper, CFLower))
             stackedCF = stackedCF[np.isfinite(stackedCF)]
-            self.CPlim = [max(stackedCP) + 0.2,
-                          min(stackedCP) - 0.2]
-            self.CFlim = [min(stackedCF) - 0.002,
-                          max(stackedCF) + 0.002]
+            self.CPlim = [max(stackedCP) + 0.2, min(stackedCP) - 0.2]
+            self.CFlim = [min(stackedCF) - 0.002, max(stackedCF) + 0.002]
             self.xlimFoil = [min(x) - 0.01, max(x) + 0.01]
             self.ylimFoil = [min(y) - 0.01, max(y) + 0.01]
 
@@ -755,18 +847,20 @@ class PYXLIGHT(BaseSolver, xfoilAnalysis):
             axs[iAxsCP].plot(xLower, CPLower, color="k", zorder=-1, alpha=0.15)
             axs[iAxsCP].plot(xUpper, CPUpper, color=cpUpColor)
             axs[iAxsCP].plot(xLower, CPLower, color=cpLowColor)
-            axs[iAxsCP].plot(xUpper, CPUpperInvisc, "--", color=cpUpColor, linewidth=1.)
-            axs[iAxsCP].plot(xLower, CPLowerInvisc, "--", color=cpLowColor, linewidth=1.)
+            axs[iAxsCP].plot(xUpper, CPUpperInvisc, "--", color=cpUpColor, linewidth=1.0)
+            axs[iAxsCP].plot(xLower, CPLowerInvisc, "--", color=cpLowColor, linewidth=1.0)
             axs[iAxsCP].set_ylim(self.CPlim)
             axs[iAxsCP].set_ylabel("$c_p$", rotation="horizontal", ha="right", va="center")
 
             # Make legend for viscous vs. inviscid
-            customLines = [Line2D([0], [0], linestyle="-", color="k"),
-                            Line2D([0], [0], linestyle="--", color="k", linewidth=1.)]
+            customLines = [
+                Line2D([0], [0], linestyle="-", color="k"),
+                Line2D([0], [0], linestyle="--", color="k", linewidth=1.0),
+            ]
             axs[iAxsCP].legend(customLines, ["Viscous", "Inviscid"])
 
             # Plot the skin friction coefficient
-            axs[iAxsCF].plot([min(x) - 1, max(x) + 1], [0., 0.], zorder=-2, color="k", linewidth=0.7, alpha=0.3)
+            axs[iAxsCF].plot([min(x) - 1, max(x) + 1], [0.0, 0.0], zorder=-2, color="k", linewidth=0.7, alpha=0.3)
             axs[iAxsCF].plot(xCFUpper, CFUpper, color="k", zorder=-1, alpha=0.15)
             axs[iAxsCF].plot(xCFLower, CFLower, color="k", zorder=-1, alpha=0.15)
             axs[iAxsCF].plot(xCFUpper, CFUpper, color=cpUpColor)
@@ -835,12 +929,10 @@ class PYXLIGHT(BaseSolver, xfoilAnalysis):
         stackedCF = np.hstack((CFUpper, CFLower))
         stackedCF = stackedCF[np.isfinite(stackedCF)]
 
-        CPlim = [max(stackedCP) + 0.2,
-                 min(stackedCP) - 0.2]
+        CPlim = [max(stackedCP) + 0.2, min(stackedCP) - 0.2]
         CPlim = [max(CPlim[0], self.CPlim[0]), min(CPlim[1], self.CPlim[1])]  # inverted axis
 
-        CFlim = [min(stackedCF) - 0.002,
-                 max(stackedCF) + 0.002]
+        CFlim = [min(stackedCF) - 0.002, max(stackedCF) + 0.002]
         CFlim = [min(CFlim[0], self.CFlim[0]), max(CFlim[1], self.CFlim[1])]
 
         xlimFoil = [min(x) - 0.01, max(x) + 0.01]
@@ -855,8 +947,8 @@ class PYXLIGHT(BaseSolver, xfoilAnalysis):
         self.airfoilAxs[iAxsCP].lines.pop(-1)
         self.airfoilAxs[iAxsCP].plot(xUpper, CPUpper, color=cpUpColor)
         self.airfoilAxs[iAxsCP].plot(xLower, CPLower, color=cpLowColor)
-        self.airfoilAxs[iAxsCP].plot(xUpper, CPUpperInvisc, "--", color=cpUpColor, linewidth=1.)
-        self.airfoilAxs[iAxsCP].plot(xLower, CPLowerInvisc, "--", color=cpLowColor, linewidth=1.)
+        self.airfoilAxs[iAxsCP].plot(xUpper, CPUpperInvisc, "--", color=cpUpColor, linewidth=1.0)
+        self.airfoilAxs[iAxsCP].plot(xLower, CPLowerInvisc, "--", color=cpLowColor, linewidth=1.0)
         self.airfoilAxs[iAxsCP].set_ylim(CPlim)
 
         # CF plot
@@ -883,5 +975,5 @@ class PYXLIGHT(BaseSolver, xfoilAnalysis):
             "writeSolution": [bool, False],  # Whether or not to call writeSolution after each call to XFOIL
             "plotAirfoil": [bool, False],  # Whether to plot airfoil while running
             "outputDirectory": [str, "."],  # Where to put output files
-            "numberSolutions": [bool, True], # Whether to add call counter to output file names
+            "numberSolutions": [bool, True],  # Whether to add call counter to output file names
         }
