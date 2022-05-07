@@ -470,14 +470,15 @@ class PYXLIGHT(BaseSolver, xfoilAnalysis):
     def writeSlice(self, fileName):
         """Write pickle file containing the sliceData dictionary. The data can be
         accessed using the AeroProblem name as the key. Within that is a dictionary containing:
-            "cp_visc_upper": viscous CP on the airfoil's upper surface
-            "cp_invisc_upper": inviscid CP on the airfoil's upper surface
-            "x_upper": x coordinates of the upper surface CP data
-            "y_upper": y coordinates of the upper surface CP data
-            "cp_visc_lower": viscous CP on the airfoil's lower surface
-            "cp_invisc_lower": inviscid CP on the airfoil's lower surface
-            "x_lower": x coordinates of the lower surface CP data
-            "y_lower": y coordinates of the lower surface CP data
+
+        - "cp_visc_upper": viscous CP on the airfoil's upper surface
+        - "cp_invisc_upper": inviscid CP on the airfoil's upper surface
+        - "x_upper": x coordinates of the upper surface CP data
+        - "y_upper": y coordinates of the upper surface CP data
+        - "cp_visc_lower": viscous CP on the airfoil's lower surface
+        - "cp_invisc_lower": inviscid CP on the airfoil's lower surface
+        - "x_lower": x coordinates of the lower surface CP data
+        - "y_lower": y coordinates of the lower surface CP data
 
         Parameters
         ----------

@@ -6,5 +6,6 @@ pyXLIGHT is a version of Mark Drela's XFOIL code with the GUI features removed. 
    :maxdepth: 2
 
    install
+   API
    user-guide
    citation
