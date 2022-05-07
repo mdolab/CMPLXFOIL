@@ -20,29 +20,6 @@ from pyxlight.pyXLIGHT_solver import PYXLIGHT
 baseDir = os.path.dirname(os.path.abspath(__file__))  # Path to current folder
 
 
-def assertRelTol(x, y, tol=1e-6):
-    """
-    Throws AssertionError if abs((x - y) / x) is not less than or equal to tol.
-    If x, compares the absolute value of y with tol.
-
-    Parameters
-    ----------
-    x : numeric scalar
-        First value to compare
-    y : numeric scalar
-        Second value to compare
-    tol : float, optional
-        Tolerance within which x and y need to be, by default 1e-6
-    """
-    if x == 0:
-        relTol = abs(y)
-    else:
-        relTol = abs((x - y) / x)
-
-    if relTol > tol:
-        raise AssertionError(f"{x} and {y} not within rel tol of {tol:e} (rel tol = {relTol:e})")
-
-
 class Test_NACA(unittest.TestCase):
     def setUp(self):
         self.ap = AeroProblem(
@@ -170,11 +147,11 @@ class TestDerivatives(unittest.TestCase):
 
             # Check evalFunctionsSens's finite difference
             actualSensFD = funcsSensFD[evalFunc][alphaName].item()
-            assertRelTol(checkSensFD, actualSensFD, tol=relTol)
+            np.testing.assert_allclose(checkSensFD, actualSensFD, rtol=relTol, atol=1e-16)
 
             # Check evalFunctionsSens's complex step
             actualSensCS = funcsSensCS[evalFunc][alphaName].item()
-            assertRelTol(checkSensFD, actualSensCS, tol=relTol)
+            np.testing.assert_allclose(checkSensFD, actualSensCS, rtol=relTol, atol=1e-16)
 
     def test_shape_sens(self):
         # Initialize necessary variables
@@ -223,15 +200,15 @@ class TestDerivatives(unittest.TestCase):
                 actualSensCS = funcsSensCS[evalFunc][shapeName][i]
 
                 # Check evalFunctionsSens's finite difference
-                # assertRelTol(checkVal, actualSensFD, tol=relTol)
+                # np.testing.assert_allclose(checkVal, actualSensFD, rtol=relTol)
 
                 # Check evalFunctionsSens's complex step
-                # assertRelTol(checkVal, actualSensCS, tol=relTol)
+                # np.testing.assert_allclose(checkVal, actualSensCS, rtol=relTol)
 
                 # TODO: for some reason, the FDs computed in this function to check are way off
                 #       for now, just compare FD and CS from the class
 
-                assertRelTol(actualSensFD, actualSensCS, tol=relTol)
+                np.testing.assert_allclose(actualSensFD, actualSensCS, rtol=relTol, atol=1e-16)
 
 
 if __name__ == "__main__":
