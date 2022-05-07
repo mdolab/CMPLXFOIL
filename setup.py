@@ -28,7 +28,9 @@ setup(
     package_data={"pyxlight": ["*.so"]},
     install_requires=[
         "numpy",
+        "mdolab-baseclasses",
+        "prefoil"
     ],
-    extras_require={"testing": ["testflo"], "docs": ["sphinx-mdolab-theme"]},
+    extras_require={"testing": ["testflo"], "docs": ["sphinx-mdolab-theme"], "plotting":["matplotlib"]},
     classifiers=["Operating System :: Linux", "Programming Language :: Python, Fortran"],
 )
