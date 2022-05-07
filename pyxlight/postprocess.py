@@ -21,7 +21,6 @@ from glob import glob
 # =============================================================================
 # External Python modules
 # =============================================================================
-import numpy as np
 from baseclasses import AeroProblem
 import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation
