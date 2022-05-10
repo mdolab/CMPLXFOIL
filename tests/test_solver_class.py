@@ -22,35 +22,36 @@ baseDir = os.path.dirname(os.path.abspath(__file__))  # Path to current folder
 
 class Test_NACA(unittest.TestCase):
     def setUp(self):
+        # Set the random range to use consistent random numbers
+        self.rng = np.random.default_rng(7)
         self.ap = AeroProblem(
             name="fc", alpha=3, mach=0.2, altitude=1e3, areaRef=1.0, chordRef=1.0, evalFuncs=["cl", "cd", "cm"]
         )
         self.CFDSolver = PYXLIGHT(os.path.join(baseDir, "naca0012.dat"))
+        self.alphaSequence = np.linspace(-0.5, 0.5, 11)
+        np.shuffle(self.alphaSequence)
 
     def test_cl_solve_default(self):
         """Test that SolveCL works correctly"""
         tol = 1e-5
-        for CLTarget in np.linspace(-0.5, 0.5, 11):
+        for CLTarget in self.alphaSequence:
             # Default settings
-            self.ap.alpha = 0.0
             self.CFDSolver.solveCL(self.ap, CLTarget, tol=tol)
             self.assertAlmostEqual(float(self.CFDSolver.xfoil.cr09.cl), CLTarget, delta=tol)
 
     def test_cl_solve_CLalphaGuess(self):
         """Test that SolveCL works correctly"""
         tol = 1e-5
-        for CLTarget in np.linspace(-0.5, 0.5, 11):
+        for CLTarget in self.alphaSequence:
             # Using secant with CLalphaGuess
-            self.ap.alpha = 0.0
             self.CFDSolver.solveCL(self.ap, CLTarget, tol=tol, useNewton=False, CLalphaGuess=0.11)
             self.assertAlmostEqual(float(self.CFDSolver.xfoil.cr09.cl), CLTarget, delta=tol)
 
     def test_cl_solve_Newton(self):
         """Test that SolveCL works correctly"""
         tol = 1e-5
-        for CLTarget in np.linspace(-0.5, 0.5, 11):
+        for CLTarget in self.alphaSequence:
             # Using Newton
-            self.ap.alpha = 0.0
             self.CFDSolver.solveCL(self.ap, CLTarget, tol=tol, useNewton=True)
             self.assertAlmostEqual(float(self.CFDSolver.xfoil.cr09.cl), CLTarget, delta=tol)
 
