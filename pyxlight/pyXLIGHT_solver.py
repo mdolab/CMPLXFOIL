@@ -25,6 +25,7 @@ import os
 import time
 from copy import copy, deepcopy
 import pickle as pkl
+from collections.abc import Iterable
 
 # =============================================================================
 # External Python modules
@@ -325,6 +326,7 @@ class PYXLIGHT(BaseSolver, xfoilAnalysis):
         aeroProblem,
         CLStar,
         alpha0=None,
+        alphaBound=None,
         delta=0.5,
         tol=1e-3,
         CLalphaGuess=None,
@@ -343,6 +345,9 @@ class PYXLIGHT(BaseSolver, xfoilAnalysis):
             The desired CL
         alpha0 : float, optional
             Initial guess for secant search (deg). If None, use the value in the aeroProblem, by default None
+        alphaBound : float, tuple, list, optional
+            Bounds for angle of attack, if scalar then value is treated as a +- bound, by default None, in which case
+            limit is +-15 deg
         delta : float, optional
             Initial step direction for secant search, by default 0.5
         tol : _type_, optional
@@ -368,6 +373,17 @@ class PYXLIGHT(BaseSolver, xfoilAnalysis):
             aeroProblem.alpha = alpha0
         else:
             alpha0 = aeroProblem.alpha
+
+        if alphaBound is None:
+            alphaBound = (-15, 15)
+        elif isinstance(alphaBound, (int, float)):
+            alphaBound = (-alphaBound, alphaBound)
+        elif isinstance(alphaBound, Iterable):
+            alphaBound = (alphaBound[0], alphaBound[1])
+        else:
+            raise ValueError(
+                f'Supplied alphaBound value "{alphaBound}" is not the correct type, must be a scalar or array-like value.'
+            )
 
         dCLdAlpha = CLalphaGuess
         resPrev = None
@@ -406,7 +422,7 @@ class PYXLIGHT(BaseSolver, xfoilAnalysis):
 
             # Update the alpha either using dCLdAlpha or delta
             if dCLdAlpha is not None:
-                aeroProblem.alpha = aeroProblem.alpha - res / dCLdAlpha
+                aeroProblem.alpha = np.clip(aeroProblem.alpha - res / dCLdAlpha, alphaBound[0], alphaBound[1])
             else:
                 aeroProblem.alpha = aeroProblem.alpha + 0.5
         if not hasConverged:
