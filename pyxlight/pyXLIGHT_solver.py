@@ -71,6 +71,7 @@ class PYXLIGHT(BaseSolver, xfoilAnalysis):
     options : dict, optional
         The user-supplied options dictionary. Options are:
             maxIters
+            TODO: fix these options
     debug : bool, optional
         Set this flag to true when debugging with a symbolic
         debugger. The MExt module deletes the copied .so file when not
