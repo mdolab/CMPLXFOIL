@@ -29,7 +29,7 @@ class Test_NACA(unittest.TestCase):
         )
         self.CFDSolver = PYXLIGHT(os.path.join(baseDir, "naca0012.dat"))
         self.alphaSequence = np.linspace(-0.5, 0.5, 11)
-        np.shuffle(self.alphaSequence)
+        np.random.shuffle(self.alphaSequence)
 
     def test_cl_solve_default(self):
         """Test that SolveCL works correctly"""
