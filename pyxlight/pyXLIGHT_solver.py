@@ -396,6 +396,8 @@ class PYXLIGHT(BaseSolver, xfoilAnalysis):
 
             # Call the solver and compute the "residual"
             self.__call__(aeroProblem, deriv=True)
+            failCheck = {}
+            self.checkSolutionFailure(aeroProblem, failCheck)
             cl = float(self.xfoil.cr09.cl)
             print(f"Alpha: {aeroProblem.alpha:>6.3f}, CL: {cl:>7.6f}")
             res = cl - CLStar
@@ -412,8 +414,6 @@ class PYXLIGHT(BaseSolver, xfoilAnalysis):
             if useNewton:
                 aeroProblem.alpha += 1e-200 * 1j
                 self.__call__(aeroProblem, useComplex=True, deriv=True)
-                failCheck = {}
-                self.checkSolutionFailure(aeroProblem, failCheck)
                 dCLdAlpha = np.imag(complex(self.xfoil_cs.cr09.cl)) * 1e200
                 aeroProblem.alpha = np.real(aeroProblem.alpha)
             else:
