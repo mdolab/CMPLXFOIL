@@ -429,7 +429,7 @@ class PYXLIGHT(BaseSolver, xfoilAnalysis):
             elif dCLdAlpha is not None:
                 aeroProblem.alpha = np.clip(aeroProblem.alpha - res / dCLdAlpha, alphaBound[0], alphaBound[1])
             else:
-                aeroProblem.alpha = aeroProblem.alpha + 0.5
+                aeroProblem.alpha = aeroProblem.alpha + delta
         if not hasConverged:
             print("Did not converge :(")
         return hasConverged
