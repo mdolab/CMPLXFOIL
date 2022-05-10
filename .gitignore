@@ -1,3 +1,6 @@
+.pre-commit-config.yaml
+.vscode/*
+
 *.mod
 *.o
 *.a
