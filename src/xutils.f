@@ -7,7 +7,7 @@ C     Sets geometrically stretched array S:
 C
 C       S(i+1) - S(i)  =  r * [S(i) - S(i-1)]
 C
-C       S     (output)  array to be set  
+C       S     (output)  array to be set
 C       DS1   (input)   first S increment:  S(2) - S(1)
 C       SMAX  (input)   final S value:      S(NN)
 C       NN    (input)   number of points
@@ -85,7 +85,7 @@ C        DO i=2, N
 C          THETA(i) = ATANC( Y(i) , X(i) , THETA(i-1) )
 C        END DO
 C
-C     This will prevent the angle array THETA(i) from jumping by 
+C     This will prevent the angle array THETA(i) from jumping by
 C     +/- 2 pi when the path X(i),Y(i) crosses the negative x axis.
 C
 C     Input:
@@ -102,7 +102,7 @@ C---- set new position angle, ignoring branch cut in ATAN2 function for now
       THNEW = ATAN2( Y , X )
       DTHET = THNEW - THOLD
 C
-C---- angle change cannot exceed +/- pi, so get rid of any multiples of 2 pi 
+C---- angle change cannot exceed +/- pi, so get rid of any multiples of 2 pi
       DTCORR = DTHET - TPI*INT( (DTHET + SIGN(PI,DTHET))/TPI )
 C
 C---- set correct new angle
@@ -110,4 +110,3 @@ C---- set correct new angle
 C
       RETURN
       END ! ATANC
- 

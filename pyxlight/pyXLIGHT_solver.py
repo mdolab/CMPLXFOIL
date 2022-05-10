@@ -25,6 +25,7 @@ import os
 import time
 from copy import copy, deepcopy
 import pickle as pkl
+from collections.abc import Iterable
 
 # =============================================================================
 # External Python modules
@@ -326,6 +327,7 @@ class PYXLIGHT(BaseSolver, xfoilAnalysis):
         aeroProblem,
         CLStar,
         alpha0=None,
+        alphaBound=None,
         delta=0.5,
         tol=1e-3,
         CLalphaGuess=None,
@@ -344,6 +346,9 @@ class PYXLIGHT(BaseSolver, xfoilAnalysis):
             The desired CL
         alpha0 : float, optional
             Initial guess for secant search (deg). If None, use the value in the aeroProblem, by default None
+        alphaBound : float, tuple, list, optional
+            Bounds for angle of attack, if scalar then value is treated as a +- bound, by default None, in which case
+            limit is +-15 deg
         delta : float, optional
             Initial step direction for secant search, by default 0.5
         tol : _type_, optional
@@ -370,6 +375,17 @@ class PYXLIGHT(BaseSolver, xfoilAnalysis):
         else:
             alpha0 = aeroProblem.alpha
 
+        if alphaBound is None:
+            alphaBound = (-15, 15)
+        elif isinstance(alphaBound, (int, float)):
+            alphaBound = (-alphaBound, alphaBound)
+        elif isinstance(alphaBound, Iterable):
+            alphaBound = (alphaBound[0], alphaBound[1])
+        else:
+            raise ValueError(
+                f'Supplied alphaBound value "{alphaBound}" is not the correct type, must be a scalar or array-like value.'
+            )
+
         dCLdAlpha = CLalphaGuess
         resPrev = None
         alphaPrev = None
@@ -380,6 +396,8 @@ class PYXLIGHT(BaseSolver, xfoilAnalysis):
 
             # Call the solver and compute the "residual"
             self.__call__(aeroProblem, deriv=True)
+            failCheck = {}
+            self.checkSolutionFailure(aeroProblem, failCheck)
             cl = float(self.xfoil.cr09.cl)
             print(f"Alpha: {aeroProblem.alpha:>6.3f}, CL: {cl:>7.6f}")
             res = cl - CLStar
@@ -405,9 +423,11 @@ class PYXLIGHT(BaseSolver, xfoilAnalysis):
             resPrev = res
             alphaPrev = aeroProblem.alpha
 
-            # Update the alpha either using dCLdAlpha or delta
-            if dCLdAlpha is not None:
-                aeroProblem.alpha = aeroProblem.alpha - res / dCLdAlpha
+            # Update the alpha either using dCLdAlpha or delta, or backtracking if something went wrong
+            if dCLdAlpha == 0.0 or failCheck["fail"]:
+                aeroProblem.alpha *= 0.9
+            elif dCLdAlpha is not None:
+                aeroProblem.alpha = np.clip(aeroProblem.alpha - res / dCLdAlpha, alphaBound[0], alphaBound[1])
             else:
                 aeroProblem.alpha = aeroProblem.alpha + 0.5
         if not hasConverged:

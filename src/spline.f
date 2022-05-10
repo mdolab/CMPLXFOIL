@@ -1,8 +1,8 @@
 C***********************************************************************
 C    Module:  spline.f
-C 
-C    Copyright (C) 2000 Mark Drela 
-C 
+C
+C    Copyright (C) 2000 Mark Drela
+C
 C    This program is free software; you can redistribute it and/or modify
 C    it under the terms of the GNU General Public License as published by
 C    the Free Software Foundation; either version 2 of the License, or
@@ -36,7 +36,7 @@ C                                                       |
 C-------------------------------------------------------
 
       IF(N.GT.NMAX) STOP 'SPLINE: array overflow, increase NMAX'
-C     
+C
       DO 1 I=2, N-1
         DSM = S(I) - S(I-1)
         DSP = S(I+1) - S(I)
@@ -58,7 +58,7 @@ C---- solve for derivative array XS
       CALL TRISOL(A,B,C,XS,N)
 C
       RETURN
-      END ! SPLINE      
+      END ! SPLINE
 
 
       SUBROUTINE SPLIND(X,XS,S,N,XS1,XS2)
@@ -84,7 +84,7 @@ C              derivative end condition(s) are used     |
 C                                                       |
 C-------------------------------------------------------
       IF(N.GT.NMAX) STOP 'SPLIND: array overflow, increase NMAX'
-C     
+C
       DO 1 I=2, N-1
         DSM = S(I) - S(I-1)
         DSP = S(I+1) - S(I)
@@ -137,7 +137,7 @@ C
       RETURN
       END ! SPLIND
 
- 
+
 
       SUBROUTINE SPLINA(X,XS,S,N)
       IMPLICIT REAL (A-H,O-Z)
@@ -157,7 +157,7 @@ C     XS       dX/dS array                (calculated)  |
 C     N        number of points           (input)       |
 C                                                       |
 C-------------------------------------------------------
-C     
+C
       LEND = .TRUE.
       DO 1 I=1, N-1
         DS = S(I+1)-S(I)
@@ -311,7 +311,7 @@ C     X, Y     coordinate arrays of curve       |
 C     XS,YS    derivative arrays                |
 C              (calculated earlier by SPLINE)   |
 C-----------------------------------------------
-C     
+C
       ILOW = 1
       I = N
 C
@@ -337,7 +337,7 @@ C
       CY2 = DS*YS(I)   - Y(I) + Y(I-1)
       YD = Y(I) - Y(I-1) + (1.0-4.0*T+3.0*T*T)*CY1 + T*(3.0*T-2.0)*CY2
       YDD = (6.0*T-4.0)*CY1 + (6.0*T-2.0)*CY2
-C 
+C
       SD = SQRT(XD*XD + YD*YD)
       SD = MAX(SD,0.001*DS)
 C
@@ -358,7 +358,7 @@ C     X, Y     coordinate arrays of curve       |
 C     XS,YS    derivative arrays                |
 C              (calculated earlier by SPLINE)   |
 C-----------------------------------------------
-C     
+C
       ILOW = 1
       I = N
 C
@@ -393,7 +393,7 @@ C
       BOT = SD**3
       DBOTDT = 3.0*SD*(XD*XDD + YD*YDD)
 C
-      TOP = XD*YDD - YD*XDD      
+      TOP = XD*YDD - YD*XDD
       DTOPDT = XD*YDDD - YD*XDDD
 C
       CURVS = (DTOPDT*BOT - DBOTDT*TOP) / BOT**2
@@ -589,4 +589,3 @@ C
 C
       RETURN
       END ! SEGSPL
-

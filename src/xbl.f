@@ -1,8 +1,8 @@
 C***********************************************************************
 C    Module:  xbl.f
-C 
-C    Copyright (C) 2000 Mark Drela 
-C 
+C
+C    Copyright (C) 2000 Mark Drela
+C
 C    This program is free software; you can redistribute it and/or modify
 C    it under the terms of the GNU General Public License as published by
 C    the Free Software Foundation; either version 2 of the License, or
@@ -27,7 +27,7 @@ C     Sets up the BL Newton system coefficients
 C     for the current BL variables and the edge
 C     velocities received from SETUP. The local
 C     BL system coefficients are then
-C     incorporated into the global Newton system.  
+C     incorporated into the global Newton system.
 C-------------------------------------------------
       INCLUDE 'XFOIL.INC'
       INCLUDE 'XBL.INC'
@@ -349,7 +349,7 @@ C
       IF(LALFA) THEN
        VDEL(1,2,IV) = VSR(1)*RE_CLMR + VSM(1)*MSQ_CLMR
       ELSE
-       VDEL(1,2,IV) = 
+       VDEL(1,2,IV) =
      &       (VS1(1,4)*U1_A + VS1(1,3)*D1_A)
      &     + (VS2(1,4)*U2_A + VS2(1,3)*D2_A)
      &     + (VS1(1,5) + VS2(1,5) + VSX(1))
@@ -379,7 +379,7 @@ C
       IF(LALFA) THEN
        VDEL(2,2,IV) = VSR(2)*RE_CLMR + VSM(2)*MSQ_CLMR
       ELSE
-       VDEL(2,2,IV) = 
+       VDEL(2,2,IV) =
      &       (VS1(2,4)*U1_A + VS1(2,3)*D1_A)
      &     + (VS2(2,4)*U2_A + VS2(2,3)*D2_A)
      &     + (VS1(2,5) + VS2(2,5) + VSX(2))
@@ -409,7 +409,7 @@ C
       IF(LALFA) THEN
        VDEL(3,2,IV) = VSR(3)*RE_CLMR + VSM(3)*MSQ_CLMR
       ELSE
-       VDEL(3,2,IV) = 
+       VDEL(3,2,IV) =
      &       (VS1(3,4)*U1_A + VS1(3,3)*D1_A)
      &     + (VS2(3,4)*U2_A + VS2(3,3)*D2_A)
      &     + (VS1(3,5) + VS2(3,5) + VSX(3))
@@ -492,7 +492,7 @@ C
 C
       DUE1 = DUE2
       DDS1 = DDS2
-C      
+C
 C---- set BL variables for next station
       DO 190 ICOM=1, NCOM
         COM1(ICOM) = COM2(ICOM)
@@ -778,7 +778,7 @@ C
           IF(DMAX.LE.1.0E-5) GO TO 110
 C
   100   CONTINUE
-C        WRITE(*,1350) IBL, IS, DMAX 
+C        WRITE(*,1350) IBL, IS, DMAX
  1350   FORMAT(' MRCHUE: Convergence failed at',I4,'  side',I2,
      &         '    Res =', E12.4)
 C
@@ -787,7 +787,7 @@ CCC        IF(DMAX .LE. 0.1) GO TO 110
         IF(DMAX .LE. 0.1) GO TO 109
 C
 C------- the current solution is garbage --> extrapolate values instead
-         IF(IBL.GT.3) THEN 
+         IF(IBL.GT.3) THEN
           IF(IBL.LE.IBLTE(IS)) THEN
            THI = THET(IBM,IS) * (XSSI(IBL,IS)/XSSI(IBM,IS))**0.5
            DSI = DSTR(IBM,IS) * (XSSI(IBL,IS)/XSSI(IBM,IS))**0.5
@@ -877,8 +877,8 @@ C
 C
       RETURN
       END
-  
- 
+
+
       SUBROUTINE MRCHDU
 C----------------------------------------------------
 C     Marches the BLs and wake in mixed mode using
@@ -1110,7 +1110,7 @@ C
 C
   100   CONTINUE
 C
-C        WRITE(*,1350) IBL, IS, DMAX 
+C        WRITE(*,1350) IBL, IS, DMAX
  1350   FORMAT(' MRCHDU: Convergence failed at',I4,'  side',I2,
      &         '    Res =', E12.4)
 C
@@ -1206,8 +1206,8 @@ C
 C
       RETURN
       END
-  
- 
+
+
       SUBROUTINE XIFSET(IS)
 C-----------------------------------------------------
 C     Sets forced-transition BL coordinate locations.
@@ -1440,7 +1440,7 @@ C-------- normalize changes
 C
 C-------- accumulate for rms change
           RMSBL = RMSBL + DN1**2 + DN2**2 + DN3**2 + DN4**2
-C          
+C
 C-------- see if Ctau needs underrelaxation
           RDN1 = RLX*DN1
           IF(ABS(DN1) .GT. ABS(RMXBL)) THEN
@@ -1574,5 +1574,3 @@ C
 C
       RETURN
       END
-
-

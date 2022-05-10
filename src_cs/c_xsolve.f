@@ -1,8 +1,8 @@
 C***********************************************************************
 C    Module:  xsolve.f
-C 
-C    Copyright (C) 2000 Mark Drela 
-C 
+C
+C    Copyright (C) 2000 Mark Drela
+C
 C    This program is free software; you can redistribute it and/or modify
 C    it under the terms of the GNU General Public License as published by
 C    the Free Software Foundation; either version 2 of the License, or
@@ -35,10 +35,10 @@ C     *                                                     *
 C     *                              Mark Drela  1984       *
 C     *******************************************************
 C
-	use complexify 
-	implicit complex(a-h, o-z) 
+	use complexify
+	implicit complex(a-h, o-z)
       DIMENSION Z(NSIZ,NSIZ), R(NSIZ,NRHS)
-C     
+C
       DO 1 NP=1, NN-1
          NP1 = NP+1
 C
@@ -51,13 +51,13 @@ c where snr1 is executed if expression is -ve
 c       snr2 is executed if expression is zero
 c       snr3 is executed if expression is +ve
 
-c This will have to be rewritten explictity since 
+c This will have to be rewritten explictity since
 c the complex numbers is giving problems
 
 C------ find max pivot index NX
 c        NX = NP
 c        DO 11 N=NP1, NN
-c     IF(ABS(Z(N,NP)) -ABS(Z(NX,NP))) 11,11,111        
+c     IF(ABS(Z(N,NP)) -ABS(Z(NX,NP))) 11,11,111
 c    111      NX = N
 c   11   CONTINUE
 C
@@ -81,7 +81,7 @@ c           WRITE(*,*) 'arg:',ARG
 
  111       NX = N
  11        CONTINUE
-           
+
 
         PIVOT = 1.0/Z(NX,NP)
 C
@@ -221,8 +221,8 @@ C     *                                                     *
 C     *                              Mark Drela  1988       *
 C     *******************************************************
 C
-	use complexify 
-	implicit complex(a-h, o-z) 
+	use complexify
+	implicit complex(a-h, o-z)
       DIMENSION A(NSIZ,NSIZ), INDX(NSIZ)
 C
       PARAMETER (NVX=300)
@@ -286,8 +286,8 @@ C
 
 
       SUBROUTINE BAKSUB(NSIZ,N,A,INDX,B)
-	use complexify 
-	implicit complex(a-h, o-z) 
+	use complexify
+	implicit complex(a-h, o-z)
       DIMENSION A(NSIZ,NSIZ), B(NSIZ), INDX(NSIZ)
 C
       II = 0
@@ -334,14 +334,14 @@ C        .  .  .  .  .  .  .  |    d       R       S
 C        |  |  |  |  |  |  B  A    d       R       S
 C
 C       A, B, Z  3x3  blocks containing linearized BL equation coefficients
-C       |        3x1  vectors containing mass defect influence 
+C       |        3x1  vectors containing mass defect influence
 C                     coefficients on Ue
 C       d        3x1  unknown vectors (Newton deltas for Ctau, Theta, m)
 C       R        3x1  residual vectors
 C       S        3x1  Re influence vectors
 C-----------------------------------------------------------------
-	use complexify 
-	implicit complex(a-h, o-z) 
+	use complexify
+	implicit complex(a-h, o-z)
       include 'c_XFOIL.INC'
 C
       IVTE1 = ISYS(IBLTE(1),1)

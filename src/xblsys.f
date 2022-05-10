@@ -1,8 +1,8 @@
 C***********************************************************************
 C    Module:  xblsys.f
-C 
-C    Copyright (C) 2000 Mark Drela 
-C 
+C
+C    Copyright (C) 2000 Mark Drela
+C
 C    This program is free software; you can redistribute it and/or modify
 C    it under the terms of the GNU General Public License as published by
 C    the Free Software Foundation; either version 2 of the License, or
@@ -146,17 +146,17 @@ cC-------------------------------------------------
 cC     Checks if transition occurs in the current
 cC     interval 1..2  (IBL-1...IBL) on side IS.
 cC
-cC     Old first-order version. 
+cC     Old first-order version.
 cC
-cC     Growth rate is evaluated at the upstream 
-cC     point "1". The discrete amplification 
+cC     Growth rate is evaluated at the upstream
+cC     point "1". The discrete amplification
 cC     equation is
 cC
-cC       Ncrit - N(X1)     
+cC       Ncrit - N(X1)
 cC       -------------  =  N'(X1)
-cC          XT - X1        
+cC          XT - X1
 cC
-cC     which can be immediately solved for 
+cC     which can be immediately solved for
 cC     the transition location XT.
 cC-------------------------------------------------
 c      INCLUDE 'XBL.INC'
@@ -223,15 +223,15 @@ c      ENDIF
 cC
 c      RETURN
 c      END
- 
- 
+
+
       SUBROUTINE TRCHEK2
 C----------------------------------------------------------------
 C     New second-order version:  December 1994.
 C
 C     Checks if transition occurs in the current interval X1..X2.
-C     If transition occurs, then set transition location XT, and 
-C     its sensitivities to "1" and "2" variables.  If no transition, 
+C     If transition occurs, then set transition location XT, and
+C     its sensitivities to "1" and "2" variables.  If no transition,
 C     set amplification AMPL2.
 C
 C
@@ -394,7 +394,7 @@ C---- set sensitivity of AX(A2)
      &      +  AX_AT                                 *AMPLT_A2
 C
 C---- residual for implicit AMPL2 definition (amplification equation)
-      RES    = AMPL2 - AMPL1 - AX   *(X2-X1) 
+      RES    = AMPL2 - AMPL1 - AX   *(X2-X1)
       RES_A2 = 1.0           - AX_A2*(X2-X1)
 C
       DA2 = -RES/RES_A2
@@ -428,7 +428,7 @@ c       WRITE(*,*) "CONVERGENCE PROBLEMS IN BL ANALYSIS, XBLSYS.F"
        cm = -10
 c	write(*,*) cl
        LEXITFLAG = .TRUE.
-       LVCONV = .FALSE.  
+       LVCONV = .FALSE.
 c      GOTO 123
 c      STOP
       RETURN
@@ -670,11 +670,11 @@ C------ combine with derivatives of compressible  U1,U2 = Uec(Uei M)
 C
       RETURN
       END
- 
+
 
       SUBROUTINE TESYS(CTE,TTE,DTE)
 C--------------------------------------------------------
-C     Sets up "dummy" BL system between airfoil TE point 
+C     Sets up "dummy" BL system between airfoil TE point
 C     and first wake point infinitesimally behind TE.
 C--------------------------------------------------------
       IMPLICIT REAL (M)
@@ -695,7 +695,7 @@ C
 C
       VS1(1,1) = -1.0
       VS2(1,1) = 1.0
-      VSREZ(1) = CTE - S2      
+      VSREZ(1) = CTE - S2
 C
       VS1(2,2) = -1.0
       VS2(2,2) = 1.0
@@ -732,10 +732,10 @@ C
       RETURN
       END ! BLPRV
 
- 
+
       SUBROUTINE BLKIN
 C----------------------------------------------------------
-C     Calculates turbulence-independent secondary "2" 
+C     Calculates turbulence-independent secondary "2"
 C     variables from the primary "2" variables.
 C----------------------------------------------------------
       IMPLICIT REAL(M)
@@ -791,7 +791,7 @@ C
       END ! BLKIN
 
 
- 
+
       SUBROUTINE BLVAR(ITYP)
 C----------------------------------------------------
 C     Calculates all secondary "2" variables from
@@ -906,7 +906,7 @@ C
       CQ2_RE = CQ2_RE                + CQ2_RT2*RT2_RE
 C
 C
-C---- set skin friction coefficient 
+C---- set skin friction coefficient
       IF(ITYP.EQ.3) THEN
 C----- wake
        CF2     = 0.
@@ -1129,7 +1129,7 @@ cccc      IF(DE2 .GT. HDMAX*T2 .AND. (HK2 .GT. 4.0 .OR. ITYP.EQ.3)) THEN
 C
       RETURN
       END
- 
+
 
       SUBROUTINE BLMID(ITYP)
 C----------------------------------------------------
@@ -1201,7 +1201,7 @@ C
       RETURN
       END ! BLMID
 
- 
+
       SUBROUTINE TRDIF
 C-----------------------------------------------
 C     Sets up the Newton system governing the
@@ -1452,13 +1452,13 @@ C---- convert sensitivities wrt "T" variables into sensitivities
 C-    wrt "1" and "2" variables as done before for the laminar part
       DO 40 K=1, 3
         BTREZ(K) = VSREZ(K)
-        BTM(K)   = VSM(K) 
+        BTM(K)   = VSM(K)
      &           + VS1(K,1)*ST_MS
      &           + VS1(K,2)*TT_MS
      &           + VS1(K,3)*DT_MS
      &           + VS1(K,4)*UT_MS
      &           + VS1(K,5)*XT_MS
-        BTR(K)   = VSR(K) 
+        BTR(K)   = VSR(K)
      &           + VS1(K,1)*ST_RE
      &           + VS1(K,2)*TT_RE
      &           + VS1(K,3)*DT_RE
@@ -1557,8 +1557,8 @@ C-    were already restored for the XT-X2 differencing part.
 C
       RETURN
       END
- 
- 
+
+
       SUBROUTINE BLDIF(ITYP)
 C-----------------------------------------------------------
 C     Sets up the Newton system coefficients and residuals
@@ -1666,7 +1666,7 @@ C
 C***** laminar part -->  set amplification equation
 C
 C----- set average amplification AX over interval X1..X2
-       CALL AXSET( HK1,    T1,    RT1, AMPL1,  
+       CALL AXSET( HK1,    T1,    RT1, AMPL1,
      &             HK2,    T2,    RT2, AMPL2, AMCRIT,
      &      AX, AX_HK1, AX_T1, AX_RT1, AX_A1,
      &          AX_HK2, AX_T2, AX_RT2, AX_A2 )
@@ -1681,7 +1681,7 @@ C
        VS1(1,5) =  AX
        VS2(1,1) = Z_AX* AX_A2  +  1.0
        VS2(1,2) = Z_AX*(AX_HK2*HK2_T2 + AX_T2 + AX_RT2*RT2_T2)
-       VS2(1,3) = Z_AX*(AX_HK2*HK2_D2                        )         
+       VS2(1,3) = Z_AX*(AX_HK2*HK2_D2                        )
        VS2(1,4) = Z_AX*(AX_HK2*HK2_U2         + AX_RT2*RT2_U2)
        VS2(1,5) = -AX
        VSM(1)   = Z_AX*(AX_HK1*HK1_MS         + AX_RT1*RT1_MS
@@ -1987,7 +1987,7 @@ C
       END
 
 
- 
+
       SUBROUTINE DAMPL( HK, TH, RT, AX, AX_HK, AX_TH, AX_RT )
 C==============================================================
 C     Amplification rate routine for envelope e^n method.
@@ -1999,10 +1999,10 @@ C                AIAA Journal, Oct. 1987.
 C
 C     NEW VERSION.   March 1991       (latest bug fix  July 93)
 C          - m(H) correlation made more accurate up to H=20
-C          - for H > 5, non-similar profiles are used 
-C            instead of Falkner-Skan profiles.  These 
-C            non-similar profiles have smaller reverse 
-C            velocities, are more representative of typical 
+C          - for H > 5, non-similar profiles are used
+C            instead of Falkner-Skan profiles.  These
+C            non-similar profiles have smaller reverse
+C            velocities, are more representative of typical
 C            separation bubble profiles.
 C--------------------------------------------------------------
 C
@@ -2058,7 +2058,7 @@ C----- no amplification for Rtheta < Rcrit
 C
       ELSE
 C
-C----- Set steep cubic ramp used to turn on AX smoothly as Rtheta 
+C----- Set steep cubic ramp used to turn on AX smoothly as Rtheta
 C-     exceeds Rcrit (previously, this was done discontinuously).
 C-     The ramp goes between  -DGR < log10(Rtheta/Rcrit) < DGR
 C
@@ -2104,8 +2104,8 @@ C
       RETURN
       END ! DAMPL
 
- 
- 
+
+
       SUBROUTINE HKIN( H, MSQ, HK, HK_H, HK_MSQ )
       REAL MSQ
 C
@@ -2117,7 +2117,7 @@ C     (from Whitfield )
 C
       RETURN
       END
- 
+
 
 
       SUBROUTINE DIL( HK, RT, DI, DI_HK, DI_RT )
@@ -2272,7 +2272,7 @@ C
 C
 C----- separated branch
        GRT = LOG(RTZ)
-       HDIF = HK - HO 
+       HDIF = HK - HO
        RTMP = HK - HO + 4.0/GRT
        HTMP    = 0.007*GRT/RTMP**2 + DHSINF/HK
        HTMP_HK = -.014*GRT/RTMP**3 - DHSINF/HK**2
@@ -2308,9 +2308,9 @@ C---- Whitfield's minor additional compressibility correction
 C
       RETURN
       END
- 
- 
- 
+
+
+
       SUBROUTINE CFT( HK, RT, MSQ, CF, CF_HK, CF_RT, CF_MSQ )
       IMPLICIT REAL (A-H,M,O-Z)
       DATA GAM /1.4/
@@ -2339,7 +2339,7 @@ C
       END ! CFT
 
 
- 
+
       SUBROUTINE HCT( HK, MSQ, HC, HC_HK, HC_MSQ )
       REAL MSQ
 C
@@ -2350,5 +2350,3 @@ C---- density shape parameter    (from Whitfield)
 C
       RETURN
       END
- 
- 

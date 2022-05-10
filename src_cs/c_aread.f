@@ -1,7 +1,7 @@
 
       SUBROUTINE AREAD(LU,FNAME,NMAX,X,Y,N,NAME,ISPARS,ITYPE,INFO)
-	use complexify 
-	implicit complex(a-h, o-z) 
+	use complexify
+	implicit complex(a-h, o-z)
       DIMENSION X(NMAX), Y(NMAX)
       CHARACTER*(*) FNAME
       CHARACTER*(*) NAME
@@ -12,7 +12,7 @@ C
 C  Input:
 C       LU      logical unit to use for reading
 C       FNAME   name of coordinate file to be read,
-C               if FNAME(1:1).eq.' ', unit LU is assumed 
+C               if FNAME(1:1).eq.' ', unit LU is assumed
 C               to be already open
 C       INFO   0 keep quiet
 C              1 print info on airfoil

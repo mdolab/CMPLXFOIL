@@ -1,8 +1,8 @@
 C***********************************************************************
 C    Module:  spline.f
-C 
-C    Copyright (C) 2000 Mark Drela 
-C 
+C
+C    Copyright (C) 2000 Mark Drela
+C
 C    This program is free software; you can redistribute it and/or modify
 C    it under the terms of the GNU General Public License as published by
 C    the Free Software Foundation; either version 2 of the License, or
@@ -19,8 +19,8 @@ C    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 C***********************************************************************
 
       SUBROUTINE SPLINE(X,XS,S,N)
-	use complexify 
-	implicit complex(a-h, o-z) 
+	use complexify
+	implicit complex(a-h, o-z)
       DIMENSION X(N),XS(N),S(N)
       PARAMETER (NMAX=600)
       DIMENSION A(NMAX),B(NMAX),C(NMAX)
@@ -37,7 +37,7 @@ C     N        number of points           (input)       |
 C                                                       |
 C-------------------------------------------------------
       IF(N.GT.NMAX) STOP 'SPLINE: array overflow, increase NMAX'
-C     
+C
       DO 1 I=2, N-1
         DSM = S(I) - S(I-1)
         DSP = S(I+1) - S(I)
@@ -59,12 +59,12 @@ C---- solve for derivative array XS
       CALL TRISOL(A,B,C,XS,N)
 C
       RETURN
-      END ! SPLINE      
+      END ! SPLINE
 
 
       SUBROUTINE SPLIND(X,XS,S,N,XS1,XS2)
-	use complexify 
-	implicit complex(a-h, o-z) 
+	use complexify
+	implicit complex(a-h, o-z)
       DIMENSION X(N),XS(N),S(N)
       PARAMETER (NMAX=600)
       DIMENSION  A(NMAX),B(NMAX),C(NMAX)
@@ -87,7 +87,7 @@ C              derivative end condition(s) are used     |
 C                                                       |
 C-------------------------------------------------------
       IF(N.GT.NMAX) STOP 'SPLIND: array overflow, increase NMAX'
-C     
+C
       DO 1 I=2, N-1
         DSM = S(I) - S(I-1)
         DSP = S(I+1) - S(I)
@@ -140,10 +140,10 @@ C
       RETURN
       END ! SPLIND
 
- 
+
 
       SUBROUTINE SPLINA(X,XS,S,N)
-	use complexify 
+	use complexify
       IMPLICIT complex (A-H,O-Z)
       DIMENSION X(N),XS(N),S(N)
       LOGICAL LEND
@@ -161,7 +161,7 @@ C     XS       dX/dS array                (calculated)  |
 C     N        number of points           (input)       |
 C                                                       |
 C-------------------------------------------------------
-C     
+C
       LEND = .TRUE.
       DO 1 I=1, N-1
         DS = S(I+1)-S(I)
@@ -188,8 +188,8 @@ C
 
 
       SUBROUTINE TRISOL(A,B,C,D,KK)
-	use complexify 
-	implicit complex(a-h, o-z) 
+	use complexify
+	implicit complex(a-h, o-z)
       DIMENSION A(KK),B(KK),C(KK),D(KK)
 C-----------------------------------------
 C     Solves KK long, tri-diagonal system |
@@ -223,8 +223,8 @@ C
 
 
       FUNCTION SEVAL(SS,X,XS,S,N)
-	use complexify 
-	implicit complex(a-h, o-z) 
+	use complexify
+	implicit complex(a-h, o-z)
       DIMENSION X(N), XS(N), S(N)
 C--------------------------------------------------
 C     Calculates X(SS)                             |
@@ -252,8 +252,8 @@ C
       END ! SEVAL
 
       FUNCTION DEVAL(SS,X,XS,S,N)
-	use complexify 
-	implicit complex(a-h, o-z) 
+	use complexify
+	implicit complex(a-h, o-z)
       DIMENSION X(N), XS(N), S(N)
 C--------------------------------------------------
 C     Calculates dX/dS(SS)                         |
@@ -282,8 +282,8 @@ C
       END ! DEVAL
 
       FUNCTION D2VAL(SS,X,XS,S,N)
-	use complexify 
-	implicit complex(a-h, o-z) 
+	use complexify
+	implicit complex(a-h, o-z)
       DIMENSION X(N), XS(N), S(N)
 C--------------------------------------------------
 C     Calculates d2X/dS2(SS)                       |
@@ -313,8 +313,8 @@ C
 
 
       FUNCTION CURV(SS,X,XS,Y,YS,S,N)
-	use complexify 
-	implicit complex(a-h, o-z) 
+	use complexify
+	implicit complex(a-h, o-z)
       DIMENSION X(N), XS(N), Y(N), YS(N), S(N)
 C-----------------------------------------------
 C     Calculates curvature of splined 2-D curve |
@@ -325,7 +325,7 @@ C     X, Y     coordinate arrays of curve       |
 C     XS,YS    derivative arrays                |
 C              (calculated earlier by SPLINE)   |
 C-----------------------------------------------
-C     
+C
       ILOW = 1
       I = N
 C
@@ -351,7 +351,7 @@ C
       CY2 = DS*YS(I)   - Y(I) + Y(I-1)
       YD = Y(I) - Y(I-1) + (1.0-4.0*T+3.0*T*T)*CY1 + T*(3.0*T-2.0)*CY2
       YDD = (6.0*T-4.0)*CY1 + (6.0*T-2.0)*CY2
-C 
+C
       SD = SQRT(XD*XD + YD*YD)
       SD = MAX(SD,0.001*DS)
 C
@@ -362,8 +362,8 @@ C
 
 
       FUNCTION CURVS(SS,X,XS,Y,YS,S,N)
-	use complexify 
-	implicit complex(a-h, o-z) 
+	use complexify
+	implicit complex(a-h, o-z)
       DIMENSION X(N), XS(N), Y(N), YS(N), S(N)
 C-----------------------------------------------
 C     Calculates curvature derivative of        |
@@ -374,7 +374,7 @@ C     X, Y     coordinate arrays of curve       |
 C     XS,YS    derivative arrays                |
 C              (calculated earlier by SPLINE)   |
 C-----------------------------------------------
-C     
+C
       ILOW = 1
       I = N
 C
@@ -409,7 +409,7 @@ C
       BOT = SD**3
       DBOTDT = 3.0*SD*(XD*XDD + YD*YDD)
 C
-      TOP = XD*YDD - YD*XDD      
+      TOP = XD*YDD - YD*XDD
       DTOPDT = XD*YDDD - YD*XDDD
 C
       CURVS = (DTOPDT*BOT - DBOTDT*TOP) / BOT**2
@@ -419,8 +419,8 @@ C
 
 
       SUBROUTINE SINVRT(SI,XI,X,XS,S,N)
-	use complexify 
-	implicit complex(a-h, o-z) 
+	use complexify
+	implicit complex(a-h, o-z)
       DIMENSION X(N), XS(N), S(N)
 C-------------------------------------------------------
 C     Calculates the "inverse" spline function S(X).    |
@@ -453,8 +453,8 @@ C
 
 
       SUBROUTINE SCALC(X,Y,S,N)
-	use complexify 
-	implicit complex(a-h, o-z) 
+	use complexify
+	implicit complex(a-h, o-z)
       DIMENSION X(N), Y(N), S(N)
 C----------------------------------------
 C     Calculates the arc length array S  |
@@ -471,8 +471,8 @@ C
 
 
       SUBROUTINE SPLNXY(X,XS,Y,YS,S,N)
-	use complexify 
-	implicit complex(a-h, o-z) 
+	use complexify
+	implicit complex(a-h, o-z)
       DIMENSION X(N), XS(N), Y(N), YS(N), S(N)
 C-----------------------------------------
 C     Splines 2-D shape X(S), Y(S), along |
@@ -560,8 +560,8 @@ C     but allows derivative discontinuities     |
 C     at segment joints.  Segment joints are    |
 C     defined by identical successive S values. |
 C-----------------------------------------------
-	use complexify 
-	implicit complex(a-h, o-z) 
+	use complexify
+	implicit complex(a-h, o-z)
       DIMENSION X(N), XS(N), S(N)
 C
       IF(S(1).ceq.S(2)  ) STOP 'SEGSPL:  First input point duplicated'
@@ -593,8 +593,8 @@ C     but allows derivative discontinuities     |
 C     at segment joints.  Segment joints are    |
 C     defined by identical successive S values. |
 C-----------------------------------------------
-	use complexify 
-	implicit complex(a-h, o-z) 
+	use complexify
+	implicit complex(a-h, o-z)
       DIMENSION X(N), XS(N), S(N)
 C
       IF(S(1).ceq.S(2)  ) STOP 'SEGSPL:  First input point duplicated'
@@ -614,4 +614,3 @@ C
 C
       RETURN
       END ! SEGSPL
-

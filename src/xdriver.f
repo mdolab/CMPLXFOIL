@@ -14,7 +14,7 @@
      &        LBLINI,LIPAN,LQAIJ,LADIJ,LWDIJ,LCPXX,LQVDES,LQREFL,
      &        LQSPEC,LVCONV,LCPREF,LCLOCK,LPFILE,LPFILX,LPPSHO,
      &        LBFLAP,LFLAP,LEIW,LSCINI,LFOREF,LNORM,LGSAME,
-     &        LPLCAM, LQSYM ,LGSYM , LQGRID, LGGRID, LGTICK, 
+     &        LPLCAM, LQSYM ,LGSYM , LQGRID, LGGRID, LGTICK,
      &        LQSLOP,LGSLOP, LCSLOP, LQSPPL, LGEOPL, LGPARM,
      &        LCPGRD,LBLGRD, LBLSYM, LCMINP, LHMOMP
       LOGICAL LPLOT,LSYM,LIQSET,LCLIP,LVLAB,LCURS,LLAND
@@ -66,7 +66,7 @@
      &             GAMMA,GAMM1,
      &             MINF1,MINF,MINF_CL,TKLAM,TKL_MSQ,CPSTAR,QSTAR,
      &             CPMN,CPMNI,CPMNV,XCPMNI,XCPMNV
-      COMMON/CI03/ NCPREF, NAPOL(NPX), NPOL, IPACT, NLREF, 
+      COMMON/CI03/ NCPREF, NAPOL(NPX), NPOL, IPACT, NLREF,
      &             ICOLP(NPX),ICOLR(NPX),
      &             IMATYP(NPX),IRETYP(NPX), NXYPOL(NPX),
      &             NPOLREF, NDREF(4,NPX)
@@ -97,7 +97,7 @@
      &             LBLINI,LIPAN,LQAIJ,LADIJ,LWDIJ,LCPXX,LQVDES,LQREFL,
      &             LQSPEC,LVCONV,LCPREF,LCLOCK,LPFILE,LPFILX,LPPSHO,
      &             LBFLAP,LFLAP,LEIW,LSCINI,LFOREF,LNORM,LGSAME,
-     &             LPLCAM,LQSYM ,LGSYM, 
+     &             LPLCAM,LQSYM ,LGSYM,
      &             LQGRID,LGGRID,LGTICK,
      &             LQSLOP,LGSLOP,LCSLOP,LQSPPL,LGEOPL,LGPARM,
      &             LCPGRD,LBLGRD,LBLSYM,
@@ -141,7 +141,7 @@
      &            (Q(1,13),W3(1)), (Q(1,19),W4(1)),
      &            (Q(1,25),W5(1)), (Q(1,31),W6(1)),
      &            (Q(1,37),W7(1)), (Q(1,43),W8(1))
-   
+
       EQUIVALENCE (VM(1,1,1),BIJ(1,1)), (VM(1,1,IZX/2),CIJ(1,1))
 
       integer ncoor
@@ -154,15 +154,15 @@ c Set the coorinates:
          xb(i) = x_coor(i)
          yb(i) = y_coor(i)
  5    continue
-      
+
 ! Set alpha,Mach,RE:
       refin1 = 1e6
       minf1 = 0.01
       adeg  = 1.0
-      
-c Solve 
+
+c Solve
       call oper()
-      
+
 c Copy cl,cd
       ccl = cl
       ccd = cd
@@ -174,5 +174,3 @@ c         ccd = ccd + y_coor(i)
 c 5       continue
 
          end
-      
-
