@@ -90,6 +90,7 @@ class TestDerivatives(unittest.TestCase):
         pyxlightOptions = {
             "writeCoordinates": False,
             "plotAirfoil": False,
+            "writeSolution": False,
         }
         self.CFDSolver = PYXLIGHT(os.path.join(baseDir, "naca0012.dat"), options=pyxlightOptions)
 
@@ -155,17 +156,19 @@ class TestDerivatives(unittest.TestCase):
 
     def test_shape_sens(self):
         # Initialize necessary variables
-        step = 1e-6  # step size in shape variables
-        relTol = 5e-1  # acceptable relative error
+        step = 1e-7  # step size in shape variables
+        relTol = 1e-3  # acceptable relative error
+        absTol = 1e-3  # acceptable absolute error
         alpha = 1.5  # deg
         alphaName = "alpha_" + self.ap.name
         nShape = 40  # number of shape variables
-        shape = self.rng.random(nShape) * 1e-4  # shape variables
+        shape = self.rng.random(nShape) * 1e-2  # shape variables
         shapeName = "shape"
 
         # Evaluate the current functions
         x = {alphaName: alpha, shapeName: shape}
         self.ap.setDesignVars(x)
+        self.DVGeo.setDesignVars(x)
         self.CFDSolver(self.ap)
         origFuncs = {}
         self.CFDSolver.evalFunctions(self.ap, origFuncs)
@@ -194,21 +197,18 @@ class TestDerivatives(unittest.TestCase):
         # Check each function
         for evalFunc in origFuncs.keys():
             # Each partial within each function
-            for i in range(nShape):
-                checkVal = checkSensFD[evalFunc][shapeName][i]
-                actualSensFD = funcsSensFD[evalFunc][shapeName][i]
-                actualSensCS = funcsSensCS[evalFunc][shapeName][i]
+            checkVal = checkSensFD[evalFunc][shapeName]
+            actualSensFD = funcsSensFD[evalFunc][shapeName]
+            actualSensCS = funcsSensCS[evalFunc][shapeName]
 
-                # Check evalFunctionsSens's finite difference
-                # np.testing.assert_allclose(checkVal, actualSensFD, rtol=relTol)
+            # Check evalFunctionsSens's finite difference
+            np.testing.assert_allclose(checkVal, actualSensFD, rtol=relTol, atol=absTol)
 
-                # Check evalFunctionsSens's complex step
-                # np.testing.assert_allclose(checkVal, actualSensCS, rtol=relTol)
+            # Check evalFunctionsSens's complex step
+            np.testing.assert_allclose(checkVal, actualSensCS, rtol=relTol, atol=absTol)
 
-                # TODO: for some reason, the FDs computed in this function to check are way off
-                #       for now, just compare FD and CS from the class
-
-                np.testing.assert_allclose(actualSensFD, actualSensCS, rtol=relTol, atol=1e-16)
+            # Check evalFunctionsSens's methods against each other
+            np.testing.assert_allclose(actualSensFD, actualSensCS, rtol=relTol, atol=absTol)
 
 
 if __name__ == "__main__":
