@@ -27,7 +27,7 @@ class Test_NACA(unittest.TestCase):
         )
         self.CFDSolver = PYXLIGHT(os.path.join(baseDir, "naca0012.dat"))
 
-    def test_cl_solve(self):
+    def test_cl_solve_default(self):
         """Test that SolveCL works correctly"""
         tol = 1e-5
         for CLTarget in np.linspace(-0.5, 0.5, 11):
@@ -36,11 +36,19 @@ class Test_NACA(unittest.TestCase):
             self.CFDSolver.solveCL(self.ap, CLTarget, tol=tol)
             self.assertAlmostEqual(float(self.CFDSolver.xfoil.cr09.cl), CLTarget, delta=tol)
 
+    def test_cl_solve_CLalphaGuess(self):
+        """Test that SolveCL works correctly"""
+        tol = 1e-5
+        for CLTarget in np.linspace(-0.5, 0.5, 11):
             # Using secant with CLalphaGuess
             self.ap.alpha = 0.0
             self.CFDSolver.solveCL(self.ap, CLTarget, tol=tol, useNewton=False, CLalphaGuess=0.11)
             self.assertAlmostEqual(float(self.CFDSolver.xfoil.cr09.cl), CLTarget, delta=tol)
 
+    def test_cl_solve_Newton(self):
+        """Test that SolveCL works correctly"""
+        tol = 1e-5
+        for CLTarget in np.linspace(-0.5, 0.5, 11):
             # Using Newton
             self.ap.alpha = 0.0
             self.CFDSolver.solveCL(self.ap, CLTarget, tol=tol, useNewton=True)
