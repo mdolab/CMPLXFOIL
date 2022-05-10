@@ -412,6 +412,8 @@ class PYXLIGHT(BaseSolver, xfoilAnalysis):
             if useNewton:
                 aeroProblem.alpha += 1e-200 * 1j
                 self.__call__(aeroProblem, useComplex=True, deriv=True)
+                failCheck = {}
+                self.checkSolutionFailure(aeroProblem, failCheck)
                 dCLdAlpha = np.imag(complex(self.xfoil_cs.cr09.cl)) * 1e200
                 aeroProblem.alpha = np.real(aeroProblem.alpha)
             else:
@@ -421,8 +423,10 @@ class PYXLIGHT(BaseSolver, xfoilAnalysis):
             resPrev = res
             alphaPrev = aeroProblem.alpha
 
-            # Update the alpha either using dCLdAlpha or delta
-            if dCLdAlpha is not None:
+            # Update the alpha either using dCLdAlpha or delta, or backtracking if something went wrong
+            if dCLdAlpha == 0.0 or failCheck["fail"]:
+                aeroProblem.alpha *= 0.9
+            elif dCLdAlpha is not None:
                 aeroProblem.alpha = np.clip(aeroProblem.alpha - res / dCLdAlpha, alphaBound[0], alphaBound[1])
             else:
                 aeroProblem.alpha = aeroProblem.alpha + 0.5
