@@ -1,8 +1,8 @@
 C***********************************************************************
 C    Module:  naca.f
-C 
-C    Copyright (C) 2000 Mark Drela 
-C 
+C
+C    Copyright (C) 2000 Mark Drela
+C
 C    This program is free software; you can redistribute it and/or modify
 C    it under the terms of the GNU General Public License as published by
 C    the Free Software Foundation; either version 2 of the License, or
@@ -19,8 +19,8 @@ C    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 C***********************************************************************
 
       SUBROUTINE NACA4(IDES,XX,YT,YC,NSIDE,XB,YB,NB,NAME)
-	use complexify 
-	implicit complex(a-h, o-z) 
+	use complexify
+	implicit complex(a-h, o-z)
       complex XX(NSIDE), YT(NSIDE), YC(NSIDE)
       complex XB(2*NSIDE), YB(2*NSIDE)
       complex M
@@ -85,8 +85,8 @@ C
 
 
       SUBROUTINE NACA4B(M,P,T,XX,YT,YC,NSIDE,XB,YB,NB,NAME)
-	use complexify 
-	implicit complex(a-h, o-z) 
+	use complexify
+	implicit complex(a-h, o-z)
       complex XX(NSIDE), YT(NSIDE), YC(NSIDE)
       complex XB(2*NSIDE), YB(2*NSIDE)
       complex M
@@ -151,8 +151,8 @@ C
 
 
       SUBROUTINE NACA5(IDES,XX,YT,YC,NSIDE,XB,YB,NB,NAME)
-	use complexify 
-	implicit complex(a-h, o-z) 
+	use complexify
+	implicit complex(a-h, o-z)
       complex XX(NSIDE), YT(NSIDE), YC(NSIDE)
       complex XB(2*NSIDE), YB(2*NSIDE)
       complex M

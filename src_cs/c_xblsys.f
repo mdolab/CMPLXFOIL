@@ -1,8 +1,8 @@
 C***********************************************************************
 C    Module:  xblsys.f
-C 
-C    Copyright (C) 2000 Mark Drela 
-C 
+C
+C    Copyright (C) 2000 Mark Drela
+C
 C    This program is free software; you can redistribute it and/or modify
 C    it under the terms of the GNU General Public License as published by
 C    the Free Software Foundation; either version 2 of the License, or
@@ -20,8 +20,8 @@ C***********************************************************************
 
 
       SUBROUTINE TRCHEK
-	use complexify 
-	implicit complex(a-h, o-z) 
+	use complexify
+	implicit complex(a-h, o-z)
 
 C
 C---- 1st-order amplification equation
@@ -70,8 +70,8 @@ c$$$      DAX_T2 = 0.
 C
 C==========================
 C---- 2nd-order
-	use complexify 
-	implicit complex(a-h, o-z) 
+	use complexify
+	implicit complex(a-h, o-z)
       CALL DAMPL( HK1, T1, RT1, AX1, AX1_HK1, AX1_T1, AX1_RT1 )
       CALL DAMPL( HK2, T2, RT2, AX2, AX2_HK2, AX2_T2, AX2_RT2 )
 C
@@ -150,21 +150,21 @@ cC-------------------------------------------------
 C     Checks if transition occurs in the current
 C     interval 1..2  (IBL-1...IBL) on side IS.
 C
-cC     Old first-order version. 
+cC     Old first-order version.
 cC
-cC     Growth rate is evaluated at the upstream 
-cC     point "1". The discrete amplification 
+cC     Growth rate is evaluated at the upstream
+cC     point "1". The discrete amplification
 cC     equation is
 cC
-cC       Ncrit - N(X1)     
+cC       Ncrit - N(X1)
 cC       -------------  =  N'(X1)
-cC          XT - X1        
+cC          XT - X1
 cC
-cC     which can be immediately solved for 
+cC     which can be immediately solved for
 cC     the transition location XT.
 cC-------------------------------------------------
-c      use complexify 
-c      implicit complex(a-h, o-z) 
+c      use complexify
+c      implicit complex(a-h, o-z)
 c      INCLUDE 'c_XBL.INC'
 cc
 c
@@ -231,15 +231,15 @@ c      ENDIF
 cC
 c      RETURN
 c      END
- 
- 
+
+
       SUBROUTINE TRCHEK2
 C----------------------------------------------------------------
 C     New second-order version:  December 1994.
 C
 C     Checks if transition occurs in the current interval X1..X2.
-C     If transition occurs, then set transition location XT, and 
-C     its sensitivities to "1" and "2" variables.  If no transition, 
+C     If transition occurs, then set transition location XT, and
+C     its sensitivities to "1" and "2" variables.  If no transition,
 C     set amplification AMPL2.
 C
 C
@@ -260,8 +260,8 @@ C  If N2>Ncrit:  NT=Ncrit , XT=(Ncrit-N1)/(N2-N1)  (transition)
 C
 C
 C----------------------------------------------------------------
-	use complexify 
-	implicit complex(a-h, o-z) 
+	use complexify
+	implicit complex(a-h, o-z)
       include 'c_XFOIL.INC'
       include 'c_XBL.INC'
       DATA DAEPS / 5.0E-5 /
@@ -404,7 +404,7 @@ C---- set sensitivity of AX(A2)
      &      +  AX_AT                                 *AMPLT_A2
 C
 C---- residual for implicit AMPL2 definition (amplification equation)
-      RES    = AMPL2 - AMPL1 - AX   *(X2-X1) 
+      RES    = AMPL2 - AMPL1 - AX   *(X2-X1)
       RES_A2 = 1.0           - AX_A2*(X2-X1)
 C
       DA2 = -RES/RES_A2
@@ -438,7 +438,7 @@ c       WRITE(*,*) "CONVERGENCE PROBLEMS IN BL ANALYSIS, XBLSYS.F"
        cm = -10
 c	write(*,*) cl
        LEXITFLAG = .TRUE.
-       LVCONV = .FALSE.  
+       LVCONV = .FALSE.
 c      GOTO 123
 c      STOP
       RETURN
@@ -619,9 +619,9 @@ C     If TRAN, then  dS2  replaces  dA2
 C     If TURB, then  dS1, dS2  replace  dA1, dA2
 C
 C------------------------------------------------------------------
-	use complexify 
+	use complexify
 c      IMPLICIT complex(M)
-      implicit complex(a-h,m, o-z) 
+      implicit complex(a-h,m, o-z)
       include 'c_XBL.INC'
 
 c      write(*,*) 'VS1 before first part',VS1
@@ -705,15 +705,15 @@ C
 c      write(*,*) 'X2 at end',X2
       RETURN
       END
- 
+
 
       SUBROUTINE TESYS(CTE,TTE,DTE)
 C--------------------------------------------------------
-C     Sets up "dummy" BL system between airfoil TE point 
+C     Sets up "dummy" BL system between airfoil TE point
 C     and first wake point infinitesimally behind TE.
 C--------------------------------------------------------
-	use complexify 
-        implicit complex(a-h,m, o-z) 
+	use complexify
+        implicit complex(a-h,m, o-z)
 c        IMPLICIT complex (M)
       include 'c_XBL.INC'
 C
@@ -732,7 +732,7 @@ C
 C
       VS1(1,1) = -1.0
       VS2(1,1) = 1.0
-      VSREZ(1) = CTE - S2      
+      VSREZ(1) = CTE - S2
 C
       VS1(2,2) = -1.0
       VS2(2,2) = 1.0
@@ -750,8 +750,8 @@ C
 C----------------------------------------------------------
 C     Set BL primary "2" variables from parameter list
 C----------------------------------------------------------
-	use complexify 
-        implicit complex(a-h,m, o-z) 
+	use complexify
+        implicit complex(a-h,m, o-z)
 c      IMPLICIT complex(M)
       include 'c_XBL.INC'
 C
@@ -771,14 +771,14 @@ C
       RETURN
       END ! BLPRV
 
- 
+
       SUBROUTINE BLKIN
 C----------------------------------------------------------
-C     Calculates turbulence-independent secondary "2" 
+C     Calculates turbulence-independent secondary "2"
 C     variables from the primary "2" variables.
 C----------------------------------------------------------
-	use complexify 
-	implicit complex(a-h,m, o-z) 
+	use complexify
+	implicit complex(a-h,m, o-z)
 c      IMPLICIT complex(M)
       include 'c_XBL.INC'
 C
@@ -832,7 +832,7 @@ C
       END ! BLKIN
 
 
- 
+
       SUBROUTINE BLVAR(ITYP)
 C----------------------------------------------------
 C     Calculates all secondary "2" variables from
@@ -844,8 +844,8 @@ C      ITYP = 1 :  laminar
 C      ITYP = 2 :  turbulent
 C      ITYP = 3 :  turbulent wake
 C----------------------------------------------------
-	use complexify 
-	implicit complex(a-h,m, o-z) 
+	use complexify
+	implicit complex(a-h,m, o-z)
 c      IMPLICIT complex(M)
       include 'c_XBL.INC'
 C
@@ -949,7 +949,7 @@ C
       CQ2_RE = CQ2_RE                + CQ2_RT2*RT2_RE
 C
 C
-C---- set skin friction coefficient 
+C---- set skin friction coefficient
       IF(ITYP.ceq.3) THEN
 C----- wake
        CF2     = 0.
@@ -1172,7 +1172,7 @@ cccc      IF(DE2 .GT. HDMAX*T2 .AND. (HK2 .GT. 4.0 .OR. ITYP.EQ.3)) THEN
 C
       RETURN
       END
- 
+
 
       SUBROUTINE BLMID(ITYP)
 C----------------------------------------------------
@@ -1182,9 +1182,9 @@ C      ITYP = 1 :  laminar
 C      ITYP = 2 :  turbulent
 C      ITYP = 3 :  turbulent wake
 C----------------------------------------------------
-	use complexify 
+	use complexify
 c      IMPLICIT complex(M)
-      implicit complex(a-h,m, o-z) 
+      implicit complex(a-h,m, o-z)
       include 'c_XBL.INC'
 C
 C---- set similarity variables if not defined
@@ -1246,7 +1246,7 @@ C
       RETURN
       END ! BLMID
 
- 
+
       SUBROUTINE TRDIF
 C-----------------------------------------------
 C     Sets up the Newton system governing the
@@ -1255,9 +1255,9 @@ C     the  laminar  part  X1 < xi < XT  and
 C     the turbulent part  XT < xi < X2
 C     are simply summed.
 C-----------------------------------------------
-	use complexify 
+	use complexify
       IMPLICIT complex(M)
-      implicit complex(a-h, o-z) 
+      implicit complex(a-h, o-z)
       include 'c_XBL.INC'
       complex  BL1(4,5), BL2(4,5), BLREZ(4), BLM(4), BLR(4), BLX(4)
      &    , BT1(4,5), BT2(4,5), BTREZ(4), BTM(4), BTR(4), BTX(4)
@@ -1499,13 +1499,13 @@ C---- convert sensitivities wrt "T" variables into sensitivities
 C-    wrt "1" and "2" variables as done before for the laminar part
       DO 40 K=1, 3
         BTREZ(K) = VSREZ(K)
-        BTM(K)   = VSM(K) 
+        BTM(K)   = VSM(K)
      &           + VS1(K,1)*ST_MS
      &           + VS1(K,2)*TT_MS
      &           + VS1(K,3)*DT_MS
      &           + VS1(K,4)*UT_MS
      &           + VS1(K,5)*XT_MS
-        BTR(K)   = VSR(K) 
+        BTR(K)   = VSR(K)
      &           + VS1(K,1)*ST_RE
      &           + VS1(K,2)*TT_RE
      &           + VS1(K,3)*DT_RE
@@ -1604,8 +1604,8 @@ C-    were already restored for the XT-X2 differencing part.
 C
       RETURN
       END
- 
- 
+
+
       SUBROUTINE BLDIF(ITYP)
 C-----------------------------------------------------------
 C     Sets up the Newton system coefficients and residuals
@@ -1618,9 +1618,9 @@ C
 C     This routine knows nothing about a transition interval,
 C     which is taken care of by TRDIF.
 C-----------------------------------------------------------
-	use complexify 
+	use complexify
 c      IMPLICIT complex(M)
-	implicit complex(a-h,m, o-z) 
+	implicit complex(a-h,m, o-z)
       include 'c_XBL.INC'
 C
       IF(ITYP.ceq.0) THEN
@@ -1649,7 +1649,7 @@ c       write(*,*) 'HS1',HS1
 c       write(*,*) 'HS2',HS2
 
 c       XLOG = 2.0*(X2-X1)/(X2+X1)
- 
+
 c       ULOG = 2.0*(U2-U1)/(U2+U1)
 c       TLOG = 2.0*(T2-T1)/(T2+T1)
 c       HLOG = 2.0*(HS2-HS1)/(HS2+HS1)
@@ -1731,7 +1731,7 @@ C
 C***** laminar part -->  set amplification equation
 C
 C----- set average amplification AX over interval X1..X2
-       CALL AXSET( HK1,    T1,    RT1, AMPL1,  
+       CALL AXSET( HK1,    T1,    RT1, AMPL1,
      &             HK2,    T2,    RT2, AMPL2, AMCRIT,
      &      AX, AX_HK1, AX_T1, AX_RT1, AX_A1,
      &          AX_HK2, AX_T2, AX_RT2, AX_A2 )
@@ -1746,7 +1746,7 @@ C
        VS1(1,5) =  AX
        VS2(1,1) = Z_AX* AX_A2  +  1.0
        VS2(1,2) = Z_AX*(AX_HK2*HK2_T2 + AX_T2 + AX_RT2*RT2_T2)
-       VS2(1,3) = Z_AX*(AX_HK2*HK2_D2                        )         
+       VS2(1,3) = Z_AX*(AX_HK2*HK2_D2                        )
        VS2(1,4) = Z_AX*(AX_HK2*HK2_U2         + AX_RT2*RT2_U2)
        VS2(1,5) = -AX
        VSM(1)   = Z_AX*(AX_HK1*HK1_MS         + AX_RT1*RT1_MS
@@ -2052,7 +2052,7 @@ C
       END
 
 
- 
+
       SUBROUTINE DAMPL( HK, TH, RT, AX, AX_HK, AX_TH, AX_RT )
 C==============================================================
 C     Amplification rate routine for envelope e^n method.
@@ -2064,10 +2064,10 @@ C                AIAA Journal, Oct. 1987.
 C
 C     NEW VERSION.   March 1991       (latest bug fix  July 93)
 C          - m(H) correlation made more accurate up to H=20
-C          - for H > 5, non-similar profiles are used 
-C            instead of Falkner-Skan profiles.  These 
-C            non-similar profiles have smaller reverse 
-C            velocities, are more representative of typical 
+C          - for H > 5, non-similar profiles are used
+C            instead of Falkner-Skan profiles.  These
+C            non-similar profiles have smaller reverse
+C            velocities, are more representative of typical
 C            separation bubble profiles.
 C--------------------------------------------------------------
 C
@@ -2092,7 +2092,7 @@ C            edge since AX will be returned as zero when RT
 C            is below the critical Rtheta.  Transition occurs
 C            when N(x) reaches Ncrit (Ncrit= 9 is "standard").
 C==============================================================
-	use complexify 
+	use complexify
       IMPLICIT complex (A-H,M,O-Z)
 ccc   DATA DGR / 0.04 /
       DATA DGR / 0.08 /
@@ -2124,7 +2124,7 @@ C----- no amplification for Rtheta < Rcrit
 C
       ELSE
 C
-C----- Set steep cubic ramp used to turn on AX smoothly as Rtheta 
+C----- Set steep cubic ramp used to turn on AX smoothly as Rtheta
 C-     exceeds Rcrit (previously, this was done discontinuously).
 C-     The ramp goes between  -DGR < log10(Rtheta/Rcrit) < DGR
 C
@@ -2170,11 +2170,11 @@ C
       RETURN
       END ! DAMPL
 
- 
- 
+
+
       SUBROUTINE HKIN( H, MSQ, HK, HK_H, HK_MSQ )
-	use complexify 
-	implicit complex(a-h, o-z) 
+	use complexify
+	implicit complex(a-h, o-z)
       complex MSQ
 C
 C---- calculate kinematic shape parameter (assuming air)
@@ -2185,14 +2185,14 @@ C     (from Whitfield )
 C
       RETURN
       END
- 
+
 
 
       SUBROUTINE DIL( HK, RT, DI, DI_HK, DI_RT )
 C
 C---- Laminar dissipation function  ( 2 CD/H* )     (from Falkner-Skan)
-	use complexify 
-	implicit complex(a-h, o-z) 
+	use complexify
+	implicit complex(a-h, o-z)
       IF(HK.LT.4.0) THEN
        DI    = ( 0.00205  *  (4.0-HK)**5.5 + 0.207 ) / RT
        DI_HK = ( -.00205*5.5*(4.0-HK)**4.5         ) / RT
@@ -2209,8 +2209,8 @@ C
 
 
       SUBROUTINE DILW( HK, RT, DI, DI_HK, DI_RT )
-	use complexify 
-	implicit complex(a-h, o-z) 
+	use complexify
+	implicit complex(a-h, o-z)
       complex MSQ
 C
       MSQ = 0.
@@ -2230,8 +2230,8 @@ C
 
 
       SUBROUTINE HSL( HK, RT, MSQ, HS, HS_HK, HS_RT, HS_MSQ )
-	use complexify 
-	implicit complex(a-h, o-z) 
+	use complexify
+	implicit complex(a-h, o-z)
       complex MSQ
 C
 C---- Laminar HS correlation
@@ -2257,8 +2257,8 @@ C
 
 
       SUBROUTINE CFL( HK, RT, MSQ, CF, CF_HK, CF_RT, CF_MSQ )
-	use complexify 
-	implicit complex(a-h, o-z) 
+	use complexify
+	implicit complex(a-h, o-z)
       complex MSQ
 C
 C---- Laminar skin friction function  ( Cf )    ( from Falkner-Skan )
@@ -2282,8 +2282,8 @@ C
       SUBROUTINE DIT( HS, US, CF, ST, DI, DI_HS, DI_US, DI_CF, DI_ST )
 C
 C---- Turbulent dissipation function  ( 2 CD/H* )
-	use complexify 
-	implicit complex(a-h, o-z) 
+	use complexify
+	implicit complex(a-h, o-z)
       DI    =  ( 0.5*CF*US + ST*ST*(1.0-US) ) * 2.0/HS
       DI_HS = -( 0.5*CF*US + ST*ST*(1.0-US) ) * 2.0/HS**2
       DI_US =  ( 0.5*CF    - ST*ST          ) * 2.0/HS
@@ -2295,7 +2295,7 @@ C
 
 
       SUBROUTINE HST( HK, RT, MSQ, HS, HS_HK, HS_RT, HS_MSQ )
-	use complexify 
+	use complexify
       IMPLICIT complex (A-H,M,O-Z)
 C
 C---- Turbulent HS correlation
@@ -2351,7 +2351,7 @@ C
 C
 C----- separated branch
        GRT = LOG(RTZ)
-       HDIF = HK - HO 
+       HDIF = HK - HO
        RTMP = HK - HO + 4.0/GRT
        HTMP    = 0.007*GRT/RTMP**2 + DHSINF/HK
        HTMP_HK = -.014*GRT/RTMP**3 - DHSINF/HK**2
@@ -2387,11 +2387,11 @@ C---- Whitfield's minor additional compressibility correction
 C
       RETURN
       END
- 
- 
- 
+
+
+
       SUBROUTINE CFT( HK, RT, MSQ, CF, CF_HK, CF_RT, CF_MSQ )
-	use complexify 
+	use complexify
       IMPLICIT complex (A-H,M,O-Z)
       DATA GAM /1.4/
 C
@@ -2419,10 +2419,10 @@ C
       END ! CFT
 
 
- 
+
       SUBROUTINE HCT( HK, MSQ, HC, HC_HK, HC_MSQ )
-	use complexify 
-	implicit complex(a-h, o-z) 
+	use complexify
+	implicit complex(a-h, o-z)
       complex MSQ
 C
 C---- density shape parameter    (from Whitfield)
@@ -2432,5 +2432,3 @@ C---- density shape parameter    (from Whitfield)
 C
       RETURN
       END
- 
- 

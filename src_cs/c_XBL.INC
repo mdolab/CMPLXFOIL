@@ -1,6 +1,6 @@
 C
-c	use complexify 
-c	implicit complex(a-h, o-z) 
+c	use complexify
+c	implicit complex(a-h, o-z)
       PARAMETER (NCOM=73)
       complex COM1(NCOM), COM2(NCOM)
       complex M1, M1_U1, M1_MS, M2, M2_U2, M2_MS
@@ -9,7 +9,7 @@ c	implicit complex(a-h, o-z)
 C
 C-    SCCON  =  shear coefficient lag constant
 C-    GACON  =  G-beta locus constants...
-C-    GBCON  =   G = GACON * sqrt(1.0 + GBCON*beta) 
+C-    GBCON  =   G = GACON * sqrt(1.0 + GBCON*beta)
 C-    GCCON  =         + GCCON / [H*Rtheta*sqrt(Cf/2)]   <-- wall term
 C-    DLCON  =  wall/wake dissipation length ratio  Lo/L
 C-    CTCON  =  Ctau weighting coefficient (implied by G-beta constants)
@@ -76,4 +76,3 @@ C
 C
       COMMON/SYS/  VS1(4,5), VS2(4,5), VSREZ(4), VSR(4), VSM(4), VSX(4)
 C
-

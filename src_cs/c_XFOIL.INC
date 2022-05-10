@@ -19,8 +19,8 @@ C
 C---- include polar variable indexing parameters
 C      INCLUDE 'PINDEX.INC'
 C
-c	use complexify 
-c	implicit complex(a-h, o-z) 
+c	use complexify
+c	implicit complex(a-h, o-z)
       PARAMETER (IQX=286, IWX=36, IPX=5, ISX=2)
 C      PARAMETER (IBX=2*IQX)
       PARAMETER (IBX=572)
@@ -38,7 +38,7 @@ C      PARAMETER (IVX=IQX/2 + IWX + 50)
      &        LBLINI,LIPAN,LQAIJ,LADIJ,LWDIJ,LCPXX,LQVDES,LQREFL,
      &        LQSPEC,LVCONV,LCPREF,LCLOCK,LPFILE,LPFILX,LPPSHO,
      &        LBFLAP,LFLAP,LEIW,LSCINI,LFOREF,LNORM,LGSAME,
-     &        LPLCAM, LQSYM ,LGSYM , LQGRID, LGGRID, LGTICK, 
+     &        LPLCAM, LQSYM ,LGSYM , LQGRID, LGGRID, LGTICK,
      &        LQSLOP,LGSLOP, LCSLOP, LQSPPL, LGEOPL, LGPARM,
      &        LCPGRD,LBLGRD, LBLSYM, LCMINP, LHMOMP
       LOGICAL LPLOT,LSYM,LIQSET,LCLIP,LVLAB,LCURS,LLAND
@@ -91,7 +91,7 @@ C
      &             GAMMA,GAMM1,
      &             MINF1,MINF,MINF_CL,TKLAM,TKL_MSQ,CPSTAR,QSTAR,
      &             CPMN,CPMNI,CPMNV,XCPMNI,XCPMNV
-      COMMON/CI03/ NCPREF, NAPOL(NPX), NPOL, IPACT, NLREF, 
+      COMMON/CI03/ NCPREF, NAPOL(NPX), NPOL, IPACT, NLREF,
      &             ICOLP(NPX),ICOLR(NPX),
      &             IMATYP(NPX),IRETYP(NPX), NXYPOL(NPX),
      &             NPOLREF, NDREF(4,NPX)
@@ -133,7 +133,7 @@ C
      &             LBLINI,LIPAN,LQAIJ,LADIJ,LWDIJ,LCPXX,LQVDES,LQREFL,
      &             LQSPEC,LVCONV,LCPREF,LCLOCK,LPFILE,LPFILX,LPPSHO,
      &             LBFLAP,LFLAP,LEIW,LSCINI,LFOREF,LNORM,LGSAME,
-     &             LPLCAM,LQSYM ,LGSYM, 
+     &             LPLCAM,LQSYM ,LGSYM,
      &             LQGRID,LGGRID,LGTICK,
      &             LQSLOP,LGSLOP,LCSLOP,LQSPPL,LGEOPL,LGPARM,
      &             LCPGRD,LBLGRD,LBLSYM,
@@ -271,8 +271,8 @@ C   NNAME       number of characters in airfoil name
 C   NPREFIX     number of characters in default filename prefix
 C
 C   ALQSP(.)    alpha,CL,CM corresponding to QSPEC distributions
-C   CLQSP(.)    
-C   CMQSP(.)    
+C   CLQSP(.)
+C   CMQSP(.)
 C   ALGAM       alpha,CL,CM corresponding to QGAMM distribution
 C   CLGAM
 C   CMGAM
@@ -360,12 +360,12 @@ C   ITMAX       max number of Newton iterations
 C   NSEQEX      max number of unconverged sequence points for early exit
 C
 C   RETYP       index giving type of Re variation with CL ...
-C            ... 1  Re constant 
+C            ... 1  Re constant
 C            ... 2  Re ~ 1/sqrt(CL)    (fixed lift)
 C            ... 3  Re ~ 1/CL          (fixed lift and dynamic pressure)
 C
 C   MATYP       index giving type of Ma variation with CL ...
-C            ... 1  Ma constant 
+C            ... 1  Ma constant
 C            ... 2  Ma ~ 1/sqrt(CL)    (fixed lift)
 C
 C   AIJPIV(.)   pivot index array for LU factoring routine
@@ -462,7 +462,7 @@ C   LPGRID      .TRUE. if polar grid overlay is enabled
 C   LPCDW       .TRUE. if polar CDwave is plotted
 C   LPLIST      .TRUE. if polar listing lines (at top of plot) are enabled
 C   LPLEGN      .TRUE. if polar legend is enabled
-C   
+C
 C   LPLOT       .TRUE. if plot page is open
 C   LSYM        .TRUE. if symbols are to be plotted in QDES routines
 C   LIQSET      .TRUE. if inverse target segment is marked off in QDES
@@ -493,16 +493,16 @@ C   CHORDB       chord
 C   AREAB        area
 C   RADBLE       LE radius
 C   ANGBTE       TE angle  (rad)
-C   
+C
 C   EI11BA       bending inertia about axis 1    x^2 dx dy
 C   EI22BA       bending inertia about axis 2    y^2 dx dy
-C   APX1BA       principal axis 1 angle 
-C   APX2BA       principal axis 2 angle 
+C   APX1BA       principal axis 1 angle
+C   APX2BA       principal axis 2 angle
 C
 C   EI11BT       bending inertia about axis 1    x^2 t ds
 C   EI22BT       bending inertia about axis 2    y^2 t ds
-C   APX1BT       principal axis 1 angle 
-C   APX2BT       principal axis 2 angle 
+C   APX1BT       principal axis 1 angle
+C   APX2BT       principal axis 2 angle
 C
 C   THICKB       max thickness
 C   CAMBRB       max camber
@@ -523,7 +523,7 @@ C   DIS(..)     dissipation array                       (for plotting only)
 C   CTQ(..)     sqrt(equilibrium max shear coefficient) array (  "  )
 C   VTI(..)     +/-1 conversion factor between panel and BL variables
 C   UINV_A(..)  dUINV/dalfa array
-C 
+C
 C   REINF1      Reynolds number  Vinf c / ve  for CL=1
 C   REINF       Reynolds number for current CL
 C   REINF_CL    dREINF/dCL

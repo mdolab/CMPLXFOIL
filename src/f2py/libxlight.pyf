@@ -1,5 +1,5 @@
 !    -*- f90 -*-
-python module libxlight ! in 
+python module libxlight ! in
     interface  ! in :xfoil
         subroutine xfoil ! in :xfoil:XFOIL.INC
             logical :: ok
@@ -419,7 +419,7 @@ python module libxlight ! in
           real*8, intent(in) :: position
           real*8, intent(in) :: thickness
         end subroutine setnaca
-   
+
         subroutine naca(camber,position,thickness,xreturn,yreturn)
           real*8, intent(in) :: camber
           real*8, intent(in) :: position
@@ -427,7 +427,7 @@ python module libxlight ! in
           real*8, dimension(189),intent(out) :: xreturn
           real*8, dimension(189),intent(out) :: yreturn
         end subroutine naca
-        
+
         subroutine bendump
         end subroutine bendump
 
@@ -439,7 +439,7 @@ python module libxlight ! in
             real*8, intent(out) :: ccd
           end subroutine xdriver
 
-    end interface 
+    end interface
 end python module libxlight
 
 ! This file was auto-generated with f2py (version:2.39.235_1700).

@@ -1,8 +1,8 @@
 C***********************************************************************
 C    Module:  xgeom.f
-C 
-C    Copyright (C) 2000 Mark Drela 
-C 
+C
+C    Copyright (C) 2000 Mark Drela
+C
 C    This program is free software; you can redistribute it and/or modify
 C    it under the terms of the GNU General Public License as published by
 C    the Free Software Foundation; either version 2 of the License, or
@@ -24,7 +24,7 @@ C------------------------------------------------------
 C     Locates leading edge spline-parameter value SLE
 C
 C     The defining condition is
-C         
+C
 C      (X-XTE,Y-YTE) . (X',Y') = 0     at  S = SLE
 C
 C     i.e. the surface tangent is normal to the chord
@@ -73,7 +73,7 @@ C------ drive dot product between chord line and LE tangent to zero
         RESS = DXDS  *DXDS + DYDS  *DYDS
      &       + XCHORD*DXDD + YCHORD*DYDD
 C
-C------ Newton delta for SLE 
+C------ Newton delta for SLE
         DSLE = -RES/RESS
 C
         DSLE = MAX( DSLE , -0.02*ABS(XCHORD+YCHORD) )
@@ -94,7 +94,7 @@ C------------------------------------------------------
 C     Locates leftmost (minimum x) point location SLE
 C
 C     The defining condition is
-C         
+C
 C      X' = 0     at  S = SLE
 C
 C     i.e. the surface tangent is vertical
@@ -128,7 +128,7 @@ C------ drive DXDS to zero
         RES  = DXDS
         RESS = DXDD
 C
-C------ Newton delta for SLE 
+C------ Newton delta for SLE
         DSLE = -RES/RESS
 C
         DSLE = MAX( DSLE , -0.01*ABS(DSLEN) )
@@ -226,8 +226,8 @@ C
       SUBROUTINE SOPPS(SOPP, SI, X,XP,Y,YP,S,N, SLE)
       DIMENSION X(*),XP(*),Y(*),YP(*),S(*)
 C--------------------------------------------------
-C     Calculates arc length SOPP of point 
-C     which is opposite of point SI, on the 
+C     Calculates arc length SOPP of point
+C     which is opposite of point SI, on the
 C     other side of the airfoil baseline
 C--------------------------------------------------
 C
@@ -262,7 +262,7 @@ C
       ENDIF
       SFRAC = (SI-SLE)/(S(IN)-SLE)
       SOPP = SLE + SFRAC*(S(INOPP)-SLE)
-C     
+C
 
       IF(ABS(SFRAC) .LE. 1.0E-5) THEN
        SOPP = SLE
@@ -305,7 +305,7 @@ C
       END ! SOPPS
 
 
- 
+
       SUBROUTINE NORM(X,XP,Y,YP,S,N)
       DIMENSION X(*),XP(*),Y(*),YP(*),S(*)
 C-----------------------------------------------
@@ -376,10 +376,10 @@ C
         T(I) = 1.0
       ENDDO
 C
-      CALL AECALC(N,X,Y,T, 1, 
+      CALL AECALC(N,X,Y,T, 1,
      &            AREA,XCENA,YCENA,EI11A,EI22A,APX1A,APX2A)
 C
-      CALL AECALC(N,X,Y,T, 2, 
+      CALL AECALC(N,X,Y,T, 2,
      &            SLEN,XCENT,YCENT,EI11T,EI22T,APX1T,APX2T)
 C
 C--- Old, approximate thickness,camber routine (on discrete points only)
@@ -403,7 +403,7 @@ C
 C
 C*********************************************************************
 
-      SUBROUTINE AECALC(N,X,Y,T, ITYPE, 
+      SUBROUTINE AECALC(N,X,Y,T, ITYPE,
      &                  AREA,XCEN,YCEN,EI11,EI22,APX1,APX2)
       DIMENSION X(*),Y(*),T(*)
 C---------------------------------------------------------------
@@ -536,13 +536,13 @@ C
 
 
 
-      SUBROUTINE TCCALC(X,XP,Y,YP,S,N, 
+      SUBROUTINE TCCALC(X,XP,Y,YP,S,N,
      &                  THICK,XTHICK, CAMBR,XCAMBR )
       DIMENSION X(*),XP(*),Y(*),YP(*),S(*)
 C---------------------------------------------------------------
 C     Calculates max thickness and camber at airfoil points
 C
-C     Note: this routine does not find the maximum camber or 
+C     Note: this routine does not find the maximum camber or
 C           thickness exactly as it only looks at discrete points
 C
 C     Input:
@@ -771,7 +771,7 @@ C     these enpoints and the flap hinge point (XBF,YBF) have
 C     an included angle of DEL.  DEL is therefore the flap
 C     deflection which will join up the points at S1,S2.
 C     SS is an approximate arc length value near S1 and S2.
-C     It is used as an initial guess for the Newton loop 
+C     It is used as an initial guess for the Newton loop
 C     for S1 and S2.
 C
 C
@@ -857,7 +857,7 @@ C------- Residual 1: set included angle via small angle approximation
          A11 =  R1_S1 *SIND + SSGN
          A12 =  R2_S2 *SIND - SSGN
 C
-C------- Residual 2: set vector sum of line segments beteen the 
+C------- Residual 2: set vector sum of line segments beteen the
 C-       endpoints and flap hinge to be perpendicular to airfoil surface.
          X1PP = D2VAL(S1,X,XP,S,N)
          Y1PP = D2VAL(S1,Y,YP,S,N)
@@ -1005,11 +1005,11 @@ C
 C     Interpolates two source airfoil shapes into an "intermediate" shape.
 C
 C     Procedure:
-C        The interpolated x coordinate at a given normalized spline 
-C        parameter value is a weighted average of the two source 
+C        The interpolated x coordinate at a given normalized spline
+C        parameter value is a weighted average of the two source
 C        x coordinates at the same normalized spline parameter value.
-C        Ditto for the y coordinates. The normalized spline parameter 
-C        runs from 0 at the leading edge to 1 at the trailing edge on 
+C        Ditto for the y coordinates. The normalized spline parameter
+C        runs from 0 at the leading edge to 1 at the trailing edge on
 C        each surface.
 C     .....................................................................
 C
@@ -1055,7 +1055,7 @@ C
 
 
       SUBROUTINE IJSECT(N,X,Y, PEX,
-     &  AREA, SLEN, 
+     &  AREA, SLEN,
      &  XC, XMIN, XMAX, XEXINT,
      &  YC, YMIN, YMAX, YEXINT,
      &  AIXX, AIXXT,
@@ -1188,13 +1188,13 @@ C
       END ! IJSECT
 
 
-      SUBROUTINE AREFINE(X,Y,S,XS,YS,N, ATOL, 
+      SUBROUTINE AREFINE(X,Y,S,XS,YS,N, ATOL,
      &                   NDIM,NNEW,XNEW,YNEW,X1,X2)
 C-------------------------------------------------------------
-C     Adds points to a x,y spline contour wherever 
-C     the angle between adjacent segments at a node 
-C     exceeds a specified threshold.  The points are 
-C     added 1/3 of a segment before and after the 
+C     Adds points to a x,y spline contour wherever
+C     the angle between adjacent segments at a node
+C     exceeds a specified threshold.  The points are
+C     added 1/3 of a segment before and after the
 C     offending node.
 C
 C     The point adding is done only within X1..X2.
@@ -1284,21 +1284,21 @@ C
 
       SUBROUTINE SCHECK(X,Y,N, STOL, LCHANGE)
 C-------------------------------------------------------------
-C     Removes points from an x,y spline contour wherever 
-C     the size of a segment between nodes falls below a 
-C     a specified threshold of the adjacent segments.  
+C     Removes points from an x,y spline contour wherever
+C     the size of a segment between nodes falls below a
+C     a specified threshold of the adjacent segments.
 C     The two node points defining the short segment are
 C     replaced with a single node at their midpoint.
-C     Note that the number of nodes may be altered by 
+C     Note that the number of nodes may be altered by
 C     this routine.
 C
-C     Intended for eliminating odd "micro" panels 
+C     Intended for eliminating odd "micro" panels
 C     that occur when blending a flap to a foil.
-C     If LCHANGE is set on return the airfoil definition 
+C     If LCHANGE is set on return the airfoil definition
 C     has been changed and resplining should be done.
 C
-C     The recommended value for STOL is 0.05 (meaning 
-C     segments less than 5% of the length of either adjoining 
+C     The recommended value for STOL is 0.05 (meaning
+C     segments less than 5% of the length of either adjoining
 C     segment are removed).  4/24/01 HHY
 C------------------------------------------------------
       REAL X(*), Y(*)
@@ -1339,7 +1339,7 @@ C------- Remove node I+1
          DO L = I+1, N
            X(L) = X(L+1)
            Y(L) = Y(L+1)
-         END DO         
+         END DO
          N = N - 1
          LCHANGE = .TRUE.
          WRITE(*,*) 'SCHECK segment removed at ',I
@@ -1361,14 +1361,14 @@ c      REAL X(*), Y(*)
 C
       PEX = 16.0
       CALL IJSECT(N,X,Y, PEX,
-     &    AREA, SLEN, 
+     &    AREA, SLEN,
      &    XC, XMIN, XMAX, XEXINT,
      &    YC, YMIN, YMAX, YEXINT,
      &    AIXX, AIXXT,
      &    AIYY, AIYYT,
      &    AJ  , AJT   )
 C
-c      WRITE(*,*) 
+c      WRITE(*,*)
 c     WRITE(*,1200) 'Area =', AREA
 c      WRITE(*,1200) 'Slen =', SLEN
 c      WRITE(*,*)
@@ -1404,9 +1404,3 @@ c      WRITE(*,1200) '    skin  J/t   =', AJT
 C
 c 1200 FORMAT(1X,A,G14.6)
       END ! BENDUMP
-
-
-
-
-
-

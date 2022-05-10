@@ -18,4 +18,3 @@ If you use pyXLIGHT, please cite the following paper for XFOIL:
         isbn      = 978-3-642-84010-4,
         doi       = 10.1007/978-3-642-84010-4_1
     }
-

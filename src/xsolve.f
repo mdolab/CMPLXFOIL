@@ -1,8 +1,8 @@
 C***********************************************************************
 C    Module:  xsolve.f
-C 
-C    Copyright (C) 2000 Mark Drela 
-C 
+C
+C    Copyright (C) 2000 Mark Drela
+C
 C    This program is free software; you can redistribute it and/or modify
 C    it under the terms of the GNU General Public License as published by
 C    the Free Software Foundation; either version 2 of the License, or
@@ -294,7 +294,7 @@ C        .  .  .  .  .  .  .  |    d       R       S
 C        |  |  |  |  |  |  B  A    d       R       S
 C
 C       A, B, Z  3x3  blocks containing linearized BL equation coefficients
-C       |        3x1  vectors containing mass defect influence 
+C       |        3x1  vectors containing mass defect influence
 C                     coefficients on Ue
 C       d        3x1  unknown vectors (Newton deltas for Ctau, Theta, m)
 C       R        3x1  residual vectors
