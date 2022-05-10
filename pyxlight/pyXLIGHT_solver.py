@@ -312,7 +312,7 @@ class PYXLIGHT(BaseSolver, xfoilAnalysis):
         }
 
         # Check for failure
-        self.curAP.solveFailed = self.curAP.fatalFail = xfoil.cl01.lexitflag != 0
+        self.curAP.solveFailed = self.curAP.fatalFail = xfoil.cl01.lexitflag != 0 or xfoil.cl01.lvconv == 0
 
         # If not a derivative call, increment callCounter
         if not deriv:
