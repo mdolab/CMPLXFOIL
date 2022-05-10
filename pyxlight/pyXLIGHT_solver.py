@@ -778,6 +778,9 @@ class PYXLIGHT(BaseSolver, xfoilAnalysis):
         # Airfoil scaling
         scale = [1.0, 1.0]  # scaling factor on chord lengths
 
+        # Find the trailing edge thickness
+        teThickness = self.coords[0, 1] - self.coords[-1, 1]
+
         return pyGeo(
             "liftingSurface",
             xsections=airfoil_list,
@@ -791,7 +794,7 @@ class PYXLIGHT(BaseSolver, xfoilAnalysis):
             rotZ=rot_z,
             bluntTe=True,
             squareTeTip=True,
-            teHeight=0.25 * 0.0254,
+            teHeight=teThickness,
         )
 
     def plotAirfoil(self, fileName=None):
