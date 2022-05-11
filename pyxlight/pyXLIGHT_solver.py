@@ -717,9 +717,11 @@ class PYXLIGHT(BaseSolver, xfoilAnalysis):
         if h is None:
             if mode == "FD":
                 h = 1e-6
-                orig_funcs = deepcopy(self.funcs[self.curAP.name])
             elif mode == "CS":
                 h = 1e-100j
+
+        if mode == "FD":
+            orig_funcs = deepcopy(self.funcs[self.curAP.name])
 
         # Process the Xs perturbation
         if xSDot is None:
