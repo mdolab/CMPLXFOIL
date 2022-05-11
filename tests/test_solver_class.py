@@ -319,7 +319,7 @@ class TestDerivativesCST(unittest.TestCase):
 
     def _eval_shape_sens(self, surf):
         # Initialize necessary variables
-        step = 1e-7  # step size in shape variables
+        step = 1e-6  # step size in shape variables
         relTol = 1e-3  # acceptable relative error
         absTol = 1e-3  # acceptable absolute error
 
