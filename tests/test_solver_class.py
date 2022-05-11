@@ -227,6 +227,7 @@ class TestDerivativesCST(unittest.TestCase):
     derivatives. This is often found when an optimizer is attached,
     resulting in SNOPT exiting 60/63.
     """
+
     def setUp(self):
         # Flight conditions
         self.alpha = 3.1998091362966057
@@ -309,7 +310,7 @@ class TestDerivativesCST(unittest.TestCase):
 
             # Check evalFunctionsSens's complex step
             np.testing.assert_allclose(checkSensFD, actualSensCS, rtol=relTol, atol=1e-16)
-    
+
     def test_upper_shape_sens(self):
         self._eval_shape_sens("upper")
 
@@ -338,7 +339,9 @@ class TestDerivativesCST(unittest.TestCase):
         self.CFDSolver.evalFunctionsSens(self.ap, funcsSensCS, mode="CS")
 
         # Estimate each partial with finite differences
-        checkSensFD = {func: {self.CSTName[surf]: np.zeros(len(self.CST[surf]))} for func in origFuncs.keys()}  # initialize
+        checkSensFD = {
+            func: {self.CSTName[surf]: np.zeros(len(self.CST[surf]))} for func in origFuncs.keys()
+        }  # initialize
         for i in range(len(self.CST[surf])):
             x[self.CSTName[surf]][i] += step
             self.DVGeo.setDesignVars(x)
