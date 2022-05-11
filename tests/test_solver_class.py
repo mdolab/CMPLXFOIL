@@ -10,7 +10,7 @@ import os
 import unittest
 import numpy as np
 from baseclasses import AeroProblem
-from pygeo import DVGeometry
+from pygeo import DVGeometry, DVGeometryCST
 
 # =============================================================================
 # Extension modules
@@ -84,7 +84,7 @@ class Test_NACA(unittest.TestCase):
             self.assertAlmostEqual(true_val, funcs[key])
 
 
-class TestDerivatives(unittest.TestCase):
+class TestDerivativesFFD(unittest.TestCase):
     def setUp(self):
         # Set the random range to use consistent random numbers
         self.rng = np.random.default_rng(7)
@@ -163,7 +163,7 @@ class TestDerivatives(unittest.TestCase):
             actualSensCS = funcsSensCS[evalFunc][alphaName].item()
             np.testing.assert_allclose(checkSensFD, actualSensCS, rtol=relTol, atol=1e-16)
 
-    def test_shape_sens(self):
+    def test_shape_sens_random(self):
         # Initialize necessary variables
         step = 1e-7  # step size in shape variables
         relTol = 1e-3  # acceptable relative error
@@ -209,6 +209,154 @@ class TestDerivatives(unittest.TestCase):
             checkVal = checkSensFD[evalFunc][shapeName]
             actualSensFD = funcsSensFD[evalFunc][shapeName]
             actualSensCS = funcsSensCS[evalFunc][shapeName]
+
+            # Check evalFunctionsSens's finite difference
+            np.testing.assert_allclose(checkVal, actualSensFD, rtol=relTol, atol=absTol)
+
+            # Check evalFunctionsSens's complex step
+            np.testing.assert_allclose(checkVal, actualSensCS, rtol=relTol, atol=absTol)
+
+            # Check evalFunctionsSens's methods against each other
+            np.testing.assert_allclose(actualSensFD, actualSensCS, rtol=relTol, atol=absTol)
+
+
+class TestDerivativesCST(unittest.TestCase):
+    """
+    The combination of flight conditions, airfoil shape,
+    and DAT file used for this case can produce very inaccurate
+    derivatives. This is often found when an optimizer is attached,
+    resulting in SNOPT exiting 60/63.
+    """
+    def setUp(self):
+        # Flight conditions
+        self.alpha = 3.1998091362966057
+        self.mach = 0.1
+        self.Re = 1e5
+        self.T = 288.15  # K
+
+        self.nCoeff = 2
+        self.DATfile = "n0012BluntTE.dat"
+
+        # Add pyXLIGHT solver
+        pyxlightOptions = {
+            "writeCoordinates": False,
+            "plotAirfoil": False,
+            "writeSolution": False,
+        }
+        self.CFDSolver = PYXLIGHT(os.path.join(baseDir, self.DATfile), options=pyxlightOptions)
+
+        # Add AeroProblem with flight conditions and AoA DV
+        self.ap = AeroProblem(
+            name="fc",
+            alpha=self.alpha,
+            mach=self.mach,
+            reynolds=self.Re,
+            reynoldsLength=1.0,
+            T=self.T,
+            areaRef=1.0,
+            chordRef=1.0,
+            evalFuncs=["cl", "cd", "cm"],
+        )
+        self.ap.addDV("alpha", value=self.alpha, lower=0, upper=10.0, scale=1.0)
+
+        # Geometry setup
+        self.CSTName = {"upper": "upper_shape", "lower": "lower_shape"}
+        self.CST = {}
+        self.CST["upper"] = np.array([0.15335040881179007, 0.1373052558913066])
+        self.CST["lower"] = np.array([-0.15335040881179007, -0.05284956303352384])
+        self.upperName = "upper_shape"
+        self.lowerName = "lower_shape"
+        self.DVGeo = DVGeometryCST(os.path.join(baseDir, self.DATfile), debug=False)
+        self.DVGeo.addDV(self.CSTName["upper"], dvType="upper", dvNum=self.nCoeff, default=self.CST["upper"])
+        self.DVGeo.addDV(self.CSTName["lower"], dvType="lower", dvNum=self.nCoeff, default=self.CST["lower"])
+        self.CFDSolver.setDVGeo(self.DVGeo)
+
+    def test_alpha_sens(self):
+        # Initialize necessary variables
+        step = 1e-6  # step size in alpha
+        relTol = 8e-3  # acceptable relative error
+        alphaName = "alpha_" + self.ap.name
+
+        # Evaluate the current functions
+        x = {alphaName: self.alpha}
+        self.ap.setDesignVars(x)
+        self.CFDSolver(self.ap)
+        origFuncs = {}
+        self.CFDSolver.evalFunctions(self.ap, origFuncs)
+
+        # Evaluate built in sensitivities with both methods
+        funcsSensFD = {}
+        self.CFDSolver.evalFunctionsSens(self.ap, funcsSensFD, mode="FD")
+        self.CFDSolver(self.ap)
+        funcsSensCS = {}
+        self.CFDSolver.evalFunctionsSens(self.ap, funcsSensCS, mode="CS")
+
+        # Perturb alpha
+        x[alphaName] += step
+        self.ap.setDesignVars(x)
+        self.CFDSolver(self.ap)
+        pertFuncs = {}
+        self.CFDSolver.evalFunctions(self.ap, pertFuncs)
+
+        # Check each function
+        for evalFunc in origFuncs.keys():
+            checkSensFD = (pertFuncs[evalFunc] - origFuncs[evalFunc]) / step
+            actualSensFD = funcsSensFD[evalFunc][alphaName].item()
+            actualSensCS = funcsSensCS[evalFunc][alphaName].item()
+
+            # Check evalFunctionsSens's finite difference
+            np.testing.assert_allclose(checkSensFD, actualSensFD, rtol=relTol, atol=1e-16)
+
+            # Check evalFunctionsSens's complex step
+            np.testing.assert_allclose(checkSensFD, actualSensCS, rtol=relTol, atol=1e-16)
+    
+    def test_upper_shape_sens(self):
+        self._eval_shape_sens("upper")
+
+    def test_lower_shape_sens(self):
+        self._eval_shape_sens("lower")
+
+    def _eval_shape_sens(self, surf):
+        # Initialize necessary variables
+        step = 1e-7  # step size in shape variables
+        relTol = 1e-3  # acceptable relative error
+        absTol = 1e-3  # acceptable absolute error
+
+        # Evaluate the current functions
+        x = {self.CSTName[surf]: self.CST[surf]}
+        self.ap.setDesignVars(x)
+        self.DVGeo.setDesignVars(x)
+        self.CFDSolver(self.ap)
+        origFuncs = {}
+        self.CFDSolver.evalFunctions(self.ap, origFuncs)
+
+        # Evaluate built in sensitivities with both methods
+        funcsSensFD = {}
+        self.CFDSolver.evalFunctionsSens(self.ap, funcsSensFD, mode="FD")
+        self.CFDSolver(self.ap)
+        funcsSensCS = {}
+        self.CFDSolver.evalFunctionsSens(self.ap, funcsSensCS, mode="CS")
+
+        # Estimate each partial with finite differences
+        checkSensFD = {func: {self.CSTName[surf]: np.zeros(len(self.CST[surf]))} for func in origFuncs.keys()}  # initialize
+        for i in range(len(self.CST[surf])):
+            x[self.CSTName[surf]][i] += step
+            self.DVGeo.setDesignVars(x)
+            self.CFDSolver(self.ap)
+            pertFuncs = {}
+            self.CFDSolver.evalFunctions(self.ap, pertFuncs)
+            x[self.CSTName[surf]][i] -= step
+
+            # Compute partial derivative for each function of interest
+            for evalFunc in origFuncs.keys():
+                checkSensFD[evalFunc][self.CSTName[surf]][i] = (pertFuncs[evalFunc] - origFuncs[evalFunc]) / step
+
+        # Check each function
+        for evalFunc in origFuncs.keys():
+            # Each partial within each function
+            checkVal = checkSensFD[evalFunc][self.CSTName[surf]]
+            actualSensFD = funcsSensFD[evalFunc][self.CSTName[surf]]
+            actualSensCS = funcsSensCS[evalFunc][self.CSTName[surf]]
 
             # Check evalFunctionsSens's finite difference
             np.testing.assert_allclose(checkVal, actualSensFD, rtol=relTol, atol=absTol)
