@@ -398,7 +398,7 @@ class PYXLIGHT(BaseSolver, xfoilAnalysis):
             self.__call__(aeroProblem, deriv=True)
             failCheck = {}
             self.checkSolutionFailure(aeroProblem, failCheck)
-            cl = float(self.xfoil.cr09.cl)
+            cl = float(self.funcs[aeroProblem.name]["cl"])
             print(f"Alpha: {aeroProblem.alpha:>6.3f}, CL: {cl:>7.6f}")
             res = cl - CLStar
 
@@ -414,7 +414,7 @@ class PYXLIGHT(BaseSolver, xfoilAnalysis):
             if useNewton:
                 aeroProblem.alpha += 1e-200 * 1j
                 self.__call__(aeroProblem, useComplex=True, deriv=True)
-                dCLdAlpha = np.imag(complex(self.xfoil_cs.cr09.cl)) * 1e200
+                dCLdAlpha = np.imag(self.funcsComplex[aeroProblem.name]["cl"]) * 1e200
                 aeroProblem.alpha = np.real(aeroProblem.alpha)
             else:
                 # If using secant, we can only compute dCLdAlpha from the second iteration onwards
