@@ -88,6 +88,9 @@ class PYXLIGHT(BaseSolver, xfoilAnalysis):
 
         super().__init__("PYXLIGHT", "Panel Method", defaultOptions=self._getDefaultOptions(), options=options)
 
+        if self.getOption("xTrip").shape != (2,):
+            raise ValueError("xTrip option shape must be (2,)")
+
         # Read in DAT file and create coordinates. DVGeo needs 3D coordinates
         # so keep the third dimension as dummy coordinates.
         self.DATFileName = fileName
@@ -262,6 +265,8 @@ class PYXLIGHT(BaseSolver, xfoilAnalysis):
         xfoil.cr09.minf1 = aeroProblem.mach  # Mach Number set
         xfoil.cr09.adeg = aeroProblem.alpha
         xfoil.ci04.itmax = self.getOption("maxIters")  # Iterations Limit Set
+        if not np.any(np.isnan(self.getOption("xTrip"))):  # NaN is default to not set, otherwise set it
+            xfoil.cr15.xstrip = self.getOption("xTrip")
 
         # Call XFOIL
         xfoil.oper()
@@ -997,10 +1002,14 @@ class PYXLIGHT(BaseSolver, xfoilAnalysis):
     def _getDefaultOptions():
         return {
             "maxIters": [int, 100],  # maximum iterations for XFOIL solver
-            "writeCoordinates": [bool, True],  # Whether to write coordinates to .dat file when `writeSolution` called
-            "writeSliceFile": [bool, True],  # Whether or not to save chordwise data
-            "writeSolution": [bool, False],  # Whether or not to call writeSolution after each call to XFOIL
-            "plotAirfoil": [bool, False],  # Whether to plot airfoil while running
-            "outputDirectory": [str, "."],  # Where to put output files
-            "numberSolutions": [bool, True],  # Whether to add call counter to output file names
+            "writeCoordinates": [bool, True],  # whether to write coordinates to .dat file when `writeSolution` called
+            "writeSliceFile": [bool, True],  # whether or not to save chordwise data
+            "writeSolution": [bool, False],  # whether or not to call writeSolution after each call to XFOIL
+            "plotAirfoil": [bool, False],  # whether to plot airfoil while running
+            "outputDirectory": [str, "."],  # where to put output files
+            "numberSolutions": [bool, True],  # whether to add call counter to output file names
+            "xTrip": [
+                np.ndarray,
+                np.NaN * np.ones(2),
+            ],  # boundary layer trip x coordinate of upper and lower surface, respectively (two-element array)
         }
