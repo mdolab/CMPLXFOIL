@@ -14,6 +14,7 @@ It includes a wrapper to interface with `MACH-Aero <https://mdolab-mach-aero.rea
 
 .. image:: assets/airfoil_opt.gif
    :width: 500
+   :align: center
 
 Disclaimer
 ==========
@@ -29,3 +30,4 @@ Increasing the number of panels helps (pyXLIGHT uses 284 panels by default), but
 
 .. image:: assets/multimodality_cd.svg
    :width: 600
+   :align: center

@@ -21,7 +21,7 @@ alpha = 0.0 if mycl == 0.0 else 1.0  # initial angle of attack (zero if the targ
 mach = 0.3  # Mach number
 Re = 1e6  # Reynolds number
 T = 288.15  # 1976 US Standard Atmosphere temperature @ sea level (K)
-# rst params (beg)
+# rst params (end)
 
 # ======================================================================
 #         Create multipoint communication object
@@ -83,7 +83,7 @@ if mycl != 0.0:
 #         Geometric Design Variable Set-up
 # ======================================================================
 # rst geom (beg)
-DVGeo = DVGeometryCST(os.path.join(curDir, "naca0012.dat"), debug=False)
+DVGeo = DVGeometryCST(os.path.join(curDir, "naca0012.dat"))
 
 nCoeff = 4  # number of CST coefficients on each surface
 DVGeo.addDV("upper_shape", dvType="upper", dvNum=nCoeff)
@@ -228,6 +228,6 @@ CFDSolver.airfoilFig.savefig(os.path.join(outputDir, "OptFoil.pdf"))
 
 # Animate the optimization
 AnimateAirfoilOpt(outputDir, "fc").animate(
-    outputFileName=os.path.join(outputDir, "OptFoil"), fps=10, dpi=300, extra_args=["-vcodec", "libx264"]
+    outputFileName=os.path.join(outputDir, "OptFoil"), ext="gif", fps=10, dpi=300,# extra_args=["-vcodec", "libx264"]
 )
 # rst postprocessing (end)
