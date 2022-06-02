@@ -9,17 +9,27 @@ import os
 # =============================================================================
 import unittest
 import numpy as np
-from baseclasses import AeroProblem
-from pygeo import DVGeometry, DVGeometryCST
+
+externalImportsFailed = False
+try:
+    from baseclasses import AeroProblem
+    from pygeo import DVGeometry, DVGeometryCST
+except ImportError:
+    externalImportsFailed = True
 
 # =============================================================================
 # Extension modules
 # =============================================================================
-from pyxlight import PYXLIGHT
+pyxlightImportFailed = False
+try:
+    from pyxlight import PYXLIGHT
+except ImportError:
+    pyxlightImportFailed = True
 
 baseDir = os.path.dirname(os.path.abspath(__file__))  # Path to current folder
 
 
+@unittest.skipIf(externalImportsFailed or pyxlightImportFailed, "Could not import the PYXLIGHT solver")
 class TestNACA(unittest.TestCase):
     def setUp(self):
         # Set the random range to use consistent random numbers
@@ -84,6 +94,7 @@ class TestNACA(unittest.TestCase):
             self.assertAlmostEqual(true_val, funcs[key])
 
 
+@unittest.skipIf(externalImportsFailed or pyxlightImportFailed, "Could not import the PYXLIGHT solver")
 class TestTrip(unittest.TestCase):
     def test_trip(self):
         """
@@ -110,6 +121,7 @@ class TestTrip(unittest.TestCase):
             self.assertNotEqual(funcs["fc_" + func], funcsTripped["fc_" + func])
 
 
+@unittest.skipIf(externalImportsFailed or pyxlightImportFailed, "Could not import the PYXLIGHT solver")
 class TestDerivativesFFD(unittest.TestCase):
     def setUp(self):
         # Set the random range to use consistent random numbers
@@ -246,6 +258,7 @@ class TestDerivativesFFD(unittest.TestCase):
             np.testing.assert_allclose(actualSensFD, actualSensCS, rtol=relTol, atol=absTol)
 
 
+@unittest.skipIf(externalImportsFailed or pyxlightImportFailed, "Could not import the PYXLIGHT solver")
 class TestDerivativesCST(unittest.TestCase):
     def setUp(self):
         # Flight conditions
@@ -399,6 +412,7 @@ class TestDerivativesCST(unittest.TestCase):
             np.testing.assert_allclose(actualSensFD, actualSensCS, rtol=relTol, atol=absTol)
 
 
+@unittest.skipIf(externalImportsFailed or pyxlightImportFailed, "Could not import the PYXLIGHT solver")
 class TestPlotting(unittest.TestCase):
     """
     Test that the plotting utilities run with no errors.
@@ -413,17 +427,17 @@ class TestPlotting(unittest.TestCase):
 
         # Run an initial case and plot it
         self.CFDSolver(self.ap)
-        _, _ = self.CFDSolver.plotAirfoil(showPlot=True)
+        _, _ = self.CFDSolver.plotAirfoil(showPlot=False)
 
         # Run another case and update the plot
         self.ap.alpha = 4.
         self.CFDSolver(self.ap)
-        _, _ = self.CFDSolver.plotAirfoil(showPlot=True)  # this will call self.CFDSolver.updateAirfoilPlot()
+        _, _ = self.CFDSolver.plotAirfoil(showPlot=False)  # this will call self.CFDSolver.updateAirfoilPlot()
 
         # Run another case and try calling updateAirfoilPlot directly
         self.ap.alpha = 5.
         self.CFDSolver(self.ap)
-        self.CFDSolver.updateAirfoilPlot(pause=True)
+        self.CFDSolver.updateAirfoilPlot(pause=False)
 
 
 if __name__ == "__main__":

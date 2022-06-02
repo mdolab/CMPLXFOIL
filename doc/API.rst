@@ -1,3 +1,5 @@
+.. _pyXLIGHT API:
+
 pyXLIGHT API
 ============
 .. currentmodule:: pyxlight

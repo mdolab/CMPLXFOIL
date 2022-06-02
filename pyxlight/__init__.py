@@ -1,5 +1,13 @@
 __version__ = "2.0.0"
 
-from .pyXLIGHT_solver import PYXLIGHT
-from .postprocess import AnimateAirfoilOpt
+try:
+    from .pyXLIGHT_solver import PYXLIGHT
+except ImportError:
+    pass
+
+try:
+    from .postprocess import AnimateAirfoilOpt
+except ImportError:
+    pass
+
 from .pyXLIGHT import xfoilAnalysis

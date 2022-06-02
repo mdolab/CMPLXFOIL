@@ -12,18 +12,37 @@ This can be GNU / GFortran or Intel, default configuration files are packaged fo
 
 In addition to standard compilers, pyXLIGHT requires the following dependencies:
 
-=================== =======
-Package             Version
-=================== =======
+=================== ======= =======
+Package             Version Notes
+=================== ======= =======
 Python              3.X.X
-NumPy               ---
-=================== =======
+NumPy               ---     ``conda install numpy`` or ``pip install numpy`` 
+=================== ======= =======
 
-With the exception of Python, which must be installed on your system, these packages can be installed using:
+To use the :ref:`PYXLIGHT<pyXLIGHT API>` interface for the `MACH-Aero <https://mdolab-mach-aero.readthedocs-hosted.com/en/latest/index.html>`_ framework, the following additional dependencies are required:
 
-.. prompt:: bash
+=================== ======= =======
+Package             Version Notes
+=================== ======= =======
+`baseclasses`_      ---     ``pip install mdolab-baseclasses``
+`preFoil`_          ---
+`pyGeo`_            --- 
+=================== ======= =======
 
-    pip install numpy
+.. _baseclasses: https://github.com/mdolab/baseclasses
+.. _preFoil: https://github.com/mdolab/prefoil
+.. _pyGeo: https://github.com/mdolab/pygeo
+
+Finally, PYXLIGHT's plotting features use
+
+=================== ======= =======
+Package             Version Notes
+=================== ======= =======
+matplotlib          ---     ``pip install matplotlib``
+`niceplots`_        ---     optional
+=================== ======= =======
+
+.. _niceplots: https://github.com/mdolab/niceplots
 
 Build and Installation
 ----------------------
@@ -53,8 +72,7 @@ Once the Python libraries are generated, install pyXLIGHT by running pip install
 
 Verification
 ------------
-pyXLIGHT has a single functionality test, which can be run to ensure that the code can be run and executed.
-This test is located in the ``tests/`` directory and can be run with the command:
+Tests are located in the ``tests/`` directory and can be run with the command:
 
 .. prompt:: bash
 
