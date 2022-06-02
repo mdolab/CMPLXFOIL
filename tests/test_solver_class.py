@@ -15,12 +15,12 @@ from pygeo import DVGeometry, DVGeometryCST
 # =============================================================================
 # Extension modules
 # =============================================================================
-from pyxlight.pyXLIGHT_solver import PYXLIGHT
+from pyxlight import PYXLIGHT
 
 baseDir = os.path.dirname(os.path.abspath(__file__))  # Path to current folder
 
 
-class Test_NACA(unittest.TestCase):
+class TestNACA(unittest.TestCase):
     def setUp(self):
         # Set the random range to use consistent random numbers
         self.rng = np.random.default_rng(7)
@@ -29,7 +29,7 @@ class Test_NACA(unittest.TestCase):
         )
         self.CFDSolver = PYXLIGHT(os.path.join(baseDir, "naca0012.dat"))
         self.alphaSequence = np.linspace(-0.5, 0.5, 11)
-        np.random.shuffle(self.alphaSequence)
+        self.rng.shuffle(self.alphaSequence)
 
     def test_cl_solve_default(self):
         """Test that SolveCL works correctly"""
@@ -82,6 +82,32 @@ class Test_NACA(unittest.TestCase):
         }
         for key, true_val in true_funcs.items():
             self.assertAlmostEqual(true_val, funcs[key])
+
+
+class TestTrip(unittest.TestCase):
+    def test_trip(self):
+        """
+        Test that setting the trip changes the result.
+        """
+        # Set the random range to use consistent random numbers
+        self.rng = np.random.default_rng(7)
+        evalFuncs = ["cl", "cd", "cm"]
+        self.ap = AeroProblem(
+            name="fc", alpha=3, mach=0.2, altitude=1e3, areaRef=1.0, chordRef=1.0, evalFuncs=evalFuncs
+        )
+        self.CFDSolver = PYXLIGHT(os.path.join(baseDir, "naca0012.dat"))
+        self.CFDSolverTripped = PYXLIGHT(os.path.join(baseDir, "naca0012.dat"), options={"xTrip": np.array([0.1, 0.1])})
+        
+        funcs = {}
+        self.CFDSolver(self.ap)
+        self.CFDSolver.evalFunctions(self.ap, funcs)
+
+        funcsTripped = {}
+        self.CFDSolverTripped(self.ap)
+        self.CFDSolverTripped.evalFunctions(self.ap, funcsTripped)
+
+        for func in evalFuncs:
+            self.assertNotEqual(funcs["fc_" + func], funcsTripped["fc_" + func])
 
 
 class TestDerivativesFFD(unittest.TestCase):
@@ -221,18 +247,11 @@ class TestDerivativesFFD(unittest.TestCase):
 
 
 class TestDerivativesCST(unittest.TestCase):
-    """
-    The combination of flight conditions, airfoil shape,
-    and DAT file used for this case can produce very inaccurate
-    derivatives. This is often found when an optimizer is attached,
-    resulting in SNOPT exiting 60/63.
-    """
-
     def setUp(self):
         # Flight conditions
-        self.alpha = 3.1998091362966057
+        self.alpha = 2.
         self.mach = 0.1
-        self.Re = 1e5
+        self.Re = 1e7
         self.T = 288.15  # K
 
         self.nCoeff = 2
@@ -263,10 +282,18 @@ class TestDerivativesCST(unittest.TestCase):
         # Geometry setup
         self.CSTName = {"upper": "upper_shape", "lower": "lower_shape"}
         self.CST = {}
-        self.CST["upper"] = np.array([0.15335040881179007, 0.1373052558913066])
-        self.CST["lower"] = np.array([-0.15335040881179007, -0.05284956303352384])
+
+        self.CST["upper"] = np.array([0.15, 0.13])
+        self.CST["lower"] = np.array([-0.15, -0.1])
         self.upperName = "upper_shape"
         self.lowerName = "lower_shape"
+
+        # This combination of alpha and CST coefficients is likely on a cusp (see multimodality
+        # section in the docs), resulting in the FD and CS derivatives mismatching
+        # self.alpha = 3.1998091362966057
+        # self.CST["upper"] = np.array([0.15335040881179007, 0.1373052558913066])
+        # self.CST["lower"] = np.array([-0.15335040881179007, -0.05284956303352384])
+
         self.DVGeo = DVGeometryCST(os.path.join(baseDir, self.DATfile), debug=False)
         self.DVGeo.addDV(self.CSTName["upper"], dvType="upper", dvNum=self.nCoeff, default=self.CST["upper"])
         self.DVGeo.addDV(self.CSTName["lower"], dvType="lower", dvNum=self.nCoeff, default=self.CST["lower"])
@@ -275,7 +302,8 @@ class TestDerivativesCST(unittest.TestCase):
     def test_alpha_sens(self):
         # Initialize necessary variables
         step = 1e-6  # step size in alpha
-        relTol = 8e-3  # acceptable relative error
+        relTol = 2e-3  # acceptable relative error
+        absTol = 1e-5  # acceptable absolute error
         alphaName = "alpha_" + self.ap.name
 
         # Evaluate the current functions
@@ -306,10 +334,10 @@ class TestDerivativesCST(unittest.TestCase):
             actualSensCS = funcsSensCS[evalFunc][alphaName].item()
 
             # Check evalFunctionsSens's finite difference
-            np.testing.assert_allclose(checkSensFD, actualSensFD, rtol=relTol, atol=1e-16)
+            np.testing.assert_allclose(checkSensFD, actualSensFD, rtol=relTol, atol=absTol)
 
             # Check evalFunctionsSens's complex step
-            np.testing.assert_allclose(checkSensFD, actualSensCS, rtol=relTol, atol=1e-16)
+            np.testing.assert_allclose(checkSensFD, actualSensCS, rtol=relTol, atol=absTol)
 
     def test_upper_shape_sens(self):
         self._eval_shape_sens("upper")
@@ -320,8 +348,8 @@ class TestDerivativesCST(unittest.TestCase):
     def _eval_shape_sens(self, surf):
         # Initialize necessary variables
         step = 1e-6  # step size in shape variables
-        relTol = 1e-3  # acceptable relative error
-        absTol = 1e-3  # acceptable absolute error
+        relTol = 1e-4  # acceptable relative error
+        absTol = 1e-4  # acceptable absolute error
 
         # Evaluate the current functions
         x = {self.CSTName[surf]: self.CST[surf]}
@@ -369,6 +397,33 @@ class TestDerivativesCST(unittest.TestCase):
 
             # Check evalFunctionsSens's methods against each other
             np.testing.assert_allclose(actualSensFD, actualSensCS, rtol=relTol, atol=absTol)
+
+
+class TestPlotting(unittest.TestCase):
+    """
+    Test that the plotting utilities run with no errors.
+    """
+    def test_plotting(self):
+        # Set the random range to use consistent random numbers
+        self.rng = np.random.default_rng(13)
+        self.ap = AeroProblem(
+            name="fc", alpha=3, mach=0.2, altitude=1e3, areaRef=1.0, chordRef=1.0, evalFuncs=["cl", "cd", "cm"]
+        )
+        self.CFDSolver = PYXLIGHT(os.path.join(baseDir, "naca0012.dat"))
+
+        # Run an initial case and plot it
+        self.CFDSolver(self.ap)
+        _, _ = self.CFDSolver.plotAirfoil(showPlot=True)
+
+        # Run another case and update the plot
+        self.ap.alpha = 4.
+        self.CFDSolver(self.ap)
+        _, _ = self.CFDSolver.plotAirfoil(showPlot=True)  # this will call self.CFDSolver.updateAirfoilPlot()
+
+        # Run another case and try calling updateAirfoilPlot directly
+        self.ap.alpha = 5.
+        self.CFDSolver(self.ap)
+        self.CFDSolver.updateAirfoilPlot(pause=True)
 
 
 if __name__ == "__main__":

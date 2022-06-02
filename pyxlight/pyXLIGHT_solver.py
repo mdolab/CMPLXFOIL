@@ -824,7 +824,7 @@ class PYXLIGHT(BaseSolver, xfoilAnalysis):
             teHeight=teThickness,
         )
 
-    def plotAirfoil(self, fileName=None):
+    def plotAirfoil(self, fileName=None, showPlot=True):
         """
         Plots the current airfoil and returns the figure.
 
@@ -833,6 +833,8 @@ class PYXLIGHT(BaseSolver, xfoilAnalysis):
         fileName : str, optional
             FileName to save to, if none specified it will
             show the plot with plt.show()
+        showPlot : bool, optional
+            Pop open the plot, by default True
 
         Returns
         -------
@@ -872,7 +874,8 @@ class PYXLIGHT(BaseSolver, xfoilAnalysis):
             iAxsCF = 1
             iAxsFoil = 2
             plt.ion()
-            plt.show()
+            if showPlot:
+                plt.show()
 
             # Plot the CP on the upper axis
             axs[iAxsCP].plot(xUpper, CPUpper, color="k", zorder=-1, alpha=0.15)
@@ -913,12 +916,12 @@ class PYXLIGHT(BaseSolver, xfoilAnalysis):
             axs[iAxsFoil].yaxis.set_ticks_position("left")
             axs[iAxsFoil].xaxis.set_ticks_position("bottom")
 
-            if fileName is None:
+            if fileName is None and showPlot:
                 plt.pause(0.5)
             self.airfoilFig = fig
             self.airfoilAxs = axs
         else:
-            self.updateAirfoilPlot()
+            self.updateAirfoilPlot(pause=showPlot)
 
         if fileName is not None:
             self.airfoilFig.savefig(fileName)
@@ -973,10 +976,10 @@ class PYXLIGHT(BaseSolver, xfoilAnalysis):
         ylimFoil = [min(ylimFoil[0], self.ylimFoil[0]), max(ylimFoil[1], self.ylimFoil[1])]
 
         # CP plot
-        self.airfoilAxs[iAxsCP].lines.pop(-1)
-        self.airfoilAxs[iAxsCP].lines.pop(-1)
-        self.airfoilAxs[iAxsCP].lines.pop(-1)
-        self.airfoilAxs[iAxsCP].lines.pop(-1)
+        self.airfoilAxs[iAxsCP].lines[-1].remove()
+        self.airfoilAxs[iAxsCP].lines[-1].remove()
+        self.airfoilAxs[iAxsCP].lines[-1].remove()
+        self.airfoilAxs[iAxsCP].lines[-1].remove()
         self.airfoilAxs[iAxsCP].plot(xUpper, CPUpper, color=cpUpColor)
         self.airfoilAxs[iAxsCP].plot(xLower, CPLower, color=cpLowColor)
         self.airfoilAxs[iAxsCP].plot(xUpper, CPUpperInvisc, "--", color=cpUpColor, linewidth=1.0)
@@ -984,13 +987,13 @@ class PYXLIGHT(BaseSolver, xfoilAnalysis):
         self.airfoilAxs[iAxsCP].set_ylim(CPlim)
 
         # CF plot
-        self.airfoilAxs[iAxsCF].lines.pop(-1)
-        self.airfoilAxs[iAxsCF].lines.pop(-1)
+        self.airfoilAxs[iAxsCF].lines[-1].remove()
+        self.airfoilAxs[iAxsCF].lines[-1].remove()
         self.airfoilAxs[iAxsCF].plot(xCFUpper, CFUpper, color=cpUpColor)
         self.airfoilAxs[iAxsCF].plot(xCFLower, CFLower, color=cpLowColor)
         self.airfoilAxs[iAxsCF].set_ylim(CFlim)
 
-        self.airfoilAxs[iAxsFoil].lines.pop(-1)
+        self.airfoilAxs[iAxsFoil].lines[-1].remove()
         self.airfoilAxs[iAxsFoil].plot(x, y, color=color)
         self.airfoilAxs[iAxsFoil].set_xlim(xlimFoil)
         self.airfoilAxs[iAxsFoil].set_ylim(ylimFoil)
