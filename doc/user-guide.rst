@@ -1,11 +1,11 @@
 User Guide
 ==========
+This section describes a sample run script for airfoil optimization with pyXLIGHT.
+The script can be found in pyXLIGHT/examples/single_point.py.
+In addition to the required pyXLIGHT packages, it uses `multipoint <https://github.com/mdolab/multipoint>`_, `pyoptsparse <https://github.com/mdolab/pyoptsparse>`_, and mpi4py.
 
-.. note::
-    This section is under development.
 
-.. image:: multimodality_cd.svg
-   :width: 600
 
-.. image:: opt.gif
-   :width: 600
+.. .. literalinclude:: ../tutorial/airfoilopt/singlepoint/airfoil_opt.py
+..     :start-after: # rst Imports (beg)
+..     :end-before: # rst Imports (end)

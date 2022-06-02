@@ -42,7 +42,7 @@ class AnimateAirfoilOpt:
         This object assumes that the files are accessible under the name
         <dirName>/<APName>_<iteration number>.<dat or pkl>
         and that BOTH dat (airfoil shape) and pkl (chordwise data) files
-        are available. It also assumes that the iteration number starts at 1.
+        are available.
 
         Parameters
         ----------
