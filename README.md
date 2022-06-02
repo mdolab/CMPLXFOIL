@@ -6,7 +6,7 @@ pyXLIGHT
 pyXLIGHT is a version of Mark Drela's XFOIL code with the GUI features removed.
 Gradient computation is implemented with the complex-step method.
 
-![alt text](doc/assets/airfoil_opt.gif)
+![alt text](/doc/assets/airfoil_opt.gif)
 
 Documentation
 -------------
