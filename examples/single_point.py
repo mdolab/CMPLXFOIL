@@ -10,6 +10,7 @@ from pygeo import DVConstraints, DVGeometryCST
 from pyoptsparse import Optimization, OPT
 from multipoint import multiPointSparse
 from pyxlight import PYXLIGHT, AnimateAirfoilOpt
+
 # rst imports (end)
 
 # ======================================================================
@@ -147,8 +148,8 @@ def cruiseFuncsSens(x, funcs):
     CFDSolver.evalFunctionsSens(ap, funcsSens)
     CFDSolver.checkAdjointFailure(ap, funcsSens)
     print("function sensitivities:")
-    vars = ["fc_cd", "fc_cl", "fail"]
-    for var in vars:
+    evalFunc = ["fc_cd", "fc_cl", "fail"]
+    for var in evalFunc:
         print(f"    {var}: {funcsSens[var]}")
     return funcsSens
 
@@ -160,6 +161,8 @@ def objCon(funcs, printOK):
     if printOK:
         print("funcs in obj:", funcs)
     return funcs
+
+
 # rst funcs (end)
 
 # ======================================================================
@@ -209,9 +212,7 @@ optProb.getDVConIndex()
 
 # rst opt (beg)
 # Run optimization
-optOptions = {
-    "IFILE": os.path.join(outputDir, "SLSQP.out")
-}
+optOptions = {"IFILE": os.path.join(outputDir, "SLSQP.out")}
 opt = OPT("SLSQP", options=optOptions)
 sol = opt(optProb, MP.sens, storeHistory=os.path.join(outputDir, "opt.hst"))
 if MPI.COMM_WORLD.rank == 0:
@@ -228,6 +229,6 @@ CFDSolver.airfoilFig.savefig(os.path.join(outputDir, "OptFoil.pdf"))
 
 # Animate the optimization
 AnimateAirfoilOpt(outputDir, "fc").animate(
-    outputFileName=os.path.join(outputDir, "OptFoil"), ext="gif", fps=10, dpi=300,# extra_args=["-vcodec", "libx264"]
+    outputFileName=os.path.join(outputDir, "OptFoil"), fps=10, dpi=300, extra_args=["-vcodec", "libx264"]
 )
 # rst postprocessing (end)

@@ -108,7 +108,7 @@ class TestTrip(unittest.TestCase):
         )
         self.CFDSolver = PYXLIGHT(os.path.join(baseDir, "naca0012.dat"))
         self.CFDSolverTripped = PYXLIGHT(os.path.join(baseDir, "naca0012.dat"), options={"xTrip": np.array([0.1, 0.1])})
-        
+
         funcs = {}
         self.CFDSolver(self.ap)
         self.CFDSolver.evalFunctions(self.ap, funcs)
@@ -262,7 +262,7 @@ class TestDerivativesFFD(unittest.TestCase):
 class TestDerivativesCST(unittest.TestCase):
     def setUp(self):
         # Flight conditions
-        self.alpha = 2.
+        self.alpha = 2.0
         self.mach = 0.1
         self.Re = 1e7
         self.T = 288.15  # K
@@ -417,6 +417,7 @@ class TestPlotting(unittest.TestCase):
     """
     Test that the plotting utilities run with no errors.
     """
+
     def test_plotting(self):
         # Set the random range to use consistent random numbers
         self.rng = np.random.default_rng(13)
@@ -430,12 +431,12 @@ class TestPlotting(unittest.TestCase):
         _, _ = self.CFDSolver.plotAirfoil(showPlot=False)
 
         # Run another case and update the plot
-        self.ap.alpha = 4.
+        self.ap.alpha = 4.0
         self.CFDSolver(self.ap)
         _, _ = self.CFDSolver.plotAirfoil(showPlot=False)  # this will call self.CFDSolver.updateAirfoilPlot()
 
         # Run another case and try calling updateAirfoilPlot directly
-        self.ap.alpha = 5.
+        self.ap.alpha = 5.0
         self.CFDSolver(self.ap)
         self.CFDSolver.updateAirfoilPlot(pause=False)
 
