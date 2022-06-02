@@ -62,16 +62,23 @@ from .pyXLIGHT import xfoilAnalysis
 
 class PYXLIGHT(BaseSolver, xfoilAnalysis):
     """
-    Solver Class Initialization
+    PYXLIGHT Class Initialization
 
     Parameters
     ----------
     fileName : str
         Filename of DAT file to read in
-    options : dict, optional
-        The user-supplied options dictionary. Options are:
-            maxIters
-            TODO: fix these options
+    options : dict of option-value pairs, optional
+        * **writeSolution**: call ``writeSolution`` when the solver is called with an AeroProblem, by default False
+        * **writeCoordinates**: write airfoil coordinates to dat file when ``writeSolution`` is called, by default True
+        * **writeSliceFile**: save chordwise data in a pickle file when ``writeSolution`` is called, by default True
+        * **plotAirfoil**: show airfoil plot with cp and cf data when ``writeSolution`` is called, by default False
+        * **outputDirectory**: directory to save the output files, by default the current directory
+        * **maxIters**: maximum iterations for XFOIL solver, by default 100
+        * **xTrip**: boundary layer trip location specified as a two-element numpy array where the first element is the
+          chordwise location at which to trip the upper surface and the second is the chordwise location at
+          which to trip the lower surface, by default will not trip the boundary layer and instead use XFOIL's
+          transition model
     debug : bool, optional
         Set this flag to true when debugging with a symbolic
         debugger. The MExt module deletes the copied .so file when not
@@ -341,8 +348,6 @@ class PYXLIGHT(BaseSolver, xfoilAnalysis):
     ):
         """Find the angle of attack that gives a target lift coefficient.
 
-        _extended_summary_
-
         Parameters
         ----------
         aeroProblem : pyAero_problem class
@@ -441,7 +446,7 @@ class PYXLIGHT(BaseSolver, xfoilAnalysis):
 
     def writeSolution(self, outputDir=None, baseName=None, number=None):
         """This is a generic shell function that potentially writes the various output files. The intent is that the
-        user or calling program can call this file and ADflow write all the files that the user has defined. It is
+        user or calling program can call this file and pyXLIGHT write all the files that the user has defined. It is
         recommended that this function is used along with the associated logical flags in  the options to determine the
         desired writing procedure.
 
@@ -495,16 +500,26 @@ class PYXLIGHT(BaseSolver, xfoilAnalysis):
 
     def writeSlice(self, fileName):
         """Write pickle file containing the sliceData dictionary. The data can be
-        accessed using the AeroProblem name as the key. Within that is a dictionary containing:
+        accessed using the AeroProblem name as the key. Within that is a dictionary containing
 
-        - "cp_visc_upper": viscous CP on the airfoil's upper surface
-        - "cp_invisc_upper": inviscid CP on the airfoil's upper surface
-        - "x_upper": x coordinates of the upper surface CP data
-        - "y_upper": y coordinates of the upper surface CP data
-        - "cp_visc_lower": viscous CP on the airfoil's lower surface
-        - "cp_invisc_lower": inviscid CP on the airfoil's lower surface
-        - "x_lower": x coordinates of the lower surface CP data
-        - "y_lower": y coordinates of the lower surface CP data
+        * Pressure coefficient data on the upper surface
+            * ``"cp_visc_upper"``: viscous CP on the airfoil's upper surface
+            * ``"cp_invisc_upper"``: inviscid CP on the airfoil's upper surface
+            * ``"x_upper"``: x coordinates of the upper surface CP data
+            * ``"y_upper"``: y coordinates of the upper surface CP data
+        * Pressure coefficient data on the lower surface
+            * ``"cp_visc_lower"``: viscous CP on the airfoil's lower surface
+            * ``"cp_invisc_lower"``: inviscid CP on the airfoil's lower surface
+            * ``"x_lower"``: x coordinates of the lower surface CP data
+            * ``"y_lower"``: y coordinates of the lower surface CP data
+        * Skin friction coefficient data on the upper surface
+            * ``"cf_upper"``: skin friction coefficient on the upper surface
+            * ``"x_cf_upper"``: x coordinates of upper surface skin friction coefficient
+            * ``"y_cf_upper"``: y coordinates of upper surface skin friction coefficient
+        * Skin friction coefficient data on the lower surface
+            * ``"cf_lower"``: skin friction coefficient on the lower surface
+            * ``"x_cf_lower"``: x coordinates of lower surface skin friction coefficient
+            * ``"y_cf_lower"``: y coordinates of lower surface skin friction coefficient
 
         Parameters
         ----------
@@ -632,7 +647,7 @@ class PYXLIGHT(BaseSolver, xfoilAnalysis):
             Specifies how the jacobian vector products will be computed
         h : float
             Step sized used when the mode is "FD" or "CS" (must be complex
-            if mode="CS")
+            if mode = "CS")
         """
         # This is the one and only gateway to the getting derivatives
         # out of xfoil. If you want a derivative, it should come from
@@ -700,7 +715,7 @@ class PYXLIGHT(BaseSolver, xfoilAnalysis):
             Specifies how the jacobian vector products will be computed
         h : float
             Step sized used when the mode is "FD" or "CS" (must be complex
-            if mode="CS")
+            if mode = "CS")
 
         Returns
         -------

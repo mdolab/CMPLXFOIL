@@ -1,6 +1,6 @@
 pyXLIGHT API
 ============
-.. currentmodule:: pyxlight.pyXLIGHT_solver
+.. currentmodule:: pyxlight
 
-.. autoclass:: pyxlight.pyXLIGHT_solver.PYXLIGHT
+.. autoclass:: pyxlight.PYXLIGHT
     :members:
