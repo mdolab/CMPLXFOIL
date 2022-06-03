@@ -7,5 +7,7 @@ PYXLIGHT
 .. autoclass:: PYXLIGHT
     :members: 
 
+AnimateAirfoilOpt
+-----------------
 .. autoclass:: AnimateAirfoilOpt
     :members: 
