@@ -74,21 +74,21 @@ class TestNACA(unittest.TestCase):
             self.CFDSolver(self.ap)
             self.CFDSolver.evalFunctions(self.ap, funcs)
         true_funcs = {
-            "polar_-10.0deg_cd": 0.01101993462628528,
-            "polar_-10.0deg_cl": -1.159084142777055,
-            "polar_-10.0deg_cm": -0.0011892066512280467,
-            "polar_-5.0deg_cd": 0.00662873986434532,
-            "polar_-5.0deg_cl": -0.5699935973412055,
-            "polar_-5.0deg_cm": -0.0017538538410242423,
-            "polar_0.0deg_cd": 0.005119943489125211,
-            "polar_0.0deg_cl": -1.5079734336231887e-14,
-            "polar_0.0deg_cm": 4.565921255416294e-15,
-            "polar_5.0deg_cd": 0.006628892689364835,
-            "polar_5.0deg_cl": 0.5700367928924902,
-            "polar_5.0deg_cm": 0.0017440066787678468,
-            "polar_10.0deg_cd": 0.011018323406864667,
-            "polar_10.0deg_cl": 1.1589444225017087,
-            "polar_10.0deg_cm": 0.0012188640029523216,
+            "polar_-10.0deg_cd": 0.011025153413460432,
+            "polar_-10.0deg_cl": -1.1588483291827825,
+            "polar_-10.0deg_cm": -0.0012226349825473892,
+            "polar_-5.0deg_cd": 0.006681735627505201,
+            "polar_-5.0deg_cl": -0.5699314393578008,
+            "polar_-5.0deg_cm": -0.0017402658692315196,
+            "polar_0.0deg_cd": 0.005149998979665711,
+            "polar_0.0deg_cl": 2.3731559252448964e-14,
+            "polar_0.0deg_cm": -5.189882517357458e-15,
+            "polar_5.0deg_cd": 0.006681852094188599,
+            "polar_5.0deg_cl": 0.5699617443207495,
+            "polar_5.0deg_cm": 0.0017333482408693297,
+            "polar_10.0deg_cd": 0.011024378048979051,
+            "polar_10.0deg_cl": 1.1587674856662604,
+            "polar_10.0deg_cm": 0.0012397586091073744,
         }
         for key, true_val in true_funcs.items():
             self.assertAlmostEqual(true_val, funcs[key])
