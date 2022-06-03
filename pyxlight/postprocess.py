@@ -28,7 +28,7 @@ from matplotlib.animation import FuncAnimation
 # =============================================================================
 # Extension modules
 # =============================================================================
-from .pyXLIGHT_solver import PYXLIGHT
+from .pyXLIGHT import PYXLIGHT
 
 
 class AnimateAirfoilOpt:

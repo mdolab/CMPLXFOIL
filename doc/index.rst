@@ -2,7 +2,8 @@ pyXLIGHT
 ====================================
 pyXLIGHT is a version of Mark Drela's XFOIL code with the GUI features removed.
 Gradient computation is implemented with the complex-step method.
-It includes a wrapper to interface with `MACH-Aero <https://mdolab-mach-aero.readthedocs-hosted.com/en/latest/index.html>`_ for optimization and postprocessing tools.
+The Python interface is designed to be used with `MACH-Aero <https://mdolab-mach-aero.readthedocs-hosted.com/en/latest/index.html>`_ tools for optimization.
+This package also includes some postprocessing tools.
 
 .. toctree::
    :maxdepth: 2
