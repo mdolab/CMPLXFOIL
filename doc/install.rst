@@ -16,32 +16,17 @@ In addition to standard compilers, CMPLXFOIL requires the following dependencies
 Package             Version Notes
 =================== ======= =======
 Python              3.X.X
-NumPy               ---     ``conda install numpy`` or ``pip install numpy`` 
-=================== ======= =======
-
-To use the :ref:`CMPLXFOIL<CMPLXFOIL API>` interface for the `MACH-Aero <https://mdolab-mach-aero.readthedocs-hosted.com/en/latest/index.html>`_ framework, the following additional dependencies are required:
-
-=================== ======= =======
-Package             Version Notes
-=================== ======= =======
+NumPy               ---     ``conda install numpy`` or ``pip install numpy``
 `baseclasses`_      ---     ``pip install mdolab-baseclasses``
 `preFoil`_          ---
-`pyGeo`_            --- 
+`pyGeo`_            ---
+matplotlib          ---     ``pip install matplotlib``
+`niceplots`_        ---     optional
 =================== ======= =======
 
 .. _baseclasses: https://github.com/mdolab/baseclasses
 .. _preFoil: https://github.com/mdolab/prefoil
 .. _pyGeo: https://github.com/mdolab/pygeo
-
-Finally, CMPLXFOIL's plotting features use
-
-=================== ======= =======
-Package             Version Notes
-=================== ======= =======
-matplotlib          ---     ``pip install matplotlib``
-`niceplots`_        ---     optional
-=================== ======= =======
-
 .. _niceplots: https://github.com/mdolab/niceplots
 
 Build and Installation
