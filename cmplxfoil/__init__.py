@@ -1,6 +1,6 @@
 __version__ = "2.0.0"
 
-from .pyXLIGHT import PYXLIGHT
+from .CMPLXFOIL import CMPLXFOIL
 
 try:
     from .postprocess import AnimateAirfoilOpt

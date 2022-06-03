@@ -1,4 +1,4 @@
-# Test script to test pyXLIGHT
+# Test script to test CMPLXFOIL
 # =============================================================================
 # Standard Python Modules
 # =============================================================================
@@ -20,16 +20,11 @@ except ImportError:
 # =============================================================================
 # Extension modules
 # =============================================================================
-pyxlightImportFailed = False
-try:
-    from pyxlight import PYXLIGHT
-except ImportError:
-    pyxlightImportFailed = True
+from cmplxfoil import CMPLXFOIL
 
 baseDir = os.path.dirname(os.path.abspath(__file__))  # Path to current folder
 
 
-@unittest.skipIf(externalImportsFailed or pyxlightImportFailed, "Could not import the PYXLIGHT solver")
 class TestNACA(unittest.TestCase):
     def setUp(self):
         # Set the random range to use consistent random numbers
@@ -37,7 +32,7 @@ class TestNACA(unittest.TestCase):
         self.ap = AeroProblem(
             name="fc", alpha=3, mach=0.2, altitude=1e3, areaRef=1.0, chordRef=1.0, evalFuncs=["cl", "cd", "cm"]
         )
-        self.CFDSolver = PYXLIGHT(os.path.join(baseDir, "naca0012.dat"))
+        self.CFDSolver = CMPLXFOIL(os.path.join(baseDir, "naca0012.dat"))
         self.alphaSequence = np.linspace(-0.5, 0.5, 11)
         self.rng.shuffle(self.alphaSequence)
 
@@ -94,7 +89,6 @@ class TestNACA(unittest.TestCase):
             self.assertAlmostEqual(true_val, funcs[key])
 
 
-@unittest.skipIf(externalImportsFailed or pyxlightImportFailed, "Could not import the PYXLIGHT solver")
 class TestTrip(unittest.TestCase):
     def test_trip(self):
         """
@@ -106,8 +100,8 @@ class TestTrip(unittest.TestCase):
         self.ap = AeroProblem(
             name="fc", alpha=3, mach=0.2, altitude=1e3, areaRef=1.0, chordRef=1.0, evalFuncs=evalFuncs
         )
-        self.CFDSolver = PYXLIGHT(os.path.join(baseDir, "naca0012.dat"))
-        self.CFDSolverTripped = PYXLIGHT(os.path.join(baseDir, "naca0012.dat"), options={"xTrip": np.array([0.1, 0.1])})
+        self.CFDSolver = CMPLXFOIL(os.path.join(baseDir, "naca0012.dat"))
+        self.CFDSolverTripped = CMPLXFOIL(os.path.join(baseDir, "naca0012.dat"), options={"xTrip": np.array([0.1, 0.1])})
 
         funcs = {}
         self.CFDSolver(self.ap)
@@ -121,7 +115,6 @@ class TestTrip(unittest.TestCase):
             self.assertNotEqual(funcs["fc_" + func], funcsTripped["fc_" + func])
 
 
-@unittest.skipIf(externalImportsFailed or pyxlightImportFailed, "Could not import the PYXLIGHT solver")
 class TestDerivativesFFD(unittest.TestCase):
     def setUp(self):
         # Set the random range to use consistent random numbers
@@ -133,13 +126,13 @@ class TestDerivativesFFD(unittest.TestCase):
         Re = 1e6
         T = 288.15  # K
 
-        # Add pyXLIGHT solver
-        pyxlightOptions = {
+        # Add CMPLXFOIL solver
+        cmplxfoilOptions = {
             "writeCoordinates": False,
             "plotAirfoil": False,
             "writeSolution": False,
         }
-        self.CFDSolver = PYXLIGHT(os.path.join(baseDir, "naca0012.dat"), options=pyxlightOptions)
+        self.CFDSolver = CMPLXFOIL(os.path.join(baseDir, "naca0012.dat"), options=cmplxfoilOptions)
 
         # Add AeroProblem with flight conditions and AoA DV
         self.ap = AeroProblem(
@@ -258,7 +251,6 @@ class TestDerivativesFFD(unittest.TestCase):
             np.testing.assert_allclose(actualSensFD, actualSensCS, rtol=relTol, atol=absTol)
 
 
-@unittest.skipIf(externalImportsFailed or pyxlightImportFailed, "Could not import the PYXLIGHT solver")
 class TestDerivativesCST(unittest.TestCase):
     def setUp(self):
         # Flight conditions
@@ -270,13 +262,13 @@ class TestDerivativesCST(unittest.TestCase):
         self.nCoeff = 2
         self.DATfile = "n0012BluntTE.dat"
 
-        # Add pyXLIGHT solver
-        pyxlightOptions = {
+        # Add CMPLXFOIL solver
+        cmplxfoilOptions = {
             "writeCoordinates": False,
             "plotAirfoil": False,
             "writeSolution": False,
         }
-        self.CFDSolver = PYXLIGHT(os.path.join(baseDir, self.DATfile), options=pyxlightOptions)
+        self.CFDSolver = CMPLXFOIL(os.path.join(baseDir, self.DATfile), options=cmplxfoilOptions)
 
         # Add AeroProblem with flight conditions and AoA DV
         self.ap = AeroProblem(
@@ -412,7 +404,6 @@ class TestDerivativesCST(unittest.TestCase):
             np.testing.assert_allclose(actualSensFD, actualSensCS, rtol=relTol, atol=absTol)
 
 
-@unittest.skipIf(externalImportsFailed or pyxlightImportFailed, "Could not import the PYXLIGHT solver")
 class TestPlotting(unittest.TestCase):
     """
     Test that the plotting utilities run with no errors.
@@ -424,7 +415,7 @@ class TestPlotting(unittest.TestCase):
         self.ap = AeroProblem(
             name="fc", alpha=3, mach=0.2, altitude=1e3, areaRef=1.0, chordRef=1.0, evalFuncs=["cl", "cd", "cm"]
         )
-        self.CFDSolver = PYXLIGHT(os.path.join(baseDir, "naca0012.dat"))
+        self.CFDSolver = CMPLXFOIL(os.path.join(baseDir, "naca0012.dat"))
 
         # Run an initial case and plot it
         self.CFDSolver(self.ap)

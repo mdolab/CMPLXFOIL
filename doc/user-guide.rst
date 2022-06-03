@@ -4,7 +4,7 @@ Optimization Tutorial
 
 Introduction
 ============
-This section describes a sample run script for airfoil optimization with pyXLIGHT.
+This section describes a sample run script for airfoil optimization with CMPLXFOIL.
 It is very similar to the `MACH-Aero single point airfoil tutorial <https://mdolab-mach-aero.readthedocs-hosted.com/en/latest/machAeroTutorials/airfoilopt_singlepoint.html>`_.
 This example uses pyOptSparse's SLSQP optimizer because it comes with pyOptSparse, but SNOPT is recommended for more robustness, speed, and tunability.
 
@@ -24,8 +24,8 @@ The optimization problem solved in this script is
 
 Getting set up
 ==============
-In addition to the required pyXLIGHT packages, this script requires `multipoint <https://github.com/mdolab/multipoint>`_, `pyoptsparse <https://github.com/mdolab/pyoptsparse>`_, and mpi4py.
-The script can be found in pyXLIGHT/examples/single_point.py.
+In addition to the required CMPLXFOIL packages, this script requires `multipoint <https://github.com/mdolab/multipoint>`_, `pyoptsparse <https://github.com/mdolab/pyoptsparse>`_, and mpi4py.
+The script can be found in CMPLXFOIL/examples/single_point.py.
 
 Dissecting the optimization script
 ==================================
@@ -61,7 +61,7 @@ This section creates a directory in the run script's directory in which to save 
     :start-after: # rst dir (beg)
     :end-before: # rst dir (end)
 
-pyXLIGHT solver setup
+CMPLXFOIL solver setup
 ---------------------
 
 The options tell the solver to write out chordwise aerodynamic data (``writeSliceFile``) and the airfoil coordinates (``writeCoordinates``) every time it is called.

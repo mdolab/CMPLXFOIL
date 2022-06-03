@@ -1,14 +1,14 @@
-.. _PYXLIGHT:
-.. _pyXLIGHT API:
+.. _CMPLXFOIL:
+.. _CMPLXFOIL API:
 
-pyXLIGHT API
+CMPLXFOIL API
 ============
 
-PYXLIGHT
+CMPLXFOIL
 -------------
-.. currentmodule:: pyxlight
+.. currentmodule:: cmplxfoil
 
-.. autoclass:: PYXLIGHT
+.. autoclass:: CMPLXFOIL
     :members: 
 
 AnimateAirfoilOpt

@@ -1,6 +1,6 @@
-pyXLIGHT
+CMPLXFOIL
 ====================================
-pyXLIGHT is a version of Mark Drela's XFOIL code with the GUI features removed.
+CMPLXFOIL is a version of Mark Drela's XFOIL code with the GUI features removed.
 Gradient computation is implemented with the complex-step method.
 The Python interface is designed to be used with `MACH-Aero <https://mdolab-mach-aero.readthedocs-hosted.com/en/latest/index.html>`_ tools for optimization.
 This package also includes some postprocessing tools.
@@ -27,7 +27,7 @@ They observe that these inaccurate derivatives can create local optima.
 To visualize the behavior, they evaluate drag along a line in the design space between two optima.
 The result is shown below.
 Every dip corresponds to the transition location moving across one panel.
-Increasing the number of panels helps (pyXLIGHT uses 284 panels by default), but does not fix the problem.
+Increasing the number of panels helps (CMPLXFOIL uses 284 panels by default), but does not fix the problem.
 
 .. image:: assets/multimodality_cd.svg
    :width: 600

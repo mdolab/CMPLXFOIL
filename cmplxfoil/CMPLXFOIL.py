@@ -1,7 +1,7 @@
 """
-pyXLIGHT
+CMPLXFOIL
 
-pyXLIGHT is a wrapper for Mark Drela's XFOIL code. The purpose of this
+CMPLXFOIL is a wrapper for Mark Drela's XFOIL code. The purpose of this
 class is to provide an easy to use wrapper for xfoil for intergration
 into other projects. Both real and complex versions of xfoil can be used.
 
@@ -59,9 +59,9 @@ except ImportError:
 from . import MExt
 
 
-class PYXLIGHT(BaseSolver):
+class CMPLXFOIL(BaseSolver):
     """
-    PYXLIGHT Class Initialization
+    CMPLXFOIL Class Initialization
 
     Parameters
     ----------
@@ -88,11 +88,11 @@ class PYXLIGHT(BaseSolver):
         # Load the compiled module using MExt, allowing multiple imports
         curDir = os.path.basename(os.path.dirname(os.path.realpath(__file__)))
         time.sleep(0.1)  # BOTH of these sleeps are necessary for some reason!
-        self.xfoil = MExt.MExt("libxlight", curDir, debug=debug)._module
+        self.xfoil = MExt.MExt("libcmplxfoil", curDir, debug=debug)._module
         time.sleep(0.1)  # BOTH of these sleeps are necessary for some reason!
-        self.xfoil_cs = MExt.MExt("libxlight_cs", curDir, debug=debug)._module
+        self.xfoil_cs = MExt.MExt("libcmplxfoil_cs", curDir, debug=debug)._module
 
-        super().__init__("PYXLIGHT", "Panel Method", defaultOptions=self._getDefaultOptions(), options=options)
+        super().__init__("CMPLXFOIL", "Panel Method", defaultOptions=self._getDefaultOptions(), options=options)
 
         if self.getOption("xTrip").shape != (2,):
             raise ValueError("xTrip option shape must be (2,)")
@@ -134,7 +134,7 @@ class PYXLIGHT(BaseSolver):
         self.sliceData = {}
         self.sliceDataComplex = {}
 
-        # Possible AeroProblem design variables (only alpha for pyXLIGHT)
+        # Possible AeroProblem design variables (only alpha for CMPLXFOIL)
         self.possibleAeroDVs = ["alpha"]
 
         # Figure and axes used by self.plotAirfoil and self.updateAirfoilPlot
@@ -146,7 +146,7 @@ class PYXLIGHT(BaseSolver):
     def setDVGeo(self, DVGeo, pointSetKwargs=None):
         """
         Set the DVGeometry object that will manipulate 'geometry' in
-        this object. Note that PYXLIGHT does not **strictly** need a
+        this object. Note that CMPLXFOIL does not **strictly** need a
         DVGeometry object, but if optimization with geometric
         changes is desired, then it is required.
 
@@ -169,14 +169,14 @@ class PYXLIGHT(BaseSolver):
 
     def setAeroProblem(self, aeroProblem):
         """
-        Sets the aeroProblem to by used by PYXLIGHT.
+        Sets the aeroProblem to by used by CMPLXFOIL.
 
         Parameters
         ----------
         aeroProblem : :class:`AeroProblem <baseclasses.problems.pyAero_problem.AeroProblem>` instance
             Aero problem to set (gives flight conditions)
         """
-        ptSetName = "pyxlight_%s_coords" % aeroProblem.name
+        ptSetName = "cmplxfoil_%s_coords" % aeroProblem.name
 
         # Tell the user if we are switching aeroProblems
         if self.curAP != aeroProblem:
@@ -443,7 +443,7 @@ class PYXLIGHT(BaseSolver):
 
     def writeSolution(self, outputDir=None, baseName=None, number=None):
         """This is a generic shell function that potentially writes the various output files. The intent is that the
-        user or calling program can call this file and pyXLIGHT write all the files that the user has defined. It is
+        user or calling program can call this file and CMPLXFOIL write all the files that the user has defined. It is
         recommended that this function is used along with the associated logical flags in  the options to determine the
         desired writing procedure.
 
@@ -593,7 +593,7 @@ class PYXLIGHT(BaseSolver):
 
     def evalFunctions(self, aeroProblem, funcs, evalFuncs=None, ignoreMissing=False):
         """
-        This is the main routine for returning useful information from PYXLIGHT.
+        This is the main routine for returning useful information from CMPLXFOIL.
         The functions corresponding to the strings in ``evalFuncs`` are evaluated
         and updated into the provided dictionary.
 

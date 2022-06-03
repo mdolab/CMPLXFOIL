@@ -17,7 +17,7 @@ sys.path.insert(0, os.path.abspath("../"))
 #     subprocess.call("doxygen", shell=True)
 
 # -- Project information -----------------------------------------------------
-project = "pyXLIGHT"
+project = "CMPLXFOIL"
 
 # -- General configuration ---------------------------------------------------
 # Built-in Sphinx extensions are already contained in the imported variable

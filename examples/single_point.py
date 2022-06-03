@@ -9,7 +9,7 @@ from baseclasses import AeroProblem
 from pygeo import DVConstraints, DVGeometryCST
 from pyoptsparse import Optimization, OPT
 from multipoint import multiPointSparse
-from pyxlight import PYXLIGHT, AnimateAirfoilOpt
+from cmplxfoil import CMPLXFOIL, AnimateAirfoilOpt
 
 # rst imports (end)
 
@@ -57,7 +57,7 @@ aeroOptions = {
 }
 
 # Create solver
-CFDSolver = PYXLIGHT(os.path.join(curDir, "naca0012.dat"), options=aeroOptions)
+CFDSolver = CMPLXFOIL(os.path.join(curDir, "naca0012.dat"), options=aeroOptions)
 # rst solver (end)
 
 # ======================================================================

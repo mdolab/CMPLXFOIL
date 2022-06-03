@@ -1,6 +1,6 @@
 Citation
 ========
-If you use pyXLIGHT, please cite the following paper for XFOIL:
+If you use CMPLXFOIL, please cite the following paper for XFOIL:
 
 * Drela M. (1989) XFOIL: An Analysis and Design System for Low Reynolds Number Airfoils. In: Mueller T.J. (eds) Low Reynolds Number Aerodynamics. Lecture Notes in Engineering, vol 54. Springer, Berlin, Heidelberg. https://doi.org/10.1007/978-3-642-84010-4_1
 

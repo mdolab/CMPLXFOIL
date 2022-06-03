@@ -1,4 +1,4 @@
-# Master makefile for pyXLIGHT. The actual makefile you want is:
+# Master makefile for CMPLXFOIL. The actual makefile you want is:
 # src/build/Makefile
 # src_cs/build/Makefile
 
@@ -13,7 +13,7 @@ default:
 	echo " ";\
 	echo "The modify this config file as required. With the config file"; \
 	echo " specified, rerun 'make' and the build will start"; \
-	else make pyxlight_build;\
+	else make cmplxfoil_build;\
 	fi;
 
 clean:
@@ -27,7 +27,7 @@ clean:
 	rm -fr src_cs/build/*.so
 	rm -f *~ config.mk;
 
-pyxlight_build:
+cmplxfoil_build:
 	ln -sf config/config.mk config.mk;
 	(cd src/build/ && make)
 	(cd src_cs/build/ && make)
