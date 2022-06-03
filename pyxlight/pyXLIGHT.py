@@ -500,20 +500,27 @@ class PYXLIGHT(BaseSolver):
         accessed using the AeroProblem name as the key. Within that is a dictionary containing
 
         * Pressure coefficient data on the upper surface
+
             * ``"cp_visc_upper"``: viscous CP on the airfoil's upper surface
             * ``"cp_invisc_upper"``: inviscid CP on the airfoil's upper surface
             * ``"x_upper"``: x coordinates of the upper surface CP data
             * ``"y_upper"``: y coordinates of the upper surface CP data
+
         * Pressure coefficient data on the lower surface
+
             * ``"cp_visc_lower"``: viscous CP on the airfoil's lower surface
             * ``"cp_invisc_lower"``: inviscid CP on the airfoil's lower surface
             * ``"x_lower"``: x coordinates of the lower surface CP data
             * ``"y_lower"``: y coordinates of the lower surface CP data
+
         * Skin friction coefficient data on the upper surface
+
             * ``"cf_upper"``: skin friction coefficient on the upper surface
             * ``"x_cf_upper"``: x coordinates of upper surface skin friction coefficient
             * ``"y_cf_upper"``: y coordinates of upper surface skin friction coefficient
+
         * Skin friction coefficient data on the lower surface
+
             * ``"cf_lower"``: skin friction coefficient on the lower surface
             * ``"x_cf_lower"``: x coordinates of lower surface skin friction coefficient
             * ``"y_cf_lower"``: y coordinates of lower surface skin friction coefficient
