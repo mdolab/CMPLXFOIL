@@ -19,7 +19,7 @@ from cmplxfoil import CMPLXFOIL, AnimateAirfoilOpt
 # rst params (beg)
 mycl = 0.5  # lift coefficient constraint
 alpha = 0.0 if mycl == 0.0 else 1.0  # initial angle of attack (zero if the target cl is zero)
-mach = 0.3  # Mach number
+mach = 0.1  # Mach number
 Re = 1e6  # Reynolds number
 T = 288.15  # 1976 US Standard Atmosphere temperature @ sea level (K)
 # rst params (end)
@@ -87,8 +87,8 @@ if mycl != 0.0:
 DVGeo = DVGeometryCST(os.path.join(curDir, "naca0012.dat"))
 
 nCoeff = 4  # number of CST coefficients on each surface
-DVGeo.addDV("upper_shape", dvType="upper", dvNum=nCoeff)
-DVGeo.addDV("lower_shape", dvType="lower", dvNum=nCoeff)
+DVGeo.addDV("upper_shape", dvType="upper", dvNum=nCoeff, lower=-.1, upper=.5)
+DVGeo.addDV("lower_shape", dvType="lower", dvNum=nCoeff, lower=-.5, upper=.1)
 
 # Add DVGeo object to CFD solver
 CFDSolver.setDVGeo(DVGeo)

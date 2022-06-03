@@ -12,7 +12,7 @@ with open(os.path.join(this_directory, "README.md"), encoding="utf-8") as f:
     long_description = f.read()
 
 setup(
-    name="CMPLXFOIL",
+    name="cmplxfoil",
     version=__version__,
     description="A Python wrapped version of Mark Drela's XFOIL code with the GUI features removed.",
     long_description=long_description,
