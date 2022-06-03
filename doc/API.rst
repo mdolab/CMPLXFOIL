@@ -1,4 +1,6 @@
 .. _PYXLIGHT:
+pyXLIGHT API
+============
 
 PYXLIGHT
 -------------
