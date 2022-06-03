@@ -7,10 +7,10 @@ PYXLIGHT
 --------
 .. currentmodule:: pyxlight
 
-.. autoclass:: pyxlight.PYXLIGHT
+.. autoclass:: PYXLIGHT
     :members:
 
 AnimateAirfoilOpt
 -----------------
-.. autoclass:: pyxlight.AnimateAirfoilOpt
+.. autoclass:: AnimateAirfoilOpt
     :members:
