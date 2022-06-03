@@ -1,16 +1,8 @@
-.. _pyXLIGHT API:
-
-pyXLIGHT API
-============
+.. _PYXLIGHT:
 
 PYXLIGHT
---------
+-------------
 .. currentmodule:: pyxlight
 
 .. autoclass:: PYXLIGHT
-    :members:
-
-AnimateAirfoilOpt
------------------
-.. autoclass:: AnimateAirfoilOpt
-    :members:
+    :members: 
