@@ -358,10 +358,10 @@ class PYXLIGHT(BaseSolver, xfoilAnalysis):
             Initial guess for secant search (deg). If None, use the value in the aeroProblem, by default None
         alphaBound : float, tuple, list, optional
             Bounds for angle of attack, if scalar then value is treated as a +- bound, by default None, in which case
-            limit is +-15 deg
+            limit is +/-15 deg
         delta : float, optional
             Initial step direction for secant search, by default 0.5
-        tol : _type_, optional
+        tol : float, optional
             Desired tolerance for CL, by default 1e-3
         CLalphaGuess : float, optional
             The user can provide an estimate for the lift curve slope in order to accelerate convergence. If the user
@@ -369,8 +369,6 @@ class PYXLIGHT(BaseSolver, xfoilAnalysis):
             second run. The value should be in 1/deg., by default None
         maxIter : int, optional
             Maximum number of iterations, by default 20
-        nReset : int, optional
-            _description_, by default 25
         useNewton : bool, optional
             If True, Newton's method will be used where the dCL/dAlpha is computed using complex-step, otherwise the
             secant method is used, by default False
