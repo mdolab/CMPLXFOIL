@@ -26,7 +26,7 @@ project = "pyXLIGHT"
 extensions.extend([])
 
 # mock import for autodoc
-autodoc_mock_imports = ["numpy", "mpi4py", "petsc4py", "baseclasses", "prefoil", "pygeo"]
+autodoc_mock_imports = ["numpy", "mpi4py", "petsc4py", "baseclasses", "prefoil", "pygeo", "matplotlib"]
 
 # bibtex sources
 # bibtex_bibfiles.extend(["citations.bib"])
