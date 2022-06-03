@@ -42,7 +42,7 @@ try:
     import niceplots as nice
 
     nice.setRCParams()
-    plt.rcParams["font.size"] = 18
+    plt.rcParams.update({"font.size": 18})
     colors = nice.get_niceColors()
     color = colors["Blue"]
     cpUpColor = colors["Blue"]
