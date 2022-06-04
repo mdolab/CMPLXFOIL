@@ -11,7 +11,7 @@ CMPLXFOIL is a version of Mark Drela's XFOIL code with the GUI features removed.
 Gradient computation is implemented with the complex-step method.
 
 <p align="center">
-  <img src="/doc/assets/airfoil_opt.gif" width="1000">
+  <img src="/doc/assets/airfoil_opt.gif" width="500">
 </p>
 
 Documentation
