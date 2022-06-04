@@ -4,14 +4,14 @@ CMPLXFOIL
 [![Documentation Status](https://readthedocs.com/projects/mdolab-pyxlight/badge/?version=latest&token=7a9e7987d2288b741e09686619f4cd425b1a7348ebbcca59c0d20b2ad5a003f6)](https://mdolab-pyxlight.readthedocs-hosted.com/en/latest/?badge=latest)
 
 <p align="center">
-  <img src="cmplxfoil_logo.png" width="50">
+  <img src="cmplxfoil_logo.png" width="500">
 </p>
 
 CMPLXFOIL is a version of Mark Drela's XFOIL code with the GUI features removed.
 Gradient computation is implemented with the complex-step method.
 
 <p align="center">
-  <img src="/doc/assets/airfoil_opt.gif" width="150">
+  <img src="/doc/assets/airfoil_opt.gif" width="1000">
 </p>
 
 Documentation
