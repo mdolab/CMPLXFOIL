@@ -28,6 +28,10 @@ extensions.extend([])
 # mock import for autodoc
 autodoc_mock_imports = ["numpy", "mpi4py", "petsc4py", "baseclasses", "prefoil", "pygeo", "matplotlib", "niceplots"]
 
+# logo
+html_logo = "assets/cmplxfoil_logo.svg"
+html_theme_options["logo_only"] = True
+
 # bibtex sources
 # bibtex_bibfiles.extend(["citations.bib"])
 
