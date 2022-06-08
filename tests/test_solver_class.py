@@ -1,5 +1,10 @@
 # Test script to test CMPLXFOIL
 # =============================================================================
+# Extension modules
+# =============================================================================
+from cmplxfoil import CMPLXFOIL
+
+# =============================================================================
 # Standard Python Modules
 # =============================================================================
 import os
@@ -16,11 +21,6 @@ try:
     from pygeo import DVGeometry, DVGeometryCST
 except ImportError:
     externalImportsFailed = True
-
-# =============================================================================
-# Extension modules
-# =============================================================================
-from cmplxfoil import CMPLXFOIL
 
 baseDir = os.path.dirname(os.path.abspath(__file__))  # Path to current folder
 
@@ -101,7 +101,9 @@ class TestTrip(unittest.TestCase):
             name="fc", alpha=3, mach=0.2, altitude=1e3, areaRef=1.0, chordRef=1.0, evalFuncs=evalFuncs
         )
         self.CFDSolver = CMPLXFOIL(os.path.join(baseDir, "naca0012.dat"))
-        self.CFDSolverTripped = CMPLXFOIL(os.path.join(baseDir, "naca0012.dat"), options={"xTrip": np.array([0.1, 0.1])})
+        self.CFDSolverTripped = CMPLXFOIL(
+            os.path.join(baseDir, "naca0012.dat"), options={"xTrip": np.array([0.1, 0.1])}
+        )
 
         funcs = {}
         self.CFDSolver(self.ap)
