@@ -301,9 +301,9 @@ class TestDerivativesCST(unittest.TestCase):
         # self.CST["upper"] = np.array([0.15335040881179007, 0.1373052558913066])
         # self.CST["lower"] = np.array([-0.15335040881179007, -0.05284956303352384])
 
-        self.DVGeo = DVGeometryCST(os.path.join(baseDir, self.DATfile), debug=False)
-        self.DVGeo.addDV(self.CSTName["upper"], dvType="upper", dvNum=self.nCoeff, default=self.CST["upper"])
-        self.DVGeo.addDV(self.CSTName["lower"], dvType="lower", dvNum=self.nCoeff, default=self.CST["lower"])
+        self.DVGeo = DVGeometryCST(os.path.join(baseDir, self.DATfile), numCST=self.nCoeff, debug=False)
+        self.DVGeo.addDV(self.CSTName["upper"], dvType="upper", default=self.CST["upper"])
+        self.DVGeo.addDV(self.CSTName["lower"], dvType="lower", default=self.CST["lower"])
         self.CFDSolver.setDVGeo(self.DVGeo)
 
     def test_alpha_sens(self):

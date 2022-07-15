@@ -84,11 +84,11 @@ if mycl != 0.0:
 #         Geometric Design Variable Set-up
 # ======================================================================
 # rst geom (beg)
-DVGeo = DVGeometryCST(os.path.join(curDir, "naca0012.dat"))
-
 nCoeff = 4  # number of CST coefficients on each surface
-DVGeo.addDV("upper_shape", dvType="upper", dvNum=nCoeff, lower=-0.1, upper=0.5)
-DVGeo.addDV("lower_shape", dvType="lower", dvNum=nCoeff, lower=-0.5, upper=0.1)
+DVGeo = DVGeometryCST(os.path.join(curDir, "naca0012.dat"), numCST=nCoeff)
+
+DVGeo.addDV("upper_shape", dvType="upper", lowerBound=-0.1, upperBound=0.5)
+DVGeo.addDV("lower_shape", dvType="lower", lowerBound=-0.5, upperBound=0.1)
 
 # Add DVGeo object to CFD solver
 CFDSolver.setDVGeo(DVGeo)
