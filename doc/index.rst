@@ -9,8 +9,9 @@ This package also includes some postprocessing tools.
    :maxdepth: 2
 
    install
-   API
    user-guide
+   options
+   API
    citation
 
 .. image:: assets/airfoil_opt.gif

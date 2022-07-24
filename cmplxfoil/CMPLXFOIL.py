@@ -35,23 +35,6 @@ from baseclasses import BaseSolver
 from prefoil.utils import readCoordFile
 from prefoil.utils.io import _writeDat
 from pygeo.pyGeo import pyGeo
-import matplotlib.pyplot as plt
-from matplotlib.lines import Line2D
-
-try:
-    import niceplots as nice
-
-    nice.setRCParams()
-    plt.rcParams.update({"font.size": 18})
-    colors = nice.get_niceColors()
-    color = colors["Blue"]
-    cpUpColor = colors["Blue"]
-    cpLowColor = colors["Red"]
-except ImportError:
-    print("Install niceplots for nice looking airfoil figures")
-    color = "b"
-    cpUpColor = "b"
-    cpLowColor = "r"
 
 # =============================================================================
 # Extension modules
@@ -68,16 +51,9 @@ class CMPLXFOIL(BaseSolver):
     fileName : str
         Filename of DAT file to read in
     options : dict of option-value pairs, optional
-        * **writeSolution**: call ``writeSolution`` when the solver is called with an AeroProblem, by default False
-        * **writeCoordinates**: write airfoil coordinates to dat file when ``writeSolution`` is called, by default True
-        * **writeSliceFile**: save chordwise data in a pickle file when ``writeSolution`` is called, by default True
-        * **plotAirfoil**: show airfoil plot with cp and cf data when ``writeSolution`` is called, by default False
-        * **outputDirectory**: directory to save the output files, by default the current directory
-        * **maxIters**: maximum iterations for XFOIL solver, by default 100
-        * **xTrip**: boundary layer trip location specified as a two-element numpy array where the first element is the
-          chordwise location at which to trip the upper surface and the second is the chordwise location at
-          which to trip the lower surface, by default will not trip the boundary layer and instead use XFOIL's
-          transition model
+        Options for the solver. Available options can be found
+        in the Options section of the documentation or the
+        options.yaml file in the docs directory.
     debug : bool, optional
         Set this flag to true when debugging with a symbolic
         debugger. The MExt module deletes the copied .so file when not
@@ -137,7 +113,7 @@ class CMPLXFOIL(BaseSolver):
         # Possible AeroProblem design variables (only alpha for CMPLXFOIL)
         self.possibleAeroDVs = ["alpha"]
 
-        # Figure and axes used by self.plotAirfoil and self.updateAirfoilPlot
+        # Figure and axes used by self.plotAirfoil and self._updateAirfoilPlot
         self.airfoilFig = None
         self.airfoilAxs = None
         self.CPlim = None  # y limits on the CP plot
@@ -257,9 +233,9 @@ class CMPLXFOIL(BaseSolver):
         xfoil = self.xfoil
         funcs = self.funcs
         sliceData = self.sliceData
-        var_type = float
+        dtype = float
         if useComplex:
-            var_type = complex
+            dtype = complex
             xfoil = self.xfoil_cs
             funcs = self.funcsComplex
             sliceData = self.sliceDataComplex
@@ -279,9 +255,9 @@ class CMPLXFOIL(BaseSolver):
 
         # Store results in dictionary for current aero problem
         funcs[aeroProblem.name] = {
-            "cl": var_type(xfoil.cr09.cl),
-            "cd": var_type(xfoil.cr09.cd),
-            "cm": var_type(xfoil.cr09.cm),
+            "cl": dtype(xfoil.cr09.cl),
+            "cd": dtype(xfoil.cr09.cd),
+            "cm": dtype(xfoil.cr09.cm),
         }
 
         # Pull out and process the pressure and skin friction coefficient data
@@ -292,28 +268,27 @@ class CMPLXFOIL(BaseSolver):
         end_foil_idx = np.argmax(x > self.coords[0, 0]) + 1  # XFOIL includes wake panels, which we don't want
         idx_lower_start = end_foil_idx // 2  # first half of data is upper surface
 
-        # tau_upper = xfoil.cr15.tau[]
         idxUpper = np.argwhere(xfoil.cr15.tau[:, 0] != 0).flatten()
         idxLower = np.argwhere(xfoil.cr15.tau[:, 1] != 0).flatten()
         iPanUpper = xfoil.ci05.ipan[idxUpper, 0] - 1  # FORTRAN uses 1-based indexing, need to adjust
         iPanLower = xfoil.ci05.ipan[idxLower, 1] - 1  # FORTRAN uses 1-based indexing, need to adjust
-        tauUpper = xfoil.cr15.tau[idxUpper, 0].copy().astype(var_type)
-        tauLower = xfoil.cr15.tau[idxLower, 1].copy().astype(var_type)
+        tauUpper = xfoil.cr15.tau[idxUpper, 0].copy().astype(dtype)
+        tauLower = xfoil.cr15.tau[idxLower, 1].copy().astype(dtype)
         uInf = xfoil.cr09.qinf
-        xCfUpper = x[iPanUpper].copy().astype(var_type)
-        yCfUpper = y[iPanUpper].copy().astype(var_type)
-        xCfLower = x[iPanLower].copy().astype(var_type)
-        yCfLower = y[iPanLower].copy().astype(var_type)
+        xCfUpper = x[iPanUpper].copy().astype(dtype)
+        yCfUpper = y[iPanUpper].copy().astype(dtype)
+        xCfLower = x[iPanLower].copy().astype(dtype)
+        yCfLower = y[iPanLower].copy().astype(dtype)
 
         sliceData[aeroProblem.name] = {
-            "cp_visc_upper": cpv[:idx_lower_start].copy().astype(var_type),
-            "cp_invisc_upper": cpi[:idx_lower_start].copy().astype(var_type),
-            "x_upper": x[:idx_lower_start].copy().astype(var_type),
-            "y_upper": y[:idx_lower_start].copy().astype(var_type),
-            "cp_visc_lower": cpv[idx_lower_start:end_foil_idx].copy().astype(var_type),
-            "cp_invisc_lower": cpi[idx_lower_start:end_foil_idx].copy().astype(var_type),
-            "x_lower": x[idx_lower_start:end_foil_idx].copy().astype(var_type),
-            "y_lower": y[idx_lower_start:end_foil_idx].copy().astype(var_type),
+            "cp_visc_upper": cpv[:idx_lower_start].copy().astype(dtype),
+            "cp_invisc_upper": cpi[:idx_lower_start].copy().astype(dtype),
+            "x_upper": x[:idx_lower_start].copy().astype(dtype),
+            "y_upper": y[:idx_lower_start].copy().astype(dtype),
+            "cp_visc_lower": cpv[idx_lower_start:end_foil_idx].copy().astype(dtype),
+            "cp_invisc_lower": cpi[idx_lower_start:end_foil_idx].copy().astype(dtype),
+            "x_lower": x[idx_lower_start:end_foil_idx].copy().astype(dtype),
+            "y_lower": y[idx_lower_start:end_foil_idx].copy().astype(dtype),
             "cf_upper": tauUpper / (0.5 * uInf**2),
             "x_cf_upper": xCfUpper,
             "y_cf_upper": yCfUpper,
@@ -719,7 +694,7 @@ class CMPLXFOIL(BaseSolver):
             Specifies how the jacobian vector products will be computed
         h : float
             Step sized used when the mode is "FD" or "CS" (must be complex
-            if mode = "CS")
+            if mode = "CS"), by default 1e-6 for FD and 1e-200j for CS
 
         Returns
         -------
@@ -742,7 +717,7 @@ class CMPLXFOIL(BaseSolver):
             if mode == "FD":
                 h = 1e-6
             elif mode == "CS":
-                h = 1e-100j
+                h = 1e-200j
 
         if mode == "FD":
             orig_funcs = deepcopy(self.funcs[self.curAP.name])
@@ -862,6 +837,24 @@ class CMPLXFOIL(BaseSolver):
         list of matplotlib axes
             List of matplotlib axes for CP and airfoil plots (in that order)
         """
+        # Import matplotlib and try importing niceplots
+        import matplotlib.pyplot as plt
+        from matplotlib.lines import Line2D
+
+        try:
+            import niceplots as nice
+
+            nice.setRCParams()
+            plt.rcParams.update({"font.size": 18})
+            colors = nice.get_niceColors()
+            color = colors["Blue"]
+            cpUpColor = colors["Blue"]
+            cpLowColor = colors["Red"]
+        except ImportError:
+            print("Install niceplots for nice looking airfoil figures")
+            color = "b"
+            cpUpColor = "b"
+            cpLowColor = "r"
 
         if self.airfoilFig is None:
             # Get data to plot
@@ -940,18 +933,20 @@ class CMPLXFOIL(BaseSolver):
             self.airfoilFig = fig
             self.airfoilAxs = axs
         else:
-            self.updateAirfoilPlot(pause=showPlot)
+            self._updateAirfoilPlot(pause=showPlot)
 
         if fileName is not None:
             self.airfoilFig.savefig(fileName)
 
         return self.airfoilFig, self.airfoilAxs
 
-    def updateAirfoilPlot(self, pause=True):
+    def _updateAirfoilPlot(self, pause=True):
         """
         Updates the airfoil plot with current airfoil shape.
         Assumes that the current figure is the one with the
         airfoil on it and it was the most recently plotted line.
+        This function should not be called directly by the user
+        unless you know what you're doing.
 
         Parameters
         ----------
@@ -1040,14 +1035,14 @@ class CMPLXFOIL(BaseSolver):
         NB = len(x)
 
         if setComplex:
-            varType = complex
+            dtype = complex
             xfoil = self.xfoil_cs
         else:
-            varType = float
+            dtype = float
             xfoil = self.xfoil
 
-        x_input = np.zeros(N, dtype=varType)
-        y_input = np.zeros(N, dtype=varType)
+        x_input = np.zeros(N, dtype=dtype)
+        y_input = np.zeros(N, dtype=dtype)
         x_input[:NB] = np.array(x).copy()
         y_input[:NB] = np.array(y).copy()
 
@@ -1068,6 +1063,6 @@ class CMPLXFOIL(BaseSolver):
             "numberSolutions": [bool, True],  # whether to add call counter to output file names
             "xTrip": [
                 np.ndarray,
-                np.NaN * np.ones(2),
+                np.full(2, np.NaN),
             ],  # boundary layer trip x coordinate of upper and lower surface, respectively (two-element array)
         }

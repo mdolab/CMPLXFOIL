@@ -1,0 +1,32 @@
+writeSolution:
+  desc: >
+    If True, it will call ``writeSolution`` when the solver is called with an AeroProblem.
+    By default False).
+writeCoordinates:
+  desc: >
+    If True, it will write airfoil coordinates to dat file when ``writeSolution`` is called.
+    By default True.
+writeSliceFile:
+  desc: >
+    If True, it will save chordwise data in a pickle file when ``writeSolution`` is called.
+    By default True.
+plotAirfoil:
+  desc: >
+    If True, it will show airfoil plot with cp and cf data when ``writeSolution`` is called.
+    By default False.
+outputDirectory:
+  desc: >
+    The directory to save the output files.
+    By default the current directory.
+maxIters:
+  desc: >
+    The maximum iterations for XFOIL solver.
+    By default 100.
+numberSolutions:
+  desc: >
+    If True, will add call counter to output file names.
+    By default True.
+xTrip:
+  desc: >
+    The boundary layer trip location specified as a two-element numpy array where the first element is the chordwise location at which to trip the upper surface and the second is the chordwise location at which to trip the lower surface.
+    By default will not trip the boundary layer and instead use XFOIL's transition model.

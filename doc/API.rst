@@ -2,10 +2,10 @@
 .. _CMPLXFOIL API:
 
 CMPLXFOIL API
-============
+=============
 
 CMPLXFOIL
--------------
+---------
 .. currentmodule:: cmplxfoil
 
 .. autoclass:: CMPLXFOIL
