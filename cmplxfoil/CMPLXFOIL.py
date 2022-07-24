@@ -954,6 +954,24 @@ class CMPLXFOIL(BaseSolver):
             If true, pauses after updating plot for 0.5 sec. This is necessary
             when updating a live plot, but breaks the animation in postprocess.
         """
+        # Import matplotlib and try importing niceplots
+        import matplotlib.pyplot as plt
+
+        try:
+            import niceplots as nice
+
+            nice.setRCParams()
+            plt.rcParams.update({"font.size": 18})
+            colors = nice.get_niceColors()
+            color = colors["Blue"]
+            cpUpColor = colors["Blue"]
+            cpLowColor = colors["Red"]
+        except ImportError:
+            print("Install niceplots for nice looking airfoil figures")
+            color = "b"
+            cpUpColor = "b"
+            cpLowColor = "r"
+
         # Get data to plot
         x = self.coords[:, 0]
         y = self.coords[:, 1]

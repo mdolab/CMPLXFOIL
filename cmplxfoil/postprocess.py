@@ -115,7 +115,7 @@ class AnimateAirfoilOpt:
                 foil.sliceData = pkl.load(f)
             foil.airfoilFig = fig
             foil.airfoilAxs = axs
-            foil.updateAirfoilPlot(pause=False)
+            foil._updateAirfoilPlot(pause=False)
 
         # Call the animator and save the result as a movie file
         anim = FuncAnimation(fig, animateFrame, frames=self.iters, interval=66, blit=False)

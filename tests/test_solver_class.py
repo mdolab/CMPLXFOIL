@@ -426,12 +426,12 @@ class TestPlotting(unittest.TestCase):
         # Run another case and update the plot
         self.ap.alpha = 4.0
         self.CFDSolver(self.ap)
-        _, _ = self.CFDSolver.plotAirfoil(showPlot=False)  # this will call self.CFDSolver.updateAirfoilPlot()
+        _, _ = self.CFDSolver.plotAirfoil(showPlot=False)  # this will call self.CFDSolver._updateAirfoilPlot()
 
-        # Run another case and try calling updateAirfoilPlot directly
+        # Run another case and try calling _updateAirfoilPlot directly
         self.ap.alpha = 5.0
         self.CFDSolver(self.ap)
-        self.CFDSolver.updateAirfoilPlot(pause=False)
+        self.CFDSolver._updateAirfoilPlot(pause=False)
 
 
 if __name__ == "__main__":
