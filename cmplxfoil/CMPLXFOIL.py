@@ -932,6 +932,7 @@ class CMPLXFOIL(BaseSolver):
         """
         if self.mpl is None:
             import matplotlib as mpl
+
             self.mpl = mpl
 
             try:
