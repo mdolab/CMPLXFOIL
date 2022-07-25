@@ -118,6 +118,7 @@ class CMPLXFOIL(BaseSolver):
         self.airfoilAxs = None
         self.CPlim = None  # y limits on the CP plot
         self.CFlim = None  # y limits on the CF plot
+        self.mpl = None  # stores matplotlib import if exists
 
     def setDVGeo(self, DVGeo, pointSetKwargs=None):
         """
@@ -837,24 +838,7 @@ class CMPLXFOIL(BaseSolver):
         list of matplotlib axes
             List of matplotlib axes for CP and airfoil plots (in that order)
         """
-        # Import matplotlib and try importing niceplots
-        import matplotlib.pyplot as plt
-        from matplotlib.lines import Line2D
-
-        try:
-            import niceplots as nice
-
-            nice.setRCParams()
-            plt.rcParams.update({"font.size": 18})
-            colors = nice.get_niceColors()
-            color = colors["Blue"]
-            cpUpColor = colors["Blue"]
-            cpLowColor = colors["Red"]
-        except ImportError:
-            print("Install niceplots for nice looking airfoil figures")
-            color = "b"
-            cpUpColor = "b"
-            cpLowColor = "r"
+        self._importPlotLibraries()
 
         if self.airfoilFig is None:
             # Get data to plot
@@ -881,28 +865,28 @@ class CMPLXFOIL(BaseSolver):
             self.xlimFoil = [min(x) - 0.01, max(x) + 0.01]
             self.ylimFoil = [min(y) - 0.01, max(y) + 0.01]
 
-            fig, axs = plt.subplots(nrows=3, ncols=1, sharex=True, figsize=[10, 13])
+            fig, axs = self.mpl.pyplot.subplots(nrows=3, ncols=1, sharex=True, figsize=[10, 13])
             iAxsCP = 0
             iAxsCF = 1
             iAxsFoil = 2
-            plt.ion()
+            self.mpl.pyplot.ion()
             if showPlot:
-                plt.show()
+                self.mpl.pyplot.show()
 
             # Plot the CP on the upper axis
             axs[iAxsCP].plot(xUpper, CPUpper, color="k", zorder=-1, alpha=0.15)
             axs[iAxsCP].plot(xLower, CPLower, color="k", zorder=-1, alpha=0.15)
-            axs[iAxsCP].plot(xUpper, CPUpper, color=cpUpColor)
-            axs[iAxsCP].plot(xLower, CPLower, color=cpLowColor)
-            axs[iAxsCP].plot(xUpper, CPUpperInvisc, "--", color=cpUpColor, linewidth=1.0)
-            axs[iAxsCP].plot(xLower, CPLowerInvisc, "--", color=cpLowColor, linewidth=1.0)
+            axs[iAxsCP].plot(xUpper, CPUpper, color=self.cpUpColor)
+            axs[iAxsCP].plot(xLower, CPLower, color=self.cpLowColor)
+            axs[iAxsCP].plot(xUpper, CPUpperInvisc, "--", color=self.cpUpColor, linewidth=1.0)
+            axs[iAxsCP].plot(xLower, CPLowerInvisc, "--", color=self.cpLowColor, linewidth=1.0)
             axs[iAxsCP].set_ylim(self.CPlim)
             axs[iAxsCP].set_ylabel("$c_p$", rotation="horizontal", ha="right", va="center")
 
             # Make legend for viscous vs. inviscid
             customLines = [
-                Line2D([0], [0], linestyle="-", color="k"),
-                Line2D([0], [0], linestyle="--", color="k", linewidth=1.0),
+                self.mpl.lines.Line2D([0], [0], linestyle="-", color="k"),
+                self.mpl.lines.Line2D([0], [0], linestyle="--", color="k", linewidth=1.0),
             ]
             axs[iAxsCP].legend(customLines, ["Viscous", "Inviscid"])
 
@@ -910,14 +894,14 @@ class CMPLXFOIL(BaseSolver):
             axs[iAxsCF].plot([min(x) - 1, max(x) + 1], [0.0, 0.0], zorder=-2, color="k", linewidth=0.7, alpha=0.3)
             axs[iAxsCF].plot(xCFUpper, CFUpper, color="k", zorder=-1, alpha=0.15)
             axs[iAxsCF].plot(xCFLower, CFLower, color="k", zorder=-1, alpha=0.15)
-            axs[iAxsCF].plot(xCFUpper, CFUpper, color=cpUpColor)
-            axs[iAxsCF].plot(xCFLower, CFLower, color=cpLowColor)
+            axs[iAxsCF].plot(xCFUpper, CFUpper, color=self.cpUpColor)
+            axs[iAxsCF].plot(xCFLower, CFLower, color=self.cpLowColor)
             axs[iAxsCF].set_ylim(self.CFlim)
             axs[iAxsCF].set_ylabel("$c_f$", rotation="horizontal", ha="right", va="center")
 
             # Plot the airfoil on the lower axis
             axs[iAxsFoil].plot(x, y, color="k", zorder=-1, alpha=0.15)
-            axs[iAxsFoil].plot(x, y, color=color)
+            axs[iAxsFoil].plot(x, y, color=self.color)
             axs[iAxsFoil].set_xlim(self.xlimFoil)
             axs[iAxsFoil].set_ylim(self.ylimFoil)
             axs[iAxsFoil].set_xlabel("x/c")
@@ -929,7 +913,7 @@ class CMPLXFOIL(BaseSolver):
             axs[iAxsFoil].xaxis.set_ticks_position("bottom")
 
             if fileName is None and showPlot:
-                plt.pause(0.5)
+                self.mpl.pyplot.pause(0.5)
             self.airfoilFig = fig
             self.airfoilAxs = axs
         else:
@@ -939,6 +923,31 @@ class CMPLXFOIL(BaseSolver):
             self.airfoilFig.savefig(fileName)
 
         return self.airfoilFig, self.airfoilAxs
+
+    def _importPlotLibraries(self):
+        """
+        Imports matplotlib to the self.mpl variable and
+        tries to import niceplots if it has not already
+        been imported. Otherwise does nothing.
+        """
+        if self.mpl is None:
+            import matplotlib as mpl
+            self.mpl = mpl
+
+            try:
+                import niceplots as nice
+
+                nice.setRCParams()
+                self.mpl.pyplot.rcParams.update({"font.size": 18})
+                colors = nice.get_niceColors()
+                self.color = colors["Blue"]
+                self.cpUpColor = colors["Blue"]
+                self.cpLowColor = colors["Red"]
+            except ImportError:
+                print("Install niceplots for nice looking airfoil figures")
+                self.color = "b"
+                self.cpUpColor = "b"
+                self.cpLowColor = "r"
 
     def _updateAirfoilPlot(self, pause=True):
         """
@@ -954,23 +963,7 @@ class CMPLXFOIL(BaseSolver):
             If true, pauses after updating plot for 0.5 sec. This is necessary
             when updating a live plot, but breaks the animation in postprocess.
         """
-        # Import matplotlib and try importing niceplots
-        import matplotlib.pyplot as plt
-
-        try:
-            import niceplots as nice
-
-            nice.setRCParams()
-            plt.rcParams.update({"font.size": 18})
-            colors = nice.get_niceColors()
-            color = colors["Blue"]
-            cpUpColor = colors["Blue"]
-            cpLowColor = colors["Red"]
-        except ImportError:
-            print("Install niceplots for nice looking airfoil figures")
-            color = "b"
-            cpUpColor = "b"
-            cpLowColor = "r"
+        self._importPlotLibraries()
 
         # Get data to plot
         x = self.coords[:, 0]
@@ -1012,26 +1005,26 @@ class CMPLXFOIL(BaseSolver):
         self.airfoilAxs[iAxsCP].lines[-1].remove()
         self.airfoilAxs[iAxsCP].lines[-1].remove()
         self.airfoilAxs[iAxsCP].lines[-1].remove()
-        self.airfoilAxs[iAxsCP].plot(xUpper, CPUpper, color=cpUpColor)
-        self.airfoilAxs[iAxsCP].plot(xLower, CPLower, color=cpLowColor)
-        self.airfoilAxs[iAxsCP].plot(xUpper, CPUpperInvisc, "--", color=cpUpColor, linewidth=1.0)
-        self.airfoilAxs[iAxsCP].plot(xLower, CPLowerInvisc, "--", color=cpLowColor, linewidth=1.0)
+        self.airfoilAxs[iAxsCP].plot(xUpper, CPUpper, color=self.cpUpColor)
+        self.airfoilAxs[iAxsCP].plot(xLower, CPLower, color=self.cpLowColor)
+        self.airfoilAxs[iAxsCP].plot(xUpper, CPUpperInvisc, "--", color=self.cpUpColor, linewidth=1.0)
+        self.airfoilAxs[iAxsCP].plot(xLower, CPLowerInvisc, "--", color=self.cpLowColor, linewidth=1.0)
         self.airfoilAxs[iAxsCP].set_ylim(CPlim)
 
         # CF plot
         self.airfoilAxs[iAxsCF].lines[-1].remove()
         self.airfoilAxs[iAxsCF].lines[-1].remove()
-        self.airfoilAxs[iAxsCF].plot(xCFUpper, CFUpper, color=cpUpColor)
-        self.airfoilAxs[iAxsCF].plot(xCFLower, CFLower, color=cpLowColor)
+        self.airfoilAxs[iAxsCF].plot(xCFUpper, CFUpper, color=self.cpUpColor)
+        self.airfoilAxs[iAxsCF].plot(xCFLower, CFLower, color=self.cpLowColor)
         self.airfoilAxs[iAxsCF].set_ylim(CFlim)
 
         self.airfoilAxs[iAxsFoil].lines[-1].remove()
-        self.airfoilAxs[iAxsFoil].plot(x, y, color=color)
+        self.airfoilAxs[iAxsFoil].plot(x, y, color=self.color)
         self.airfoilAxs[iAxsFoil].set_xlim(xlimFoil)
         self.airfoilAxs[iAxsFoil].set_ylim(ylimFoil)
 
         if pause:
-            plt.pause(1e-6)
+            self.mpl.pyplot.pause(1e-6)
 
     def _setCoordinates(self, x, y, setComplex=False):
         """
