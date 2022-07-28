@@ -26,7 +26,12 @@ setup(
         "cmplxfoil",
     ],
     package_data={"cmplxfoil": ["*.so"]},
-    install_requires=["numpy", "mdolab-baseclasses", "prefoil", "pygeo", "matplotlib"],
-    extras_require={"testing": ["testflo"], "docs": ["sphinx-mdolab-theme"], "plotting": ["niceplots"]},
+    install_requires=["numpy", "mdolab-baseclasses", "prefoil"],
+    extras_require={
+        "geometry": ["pygeo"],
+        "testing": ["testflo"],
+        "docs": ["sphinx-mdolab-theme"],
+        "plotting": ["matplotlib", "niceplots"],
+    },
     classifiers=["Operating System :: Linux", "Programming Language :: Python, Fortran"],
 )

@@ -32,9 +32,6 @@ from collections.abc import Iterable
 # =============================================================================
 import numpy as np
 from baseclasses import BaseSolver
-from prefoil.utils import readCoordFile
-from prefoil.utils.io import _writeDat
-from pygeo.pyGeo import pyGeo
 
 # =============================================================================
 # Extension modules
@@ -76,7 +73,7 @@ class CMPLXFOIL(BaseSolver):
         # Read in DAT file and create coordinates. DVGeo needs 3D coordinates
         # so keep the third dimension as dummy coordinates.
         self.DATFileName = fileName
-        self.coords = readCoordFile(fileName)
+        self.coords = self._readDat(fileName)
         self.coords = np.hstack((self.coords, np.zeros((self.coords.shape[0], 1))))
         self.coords0 = self.coords.copy()  # initial coordinates (never changes)
         self.setCoordinates(self.coords0)  # set the initial coordinates
@@ -469,7 +466,10 @@ class CMPLXFOIL(BaseSolver):
         fileName : str
             File name for saved dat file (".dat" will be automatically appended).
         """
-        _writeDat(fileName, self.coords[:, 0], self.coords[:, 1])
+        fileName += ".dat"
+        with open(fileName, "w") as f:
+            for i in range(self.coords.shape[0]):
+                f.write(str(round(self.coords[i, 0], 12)) + "\t\t" + str(round(self.coords[i, 1], 12)) + "\n")
 
     def writeSlice(self, fileName):
         """Write pickle file containing the sliceData dictionary. The data can be
@@ -773,6 +773,9 @@ class CMPLXFOIL(BaseSolver):
         This function returns a pyGeo surface. The intent is
         to use this for DVConstraints.
 
+        .. note::
+            This method requires the pyGeo library
+
         Parameters
         ----------
         offsetDist : float
@@ -783,6 +786,8 @@ class CMPLXFOIL(BaseSolver):
         pyGeo surface
             Extruded airfoil surface
         """
+        from pygeo.pyGeo import pyGeo
+
         airfoil_list = [self.DATFileName] * 2
         naf = len(airfoil_list)
 
@@ -1078,3 +1083,38 @@ class CMPLXFOIL(BaseSolver):
                 np.full(2, np.NaN),
             ],  # boundary layer trip x coordinate of upper and lower surface, respectively (two-element array)
         }
+
+    @staticmethod
+    def _readDat(filename, headerlines=0):
+        """
+        Reads a '.dat' style airfoil coordinate file,
+        with each coordinate on a new line and each
+        line containing an xy pair separate by whitespace.
+
+        Parameters
+        ----------
+        filename : str
+            dat file from which to read data
+        headerlines : int
+            the number of lines to skip at the beginning of the file to reach the coordinates
+
+        Returns
+        -------
+        X : Ndarray [N,2]
+            The coordinates read from the file
+        """
+        with open(filename, "r") as f:
+            for _i in range(headerlines):
+                f.readline()
+            r = []
+            while True:
+                line = f.readline()
+                if not line:
+                    break  # end of file
+                if line.isspace():
+                    break  # blank line
+                r.append([float(s) for s in line.split()])
+
+                X = np.array(r)
+
+        return X

@@ -18,16 +18,13 @@ Package             Version Notes
 Python              3.X.X
 NumPy               ---     ``conda install numpy`` or ``pip install numpy``
 `baseclasses`_      ---     ``pip install mdolab-baseclasses``
-`preFoil`_          ---
-`pyGeo`_            ---
-matplotlib          ---     ``pip install matplotlib``
-`niceplots`_        ---     optional
+`pyGeo`_            ---     optional; required for ``getTriangulatedMeshSurface`` method
+matplotlib          ---     optional; required for ``plotAirfoil`` method (``pip install matplotlib``)
+niceplots           ---     optional; required for ``plotAirfoil`` method (``pip install niceplots``)
 =================== ======= =======
 
 .. _baseclasses: https://github.com/mdolab/baseclasses
-.. _preFoil: https://github.com/mdolab/prefoil
 .. _pyGeo: https://github.com/mdolab/pygeo
-.. _niceplots: https://github.com/mdolab/niceplots
 
 Build and Installation
 ----------------------
