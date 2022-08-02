@@ -38,6 +38,7 @@ from baseclasses import BaseSolver
 plt = None
 try:
     import matplotlib as mpl
+
     plt = mpl.pyplot
     mpl_lines = mpl.lines
 except ImportError:
