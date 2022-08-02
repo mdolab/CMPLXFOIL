@@ -2,15 +2,15 @@
    :width: 500
    :align: center
 
-.. raw:: html
+.. .. raw:: html
 
-   <div style="visibility: hidden;">
+..    <div style="visibility: hidden;">
 
 CMPLXFOIL
 =========
-.. raw:: html
+.. .. raw:: html
 
-   </div>
+..    </div>
 
 CMPLXFOIL is a version of Mark Drela's XFOIL code with the GUI features removed.
 Gradient computation is implemented with the complex-step method.

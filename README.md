@@ -14,11 +14,11 @@ Gradient computation is implemented with the complex-step method.
 
 Documentation
 -------------
-Please see the [documentation](https://mdolab-pyxlight.readthedocs-hosted.com/en/latest/) for installation and usage details.
+Please see the [documentation](https://mdolab-cmplxfoil.readthedocs-hosted.com/en/latest/) for installation and usage details.
 
 To locally build the documentation, enter the ``doc`` folder and run ``make html`` in the command line prompt.
 You can then view the built documentation in the ``doc/_build/html/`` by opening ``index.html``.
 
 Citing CMPLXFOIL
 ---------------
-If you use CMPLXFOIL, please see [this page](https://mdolab-pyxlight.readthedocs-hosted.com/en/latest/citation.html) for citation information.
+If you use CMPLXFOIL, please see [this page](https://mdolab-cmplxfoil.readthedocs-hosted.com/en/latest/citation.html) for citation information.
