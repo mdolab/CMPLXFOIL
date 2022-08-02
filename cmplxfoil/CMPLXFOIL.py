@@ -29,10 +29,11 @@ from collections.abc import Iterable
 import warnings
 
 # =============================================================================
-# External Python modules
+# Other Python modules
 # =============================================================================
 import numpy as np
 from baseclasses import BaseSolver
+from . import MExt
 
 # Handle plotting imports
 plt = None
@@ -60,11 +61,6 @@ if plt:
         color = "b"
         cpUpColor = "b"
         cpLowColor = "r"
-
-# =============================================================================
-# Extension modules
-# =============================================================================
-from . import MExt
 
 
 class CMPLXFOIL(BaseSolver):
