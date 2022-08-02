@@ -37,7 +37,6 @@ from . import MExt
 
 # Handle plotting imports
 plt = None
-nice = None
 try:
     import matplotlib as mpl
 
@@ -51,10 +50,9 @@ if plt:
     try:
         import niceplots
 
-        nice = niceplots
-        nice.setRCParams()
+        niceplots.setRCParams()
         plt.rcParams.update({"font.size": 18})
-        colors = nice.get_niceColors()
+        colors = niceplots.get_niceColors()
         color = colors["Blue"]
         cpUpColor = colors["Blue"]
         cpLowColor = colors["Red"]
@@ -865,9 +863,6 @@ class CMPLXFOIL(BaseSolver):
         if plt is None:
             raise ImportError("matplotlib is required to use the plotting tools")
 
-        if nice is None:
-            print("Install niceplots for nice looking airfoil figures")
-
         if self.airfoilFig is None:
             # Get data to plot
             x = self.coords[:, 0]
@@ -968,9 +963,6 @@ class CMPLXFOIL(BaseSolver):
         """
         if plt is None:
             raise ImportError("matplotlib is required to use the plotting tools")
-
-        if nice is None:
-            print("Install niceplots for nice looking airfoil figures")
 
         # Get data to plot
         x = self.coords[:, 0]
