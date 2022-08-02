@@ -1,5 +1,17 @@
+.. image:: assets/cmplxfoil_logo.svg
+   :width: 500
+   :align: center
+
+.. raw:: html
+
+   <div style="visibility: hidden;">
+
 CMPLXFOIL
-====================================
+=========
+.. raw:: html
+
+   </div>
+
 CMPLXFOIL is a version of Mark Drela's XFOIL code with the GUI features removed.
 Gradient computation is implemented with the complex-step method.
 The Python interface is designed to be used with `MACH-Aero <https://mdolab-mach-aero.readthedocs-hosted.com/en/latest/index.html>`_ tools for optimization.
