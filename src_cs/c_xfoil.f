@@ -302,6 +302,8 @@ C---- circle plane array size (largest 2  + 1 that will fit array size)
       IF(NC1 .GT. 257) NC1 = 2**(NN-1) + 1
 C
 C---- default paneling parameters
+      ! 284 is the maximum allowable number of panels in this code and
+      ! gives the smoothest derivatives possible (though still not smooth)
       NPAN = 284
       CVPAR = 1.0
       CTERAT = 0.15

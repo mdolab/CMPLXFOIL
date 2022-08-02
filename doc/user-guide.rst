@@ -24,7 +24,7 @@ The optimization problem solved in this script is
 
 Getting set up
 ==============
-In addition to the required CMPLXFOIL packages, this script requires `multipoint <https://github.com/mdolab/multipoint>`_, `pyoptsparse <https://github.com/mdolab/pyoptsparse>`_, and mpi4py.
+In addition to the required CMPLXFOIL packages, this script requires `pygeo <https://github.com/mdolab/pygeo>`_, `multipoint <https://github.com/mdolab/multipoint>`_, `pyoptsparse <https://github.com/mdolab/pyoptsparse>`_, and mpi4py.
 The script can be found in CMPLXFOIL/examples/single_point.py.
 
 Dissecting the optimization script
@@ -39,7 +39,6 @@ Import libraries
 Specifying parameters for the optimization
 ------------------------------------------
 These parameters define the flight condition and initial angle of attack for the optimization.
-
 
 .. literalinclude:: ../examples/single_point.py
     :start-after: # rst params (beg)
@@ -82,7 +81,6 @@ We add angle of attack as a design variable (if the target lift coefficient is n
 .. literalinclude:: ../examples/single_point.py
     :start-after: # rst ap (beg)
     :end-before: # rst ap (end)
-
 
 Geometric parametrization
 -------------------------
