@@ -26,6 +26,7 @@ import time
 from copy import copy, deepcopy
 import pickle as pkl
 from collections.abc import Iterable
+import warnings
 
 # =============================================================================
 # External Python modules
@@ -337,8 +338,8 @@ class CMPLXFOIL(BaseSolver):
             Desired tolerance for CL, by default 1e-3
         CLalphaGuess : float, optional
             The user can provide an estimate for the lift curve slope in order to accelerate convergence. If the user
-            supply a value to this option, it will not use the delta value anymore to select the angle of attack of the
-            second run. The value should be in 1/deg., by default None
+            supplies a value to this option, it will not use the delta value anymore to select the angle of attack of
+            the second run. The value should be in 1/deg., by default None
         maxIter : int, optional
             Maximum number of iterations, by default 20
         useNewton : bool, optional
@@ -383,25 +384,27 @@ class CMPLXFOIL(BaseSolver):
             res = cl - CLStar
 
             # Check for convergence and divergence
-            hasConverged = abs(res) < tol
+            hasConverged = abs(res) < tol and not failCheck["fail"]
             if hasConverged:
                 print("Converged!")
                 break
             elif abs(res > maxRes):
+                warnings.warn("Solver Diverged!")
                 break
 
-            # If not converged, compute the next alpha
-            if useNewton:
-                aeroProblem.alpha += 1e-200 * 1j
-                self.__call__(aeroProblem, useComplex=True, deriv=True)
-                dCLdAlpha = np.imag(self.funcsComplex[aeroProblem.name]["cl"]) * 1e200
-                aeroProblem.alpha = np.real(aeroProblem.alpha)
-            else:
-                # If using secant, we can only compute dCLdAlpha from the second iteration onwards
-                if resPrev is not None:
-                    dCLdAlpha = (res - resPrev) / (aeroProblem.alpha - alphaPrev)
-            resPrev = res
-            alphaPrev = aeroProblem.alpha
+            # If not converged or diverged, compute the next alpha
+            if not failCheck["fail"]:
+                if useNewton:
+                    aeroProblem.alpha += 1e-200 * 1j
+                    self.__call__(aeroProblem, useComplex=True, deriv=True)
+                    dCLdAlpha = np.imag(self.funcsComplex[aeroProblem.name]["cl"]) * 1e200
+                    aeroProblem.alpha = np.real(aeroProblem.alpha)
+                else:
+                    # If using secant, we can only compute dCLdAlpha from the second iteration onwards
+                    if resPrev is not None:
+                        dCLdAlpha = (res - resPrev) / (aeroProblem.alpha - alphaPrev)
+                resPrev = res
+                alphaPrev = aeroProblem.alpha
 
             # Update the alpha either using dCLdAlpha or delta, or backtracking if something went wrong
             if dCLdAlpha == 0.0 or failCheck["fail"]:
@@ -417,7 +420,7 @@ class CMPLXFOIL(BaseSolver):
     def writeSolution(self, outputDir=None, baseName=None, number=None):
         """This is a generic shell function that potentially writes the various output files. The intent is that the
         user or calling program can call this file and CMPLXFOIL write all the files that the user has defined. It is
-        recommended that this function is used along with the associated logical flags in  the options to determine the
+        recommended that this function is used along with the associated logical flags in the options to determine the
         desired writing procedure.
 
         Parameters
@@ -435,14 +438,10 @@ class CMPLXFOIL(BaseSolver):
         if baseName is None:
             baseName = self.curAP.name
 
-        # If we are numbering solution, it saving the sequence of
-        # calls, add the call number
+        # Add a number to the filename, either from the user or from the current callCounter
         if number is not None:
-            # We need number based on the provided number:
             baseName = baseName + "_%3.3d" % number
         else:
-            # if number is none, i.e. standalone, but we need to
-            # number solutions, use internal counter
             if self.getOption("numberSolutions"):
                 baseName = baseName + "_%3.3d" % self.curAP.callCounter
 
