@@ -21,6 +21,7 @@ History
 # =============================================================================
 # Standard Python modules
 # =============================================================================
+from multiprocessing.sharedctypes import Value
 import os
 import time
 from copy import copy, deepcopy
@@ -228,15 +229,16 @@ class CMPLXFOIL(BaseSolver):
             Set to True if the call is associated with the derivative calculation. callCounter will be incremented and
             writeSolution called only if this is False
         """
-        xfoil = self.xfoil
-        funcs = self.funcs
-        sliceData = self.sliceData
-        dtype = float
         if useComplex:
             dtype = complex
             xfoil = self.xfoil_cs
             funcs = self.funcsComplex
             sliceData = self.sliceDataComplex
+        else:
+            dtype = float
+            xfoil = self.xfoil
+            funcs = self.funcs
+            sliceData = self.sliceData
 
         self.setAeroProblem(aeroProblem)
 
@@ -337,7 +339,7 @@ class CMPLXFOIL(BaseSolver):
             Desired tolerance for CL, by default 1e-3
         CLalphaGuess : float, optional
             The user can provide an estimate for the lift curve slope in order to accelerate convergence. If the user
-            supply a value to this option, it will not use the delta value anymore to select the angle of attack of the
+            supplies a value to this option, it will not use the delta value anymore to select the angle of attack of the
             second run. The value should be in 1/deg., by default None
         maxIter : int, optional
             Maximum number of iterations, by default 20
@@ -388,6 +390,7 @@ class CMPLXFOIL(BaseSolver):
                 print("Converged!")
                 break
             elif abs(res > maxRes):
+                print(f"solveCL diverged (CL = {cl:.2f}), exiting solver loop")
                 break
 
             # If not converged, compute the next alpha
@@ -417,7 +420,7 @@ class CMPLXFOIL(BaseSolver):
     def writeSolution(self, outputDir=None, baseName=None, number=None):
         """This is a generic shell function that potentially writes the various output files. The intent is that the
         user or calling program can call this file and CMPLXFOIL write all the files that the user has defined. It is
-        recommended that this function is used along with the associated logical flags in  the options to determine the
+        recommended that this function is used along with the associated logical flags in the options to determine the
         desired writing procedure.
 
         Parameters
@@ -435,8 +438,8 @@ class CMPLXFOIL(BaseSolver):
         if baseName is None:
             baseName = self.curAP.name
 
-        # If we are numbering solution, it saving the sequence of
-        # calls, add the call number
+        # If a number is provided as a parameter append it
+        # to the baseName, otherwise use the internal call counter
         if number is not None:
             # We need number based on the provided number:
             baseName = baseName + "_%3.3d" % number
@@ -526,7 +529,7 @@ class CMPLXFOIL(BaseSolver):
         Parameters
         ----------
         aeroProblem : pyAero_problem class
-            The aerodynamic problem to to get the solution for
+            The aerodynamic problem to get the solution for
         funcs : dict
             Dictionary into which the functions are saved.
         """
@@ -542,21 +545,10 @@ class CMPLXFOIL(BaseSolver):
 
     def checkAdjointFailure(self, aeroProblem, funcsSens):
         """
-        Pass through to checkSolutionFailure to maintain the same interface as ADFLOW.
+        Pass through to checkSolutionFailure to maintain the same interface as ADflow.
 
-        Take in an aeroProblem and check for adjoint failure, Then append the
-        fail flag in funcsSens. Information regarding whether or not the
-        last analysis with the aeroProblem was sucessful is
-        included. This information is included as "funcsSens['fail']". If
-        the 'fail' entry already exits in the dictionary the following
-        operation is performed:
-
-        funcsSens['fail'] = funcsSens['fail'] or <did this problem fail>
-
-        In other words, if any one problem fails, the funcsSens['fail']
-        entry will be True. This information can then be used
-        directly in multiPointSparse. For direct interface with pyOptSparse
-        the fail flag needs to be returned separately from the funcs.
+        This checks if the primal solve fails and can be called when the sensitivity
+        is being evaluated (either through FD or CS).
 
         Parameters
         ----------
@@ -680,10 +672,11 @@ class CMPLXFOIL(BaseSolver):
                     del funcsSens[func][dvName]
 
     def computeJacobianVectorProductFwd(self, xDvDot=None, xSDot=None, mode="CS", h=None):
-        """This the main python gateway for producing forward mode jacobian
-        vector products. It is not generally called by the user by
-        rather internally or from another solver. A DVGeo object and a
-        mesh object must both be set for this routine.
+        """This the main Python gateway for producing forward mode jacobian
+        vector products. They are computed using either the complex step or finite
+        difference method. This function is not generally called by the user but
+        rather internally or from another solver. A DVGeo object must be set
+        for this routine.
 
         Parameters
         ----------
@@ -707,6 +700,9 @@ class CMPLXFOIL(BaseSolver):
 
         if mode not in ["FD", "CS"]:
             raise ValueError(f'Jacobian vector product mode "{mode}" invalid. Must be either "FD" or "CS"')
+
+        if self.DVGeo is None:
+            raise ValueError("DVGeo object must be added with setDVGeo before calling computeJacobianVectorProductFwd")
 
         geoDVs = list(self.DVGeo.getValues().keys())
         possibleDVs = self.possibleAeroDVs + geoDVs
@@ -786,7 +782,10 @@ class CMPLXFOIL(BaseSolver):
         pyGeo surface
             Extruded airfoil surface
         """
-        from pygeo.pyGeo import pyGeo
+        try:
+            from pygeo.pyGeo import pyGeo
+        except ImportError:
+            raise ImportError("pygeo is required to use getTriangulatedMeshSurface")
 
         airfoil_list = [self.DATFileName] * 2
         naf = len(airfoil_list)
