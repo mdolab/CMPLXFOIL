@@ -21,7 +21,6 @@ History
 # =============================================================================
 # Standard Python modules
 # =============================================================================
-from multiprocessing.sharedctypes import Value
 import os
 import time
 from copy import copy, deepcopy
