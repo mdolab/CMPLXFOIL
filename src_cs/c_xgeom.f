@@ -1,8 +1,8 @@
 C***********************************************************************
 C    Module:  xgeom.f
-C 
-C    Copyright (C) 2000 Mark Drela 
-C 
+C
+C    Copyright (C) 2000 Mark Drela
+C
 C    This program is free software; you can redistribute it and/or modify
 C    it under the terms of the GNU General Public License as published by
 C    the Free Software Foundation; either version 2 of the License, or
@@ -19,14 +19,14 @@ C    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 C***********************************************************************
 
       SUBROUTINE LEFIND(SLE,X,XP,Y,YP,S,N)
-	use complexify 
-	implicit complex(a-h, o-z) 
+	use complexify
+	implicit complex(a-h, o-z)
       DIMENSION X(*),XP(*),Y(*),YP(*),S(*)
 C------------------------------------------------------
 C     Locates leading edge spline-parameter value SLE
 C
 C     The defining condition is
-C         
+C
 C      (X-XTE,Y-YTE) . (X',Y') = 0     at  S = SLE
 C
 C     i.e. the surface tangent is normal to the chord
@@ -75,7 +75,7 @@ C------ drive dot product between chord line and LE tangent to zero
         RESS = DXDS  *DXDS + DYDS  *DYDS
      &       + XCHORD*DXDD + YCHORD*DYDD
 C
-C------ Newton delta for SLE 
+C------ Newton delta for SLE
         DSLE = -RES/RESS
 C
         DSLE = MAX( DSLE , -0.02*ABS(XCHORD+YCHORD) )
@@ -91,14 +91,14 @@ C
 
 
       SUBROUTINE XLFIND(SLE,X,XP,Y,YP,S,N)
-	use complexify 
-	implicit complex(a-h, o-z) 
+	use complexify
+	implicit complex(a-h, o-z)
       DIMENSION X(*),XP(*),Y(*),YP(*),S(*)
 C------------------------------------------------------
 C     Locates leftmost (minimum x) point location SLE
 C
 C     The defining condition is
-C         
+C
 C      X' = 0     at  S = SLE
 C
 C     i.e. the surface tangent is vertical
@@ -132,7 +132,7 @@ C------ drive DXDS to zero
         RES  = DXDS
         RESS = DXDD
 C
-C------ Newton delta for SLE 
+C------ Newton delta for SLE
         DSLE = -RES/RESS
 C
         DSLE = MAX( DSLE , -0.01*ABS(DSLEN) )
@@ -148,8 +148,8 @@ C
 
 
       SUBROUTINE NSFIND(SLE,X,XP,Y,YP,S,N)
-	use complexify 
-	implicit complex(a-h, o-z) 
+	use complexify
+	implicit complex(a-h, o-z)
       complex X(*),Y(*),S(*),XP(*),YP(*)
 C----------------------------------------------------------
 C     Finds "nose" of airfoil where curvature is a maximum
@@ -230,12 +230,12 @@ C
 
 
       SUBROUTINE SOPPS(SOPP, SI, X,XP,Y,YP,S,N, SLE)
-	use complexify 
-	implicit complex(a-h, o-z) 
+	use complexify
+	implicit complex(a-h, o-z)
       DIMENSION X(*),XP(*),Y(*),YP(*),S(*)
 C--------------------------------------------------
-C     Calculates arc length SOPP of point 
-C     which is opposite of point SI, on the 
+C     Calculates arc length SOPP of point
+C     which is opposite of point SI, on the
 C     other side of the airfoil baseline
 C--------------------------------------------------
 C
@@ -270,7 +270,7 @@ C
       ENDIF
       SFRAC = (SI-SLE)/(S(IN)-SLE)
       SOPP = SLE + SFRAC*(S(INOPP)-SLE)
-C     
+C
 
       IF(ABS(SFRAC) .LE. 1.0E-5) THEN
        SOPP = SLE
@@ -313,10 +313,10 @@ C
       END ! SOPPS
 
 
- 
+
       SUBROUTINE NORM(X,XP,Y,YP,S,N)
-	use complexify 
-	implicit complex(a-h, o-z) 
+	use complexify
+	implicit complex(a-h, o-z)
       DIMENSION X(*),XP(*),Y(*),YP(*),S(*)
 C-----------------------------------------------
 C     Scales coordinates to get unit chord
@@ -353,8 +353,8 @@ C***************************************************************************
      &             EI11A,EI22A,APX1A,APX2A,
      &             EI11T,EI22T,APX1T,APX2T,
      &             THICK,CAMBR)
-	use complexify 
-	implicit complex(a-h, o-z) 
+	use complexify
+	implicit complex(a-h, o-z)
       DIMENSION X(*), XP(*), Y(*), YP(*), S(*), T(*)
 C
       PARAMETER (IBX=600)
@@ -388,10 +388,10 @@ C
         T(I) = 1.0
       ENDDO
 C
-      CALL AECALC(N,X,Y,T, 1, 
+      CALL AECALC(N,X,Y,T, 1,
      &            AREA,XCENA,YCENA,EI11A,EI22A,APX1A,APX2A)
 C
-      CALL AECALC(N,X,Y,T, 2, 
+      CALL AECALC(N,X,Y,T, 2,
      &            SLEN,XCENT,YCENT,EI11T,EI22T,APX1T,APX2T)
 C
 C--- Old, approximate thickness,camber routine (on discrete points only)
@@ -415,10 +415,10 @@ C
 C
 C*********************************************************************
 
-      SUBROUTINE AECALC(N,X,Y,T, ITYPE, 
+      SUBROUTINE AECALC(N,X,Y,T, ITYPE,
      &                  AREA,XCEN,YCEN,EI11,EI22,APX1,APX2)
-	use complexify 
-	implicit complex(a-h, o-z) 
+	use complexify
+	implicit complex(a-h, o-z)
       DIMENSION X(*),Y(*),T(*)
 C---------------------------------------------------------------
 C     Calculates geometric properties of shape X,Y
@@ -550,15 +550,15 @@ C
 
 
 
-      SUBROUTINE TCCALC(X,XP,Y,YP,S,N, 
+      SUBROUTINE TCCALC(X,XP,Y,YP,S,N,
      &                  THICK,XTHICK, CAMBR,XCAMBR )
-	use complexify 
-	implicit complex(a-h, o-z) 
+	use complexify
+	implicit complex(a-h, o-z)
       DIMENSION X(*),XP(*),Y(*),YP(*),S(*)
 C---------------------------------------------------------------
 C     Calculates max thickness and camber at airfoil points
 C
-C     Note: this routine does not find the maximum camber or 
+C     Note: this routine does not find the maximum camber or
 C           thickness exactly as it only looks at discrete points
 C
 C     Input:
@@ -622,8 +622,8 @@ C---------------------------------------------------------
 C     Makes passed-in airfoil symmetric about chord line.
 C---------------------------------------------------------
 
-	use complexify 
-	implicit complex(a-h, o-z) 
+	use complexify
+	implicit complex(a-h, o-z)
       DIMENSION X(NX),XP(NX),Y(NX),YP(NX),S(NX)
       DIMENSION XNEW(NX), YNEW(NX)
 C
@@ -725,8 +725,8 @@ C---------------------------------------------------------
 C     Adjusts airfoil to scale LE radius by factor RFAC.
 C     Blending of new shape is done with decay length DOC.
 C---------------------------------------------------------
-	use complexify 
-	implicit complex(a-h, o-z) 
+	use complexify
+	implicit complex(a-h, o-z)
       DIMENSION X(*),XP(*),Y(*),YP(*),S(*)
       DIMENSION XNEW(*), YNEW(*)
 C
@@ -775,8 +775,8 @@ C
 
 
       SUBROUTINE SSS(SS,S1,S2,DEL,XBF,YBF,X,XP,Y,YP,S,N,ISIDE)
-	use complexify 
-	implicit complex(a-h, o-z) 
+	use complexify
+	implicit complex(a-h, o-z)
       DIMENSION X(*),XP(*),Y(*),YP(*),S(*)
 C----------------------------------------------------------------
 C     Returns arc length points S1,S2 at flap surface break
@@ -793,7 +793,7 @@ C     these enpoints and the flap hinge point (XBF,YBF) have
 C     an included angle of DEL.  DEL is therefore the flap
 C     deflection which will join up the points at S1,S2.
 C     SS is an approximate arc length value near S1 and S2.
-C     It is used as an initial guess for the Newton loop 
+C     It is used as an initial guess for the Newton loop
 C     for S1 and S2.
 C
 C
@@ -879,7 +879,7 @@ C------- Residual 1: set included angle via small angle approximation
          A11 =  R1_S1 *SIND + SSGN
          A12 =  R2_S2 *SIND - SSGN
 C
-C------- Residual 2: set vector sum of line segments beteen the 
+C------- Residual 2: set vector sum of line segments beteen the
 C-       endpoints and flap hinge to be perpendicular to airfoil surface.
          X1PP = D2VAL(S1,X,XP,S,N)
          Y1PP = D2VAL(S1,Y,YP,S,N)
@@ -925,8 +925,8 @@ C
 
 
       SUBROUTINE CLIS(X,XP,Y,YP,S,N)
-	use complexify 
-	implicit complex(a-h, o-z) 
+	use complexify
+	implicit complex(a-h, o-z)
       DIMENSION X(*), XP(*), Y(*), YP(*), S(*)
 C-------------------------------------------------------------------
 C     Displays curvatures at panel nodes.
@@ -970,8 +970,8 @@ CCC             120   0.2134  -0.0234  -0.0234   180.024      2025.322
 
 
       SUBROUTINE CANG(X,Y,N,IPRINT, IMAX,AMAX)
-	use complexify 
-	implicit complex(a-h, o-z) 
+	use complexify
+	implicit complex(a-h, o-z)
       DIMENSION X(*), Y(*)
 C-------------------------------------------------------------------
 C     IPRINT=2:   Displays all panel node corner angles
@@ -1031,16 +1031,16 @@ C
 C     Interpolates two source airfoil shapes into an "intermediate" shape.
 C
 C     Procedure:
-C        The interpolated x coordinate at a given normalized spline 
-C        parameter value is a weighted average of the two source 
+C        The interpolated x coordinate at a given normalized spline
+C        parameter value is a weighted average of the two source
 C        x coordinates at the same normalized spline parameter value.
-C        Ditto for the y coordinates. The normalized spline parameter 
-C        runs from 0 at the leading edge to 1 at the trailing edge on 
+C        Ditto for the y coordinates. The normalized spline parameter
+C        runs from 0 at the leading edge to 1 at the trailing edge on
 C        each surface.
 C     .....................................................................
 C
-	use complexify 
-	implicit complex(a-h, o-z) 
+	use complexify
+	implicit complex(a-h, o-z)
       complex X0(N0),Y0(N0),XP0(N0),YP0(N0),S0(N0)
       complex X1(N1),Y1(N1),XP1(N1),YP1(N1),S1(N1)
       complex X(N),Y(N)
@@ -1083,14 +1083,14 @@ C
 
 
       SUBROUTINE IJSECT(N,X,Y, PEX,
-     &  AREA, SLEN, 
+     &  AREA, SLEN,
      &  XC, XMIN, XMAX, XEXINT,
      &  YC, YMIN, YMAX, YEXINT,
      &  AIXX, AIXXT,
      &  AIYY, AIYYT,
      &  AJ  , AJT    )
-	use complexify 
-	implicit complex(a-h, o-z) 
+	use complexify
+	implicit complex(a-h, o-z)
 c      DIMENSION X(N), Y(N)
       DIMENSION X(*), Y(*)
 
@@ -1220,13 +1220,13 @@ C
       END ! IJSECT
 
 
-      SUBROUTINE AREFINE(X,Y,S,XS,YS,N, ATOL, 
+      SUBROUTINE AREFINE(X,Y,S,XS,YS,N, ATOL,
      &                   NDIM,NNEW,XNEW,YNEW,X1,X2)
 C-------------------------------------------------------------
-C     Adds points to a x,y spline contour wherever 
-C     the angle between adjacent segments at a node 
-C     exceeds a specified threshold.  The points are 
-C     added 1/3 of a segment before and after the 
+C     Adds points to a x,y spline contour wherever
+C     the angle between adjacent segments at a node
+C     exceeds a specified threshold.  The points are
+C     added 1/3 of a segment before and after the
 C     offending node.
 C
 C     The point adding is done only within X1..X2.
@@ -1236,8 +1236,8 @@ C     of Eppler and Selig airfoils so that they are
 C     suitable for clean interpolation using Xfoil's
 C     arc-length spline routines.
 C------------------------------------------------------
-	use complexify 
-	implicit complex(a-h, o-z) 
+	use complexify
+	implicit complex(a-h, o-z)
       complex X(*), Y(*), S(*), XS(*), YS(*)
       complex XNEW(NDIM), YNEW(NDIM)
       LOGICAL LREF
@@ -1318,25 +1318,25 @@ C
 
       SUBROUTINE SCHECK(X,Y,N, STOL, LCHANGE)
 C-------------------------------------------------------------
-C     Removes points from an x,y spline contour wherever 
-C     the size of a segment between nodes falls below a 
-C     a specified threshold of the adjacent segments.  
+C     Removes points from an x,y spline contour wherever
+C     the size of a segment between nodes falls below a
+C     a specified threshold of the adjacent segments.
 C     The two node points defining the short segment are
 C     replaced with a single node at their midpoint.
-C     Note that the number of nodes may be altered by 
+C     Note that the number of nodes may be altered by
 C     this routine.
 C
-C     Intended for eliminating odd "micro" panels 
+C     Intended for eliminating odd "micro" panels
 C     that occur when blending a flap to a foil.
-C     If LCHANGE is set on return the airfoil definition 
+C     If LCHANGE is set on return the airfoil definition
 C     has been changed and resplining should be done.
 C
-C     The recommended value for STOL is 0.05 (meaning 
-C     segments less than 5% of the length of either adjoining 
+C     The recommended value for STOL is 0.05 (meaning
+C     segments less than 5% of the length of either adjoining
 C     segment are removed).  4/24/01 HHY
 C------------------------------------------------------
-	use complexify 
-	implicit complex(a-h, o-z) 
+	use complexify
+	implicit complex(a-h, o-z)
       complex X(*), Y(*)
       LOGICAL LCHANGE
 C
@@ -1375,7 +1375,7 @@ C------- Remove node I+1
          DO L = I+1, N
            X(L) = X(L+1)
            Y(L) = Y(L+1)
-         END DO         
+         END DO
          N = N - 1
          LCHANGE = .TRUE.
          WRITE(*,*) 'SCHECK segment removed at ',I
@@ -1393,20 +1393,20 @@ C
 
       SUBROUTINE BENDUMP
 c      REAL X(*), Y(*)
-	use complexify 
-	implicit complex(a-h, o-z) 
+	use complexify
+	implicit complex(a-h, o-z)
       include 'c_XFOIL.INC'
 C
       PEX = 16.0
       CALL IJSECT(N,X,Y, PEX,
-     &    AREA, SLEN, 
+     &    AREA, SLEN,
      &    XC, XMIN, XMAX, XEXINT,
      &    YC, YMIN, YMAX, YEXINT,
      &    AIXX, AIXXT,
      &    AIYY, AIYYT,
      &    AJ  , AJT   )
 C
-c      WRITE(*,*) 
+c      WRITE(*,*)
 c     WRITE(*,1200) 'Area =', AREA
 c      WRITE(*,1200) 'Slen =', SLEN
 c      WRITE(*,*)
@@ -1442,9 +1442,3 @@ c      WRITE(*,1200) '    skin  J/t   =', AJT
 C
 c 1200 FORMAT(1X,A,G14.6)
       END ! BENDUMP
-
-
-
-
-
-

@@ -1,7 +1,7 @@
 C***********************************************************************
 C    Module:  xpanel.f
-C 
-C    Copyright (C) 2000 Mark Drela 
+C
+C    Copyright (C) 2000 Mark Drela
 C    This program is free software; you can redistribute it and/or modify
 C    it under the terms of the GNU General Public License as published by
 C    the Free Software Foundation; either version 2 of the License, or
@@ -19,8 +19,8 @@ C***********************************************************************
 
 
       SUBROUTINE APCALC
-	use complexify 
-	implicit complex(a-h, o-z) 
+	use complexify
+	implicit complex(a-h, o-z)
       include 'c_XFOIL.INC'
 C
 C---- set angles of airfoil panels
@@ -47,15 +47,15 @@ C---- TE panel
 C
       RETURN
       END
- 
- 
+
+
       SUBROUTINE NCALC(X,Y,S,N,XN,YN)
 C---------------------------------------
 C     Calculates normal unit vector
 C     components at airfoil panel nodes
 C---------------------------------------
-	use complexify 
-	implicit complex(a-h, o-z) 
+	use complexify
+	implicit complex(a-h, o-z)
       DIMENSION X(N), Y(N), S(N), XN(N), YN(N)
 C
       IF(N.LE.1) RETURN
@@ -86,11 +86,11 @@ C
       RETURN
       END
 
- 
+
       SUBROUTINE PSILIN(I,XI,YI,NXI,NYI,PSI,PSI_NI,GEOLIN,SIGLIN)
 C-----------------------------------------------------------------------
 C     Calculates current streamfunction Psi at panel node or wake node
-C     I due to freestream and all bound vorticity Gam on the airfoil. 
+C     I due to freestream and all bound vorticity Gam on the airfoil.
 C     Sensitivities of Psi with respect to alpha (Z_ALFA) and inverse
 C     Qspec DOFs (Z_QDOF0,Z_QDOF1) which influence Gam in inverse cases.
 C     Also calculates the sensitivity vector dPsi/dGam (DZDG).
@@ -105,8 +105,8 @@ C
 C          Airfoil:  1   < I < N
 C          Wake:     N+1 < I < N+NW
 C-----------------------------------------------------------------------
-	use complexify 
-	implicit complex(a-h, o-z) 
+	use complexify
+	implicit complex(a-h, o-z)
       include 'c_XFOIL.INC'
       complex NXO, NYO, NXP, NYP, NXI, NYI
       LOGICAL GEOLIN,SIGLIN
@@ -230,7 +230,7 @@ c           write(*,*) 'NXI',NXI
 c           write(*,*) 'SY',SY
 c           write(*,*) 'NYI',NYI
 c        endif
-           
+
         X2I = SX*NXI + SY*NYI
         YYI = SX*NYI - SY*NXI
 C
@@ -836,8 +836,8 @@ C
 C          Airfoil:  1   < I < N
 C          Wake:     N+1 < I < N+NW
 C--------------------------------------------------------------------
-	use complexify 
-	implicit complex(a-h, o-z) 
+	use complexify
+	implicit complex(a-h, o-z)
       include 'c_XFOIL.INC'
       complex NXI, NYI
 C
@@ -1023,8 +1023,8 @@ C     Calculates two surface vorticity (gamma) distributions
 C     for alpha = 0, 90  degrees.  These are superimposed
 C     in SPECAL or SPECCL for specified alpha or CL.
 C--------------------------------------------------------------
-	use complexify 
-	implicit complex(a-h, o-z) 
+	use complexify
+	implicit complex(a-h, o-z)
       include 'c_XFOIL.INC'
 C
 C---- distance of internal control point ahead of sharp TE
@@ -1091,7 +1091,7 @@ C---- set up Kutta condition (no direct source influence)
    32 CONTINUE
 C
       IF(SHARP) THEN
-C----- set zero internal velocity in TE corner 
+C----- set zero internal velocity in TE corner
 C
 C----- set TE bisector angle
        AG1 = ATAN2(-YP(1),-XP(1)    )
@@ -1163,8 +1163,8 @@ C---------------------------------------------------------------
 C     Sets inviscid tangential velocity for alpha = 0, 90
 C     on wake due to freestream and airfoil surface vorticity.
 C---------------------------------------------------------------
-	use complexify 
-	implicit complex(a-h, o-z) 
+	use complexify
+	implicit complex(a-h, o-z)
       include 'c_XFOIL.INC'
 C
 C---- first wake point (same as TE)
@@ -1187,8 +1187,8 @@ C-----------------------------------------------------
 C     Calculates source panel influence coefficient
 C     matrix for current airfoil and wake geometry.
 C-----------------------------------------------------
-	use complexify 
-	implicit complex(a-h, o-z) 
+	use complexify
+	implicit complex(a-h, o-z)
       include 'c_XFOIL.INC'
 C
 C      WRITE(*,*) 'Calculating source influence matrix ...'
@@ -1256,7 +1256,7 @@ C
         DO 710 J=1, N
           CIJ(IW,J) = DQDG(J)
   710   CONTINUE
-C  
+C
         DO 720 J=1, N
           DIJ(I,J) = DQDM(J)
   720   CONTINUE
@@ -1307,11 +1307,11 @@ C
 
       SUBROUTINE XYWAKE
 C-----------------------------------------------------
-C     Sets wake coordinate array for current surface 
+C     Sets wake coordinate array for current surface
 C     vorticity and/or mass source distributions.
 C-----------------------------------------------------
-	use complexify 
-	implicit complex(a-h, o-z) 
+	use complexify
+	implicit complex(a-h, o-z)
       include 'c_XFOIL.INC'
 C
 C      WRITE(*,*) 'Calculating wake trajectory ...'
@@ -1406,11 +1406,11 @@ C
 
       SUBROUTINE STFIND
 C-----------------------------------------
-C     Locates stagnation point arc length 
+C     Locates stagnation point arc length
 C     location SST and panel index IST.
 C-----------------------------------------
-	use complexify 
-	implicit complex(a-h, o-z) 
+	use complexify
+	implicit complex(a-h, o-z)
       include 'c_XFOIL.INC'
 C
       DO 10 I=1, N-1
@@ -1448,8 +1448,8 @@ C
 C-------------------------------------------------------------
 C     Sets  BL location -> panel location  pointer array IPAN
 C-------------------------------------------------------------
-	use complexify 
-	implicit complex(a-h, o-z) 
+	use complexify
+	implicit complex(a-h, o-z)
       include 'c_XFOIL.INC'
 C
 C---- top surface first
@@ -1510,8 +1510,8 @@ C
 C-------------------------------------------------------------
 C     Sets BL arc length array on each airfoil side and wake
 C-------------------------------------------------------------
-	use complexify 
-	implicit complex(a-h, o-z) 
+	use complexify
+	implicit complex(a-h, o-z)
       include 'c_XFOIL.INC'
 C
       IS = 1
@@ -1540,7 +1540,7 @@ C
         I = IPAN(IBL,IS)
         XSSI(IBL,IS) = XSSI(IBL-1,IS)
 c     &               + SQRT((X(I)-X(I-1))**2 + (Y(I)-Y(I-1))**2)
-     &               + SQRT( (X(I)-X(I-1))*(X(I)-X(I-1)) + 
+     &               + SQRT( (X(I)-X(I-1))*(X(I)-X(I-1)) +
      &                       (Y(I)-Y(I-1))*(Y(I)-Y(I-1)))
 
 
@@ -1590,8 +1590,8 @@ C
 C--------------------------------------------------------------
 C     Sets inviscid Ue from panel inviscid tangential velocity
 C--------------------------------------------------------------
-	use complexify 
-	implicit complex(a-h, o-z) 
+	use complexify
+	implicit complex(a-h, o-z)
       include 'c_XFOIL.INC'
 C
       DO 10 IS=1, 2
@@ -1612,8 +1612,8 @@ C
 C--------------------------------------------------------------
 C     Sets viscous Ue from panel viscous tangential velocity
 C--------------------------------------------------------------
-	use complexify 
-	implicit complex(a-h, o-z) 
+	use complexify
+	implicit complex(a-h, o-z)
       include 'c_XFOIL.INC'
 C
       DO 10 IS=1, 2
@@ -1632,8 +1632,8 @@ C
 C--------------------------------------------------------------
 C     Sets panel viscous tangential velocity from viscous Ue
 C--------------------------------------------------------------
-	use complexify 
-	implicit complex(a-h, o-z) 
+	use complexify
+	implicit complex(a-h, o-z)
       include 'c_XFOIL.INC'
 C
       DO 1 IS=1, 2
@@ -1652,8 +1652,8 @@ C-------------------------------------------------------
 C     Sets inviscid panel tangential velocity for
 C     current alpha.
 C-------------------------------------------------------
-	use complexify 
-	implicit complex(a-h, o-z) 
+	use complexify
+	implicit complex(a-h, o-z)
       include 'c_XFOIL.INC'
 C
       COSA = COS(ALFA)
@@ -1669,8 +1669,8 @@ C
 
 
       SUBROUTINE GAMQV
-	use complexify 
-	implicit complex(a-h, o-z) 
+	use complexify
+	implicit complex(a-h, o-z)
       include 'c_XFOIL.INC'
 C
       DO 10 I=1, N
@@ -1686,8 +1686,8 @@ C
 C---------------------------------------------------
 C     Moves stagnation point location to new panel.
 C---------------------------------------------------
-	use complexify 
-	implicit complex(a-h, o-z) 
+	use complexify
+	implicit complex(a-h, o-z)
       include 'c_XFOIL.INC'
 C
 C---- locate new stagnation point arc length SST from GAM distribution
@@ -1728,7 +1728,7 @@ C------ move top side BL variables downstream
           THET(IBL,1) = THET(IBL-IDIF,1)
           DSTR(IBL,1) = DSTR(IBL-IDIF,1)
           UEDG(IBL,1) = UEDG(IBL-IDIF,1)
-  110   CONTINUE            
+  110   CONTINUE
 C
 C------ set BL variables between old and new stagnation point
         DUDX = UEDG(IDIF+2,1)/XSSI(IDIF+2,1)
@@ -1745,7 +1745,7 @@ C------ move bottom side BL variables upstream
           THET(IBL,2) = THET(IBL+IDIF,2)
           DSTR(IBL,2) = DSTR(IBL+IDIF,2)
           UEDG(IBL,2) = UEDG(IBL+IDIF,2)
-  120   CONTINUE            
+  120   CONTINUE
 C
        ELSE
 C------ increase in number of points on bottom side (IS=2)
@@ -1760,7 +1760,7 @@ C------ move bottom side BL variables downstream
           THET(IBL,2) = THET(IBL-IDIF,2)
           DSTR(IBL,2) = DSTR(IBL-IDIF,2)
           UEDG(IBL,2) = UEDG(IBL-IDIF,2)
-  210   CONTINUE            
+  210   CONTINUE
 C
 C------ set BL variables between old and new stagnation point
         DUDX = UEDG(IDIF+2,2)/XSSI(IDIF+2,2)
@@ -1777,7 +1777,7 @@ C------ move top side BL variables upstream
           THET(IBL,1) = THET(IBL+IDIF,1)
           DSTR(IBL,1) = DSTR(IBL+IDIF,1)
           UEDG(IBL,1) = UEDG(IBL+IDIF,1)
-  220   CONTINUE            
+  220   CONTINUE
        ENDIF
 C
       ENDIF
@@ -1797,8 +1797,8 @@ C
 C---------------------------------------------------------
 C     Sets Ue from inviscid Ue plus all source influence
 C---------------------------------------------------------
-	use complexify 
-	implicit complex(a-h, o-z) 
+	use complexify
+	implicit complex(a-h, o-z)
       include 'c_XFOIL.INC'
 C
       DO 1 IS=1, 2
@@ -1824,8 +1824,8 @@ C
 
 
       SUBROUTINE DSSET
-	use complexify 
-	implicit complex(a-h, o-z) 
+	use complexify
+	implicit complex(a-h, o-z)
       include 'c_XFOIL.INC'
 C
       DO 1 IS=1, 2

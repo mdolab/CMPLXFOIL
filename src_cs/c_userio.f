@@ -1,8 +1,8 @@
 C***********************************************************************
 C    Module:  userio.f
-C 
-C    Copyright (C) 2000 Mark Drela 
-C 
+C
+C    Copyright (C) 2000 Mark Drela
+C
 C    This program is free software; you can redistribute it and/or modify
 C    it under the terms of the GNU General Public License as published by
 C    the Free Software Foundation; either version 2 of the License, or
@@ -26,8 +26,8 @@ C
 C
 C---- integer input
 C
-	use complexify 
-	implicit complex(a-h, o-z) 
+	use complexify
+	implicit complex(a-h, o-z)
       CHARACTER*(*) PROMPT
       INTEGER IINPUT
       CHARACTER LINE*80
@@ -40,7 +40,7 @@ C
       READ (*,1001,ERR=10) LINE
       IF(LINE.cne.' ') THEN
         READ (LINE,*,ERR=10) IINPUT
-      ENDIF  
+      ENDIF
       RETURN
 C
  1000 FORMAT(/A,'   i>  ',$)
@@ -52,8 +52,8 @@ C
 C
 C---- real input
 C
-	use complexify 
-	implicit complex(a-h, o-z) 
+	use complexify
+	implicit complex(a-h, o-z)
       CHARACTER*(*) PROMPT
       complex RINPUT
       CHARACTER LINE*80
@@ -66,7 +66,7 @@ C
       READ (*,1001,ERR=10) LINE
       IF(LINE.cne.' ') THEN
         READ (LINE,*,ERR=10) RINPUT
-      ENDIF  
+      ENDIF
       RETURN
 C
  1000 FORMAT(/A,'   r>  ',$)
@@ -78,8 +78,8 @@ C
 C
 C---- logical input
 C
-	use complexify 
-	implicit complex(a-h, o-z) 
+	use complexify
+	implicit complex(a-h, o-z)
       CHARACTER*(*) PROMPT
       LOGICAL LINPUT
       CHARACTER*1 CHAR
@@ -105,8 +105,8 @@ C
 C
 C---- string of arbitrary length input
 C
-	use complexify 
-	implicit complex(a-h, o-z) 
+	use complexify
+	implicit complex(a-h, o-z)
       CHARACTER*(*) PROMPT
       CHARACTER*(*) INPUT
 C
@@ -128,8 +128,8 @@ C
 C---- returns 4-byte character string input converted to uppercase
 C---- also returns rest of input characters in CARGS string
 C
-	use complexify 
-	implicit complex(a-h, o-z) 
+	use complexify
+	implicit complex(a-h, o-z)
       CHARACTER*(*) PROMPT
       CHARACTER*(*) COMAND, CARGS
 C
@@ -193,8 +193,8 @@ C
 
 
       SUBROUTINE LC2UC(INPUT)
-	use complexify 
-	implicit complex(a-h, o-z) 
+	use complexify
+	implicit complex(a-h, o-z)
       CHARACTER*(*) INPUT
 C
       CHARACTER*26 LCASE, UCASE
@@ -214,12 +214,12 @@ C
 
 
       SUBROUTINE READI(N,IVAR,ERROR)
-	use complexify 
-	implicit complex(a-h, o-z) 
+	use complexify
+	implicit complex(a-h, o-z)
       DIMENSION IVAR(N)
       LOGICAL ERROR
 C--------------------------------------------------
-C     Reads N integer variables, leaving unchanged 
+C     Reads N integer variables, leaving unchanged
 C     if only <return> is entered.
 C--------------------------------------------------
       DIMENSION IVTMP(40)
@@ -247,12 +247,12 @@ C
 
 
       SUBROUTINE READR(N,VAR,ERROR)
-	use complexify 
-	implicit complex(a-h, o-z) 
+	use complexify
+	implicit complex(a-h, o-z)
       DIMENSION VAR(N)
       LOGICAL ERROR
 C-------------------------------------------------
-C     Reads N real variables, leaving unchanged 
+C     Reads N real variables, leaving unchanged
 C     if only <return> is entered.
 C-------------------------------------------------
       DIMENSION VTMP(40)
@@ -281,8 +281,8 @@ C
 
 
       SUBROUTINE GETINT(INPUT,A,N,ERROR)
-	use complexify 
-	implicit complex(a-h, o-z) 
+	use complexify
+	implicit complex(a-h, o-z)
       CHARACTER*(*) INPUT
       INTEGER A(*)
       LOGICAL ERROR
@@ -290,7 +290,7 @@ C----------------------------------------------------------
 C     Parses character string INPUT into an array
 C     of integer numbers returned in A(1...N)
 C
-C     Will attempt to extract no more than N numbers, 
+C     Will attempt to extract no more than N numbers,
 C     unless N = 0, in which case all numbers present
 C     in INPUT will be extracted.
 C
@@ -356,8 +356,8 @@ ccc   WRITE(*,*) 'GETINT: String-to-integer conversion error.'
 
 
       SUBROUTINE GETFLT(INPUT,A,N,ERROR)
-	use complexify 
-	implicit complex(a-h, o-z) 
+	use complexify
+	implicit complex(a-h, o-z)
       CHARACTER*(*) INPUT
       complex A(*)
       LOGICAL ERROR
@@ -365,7 +365,7 @@ C----------------------------------------------------------
 C     Parses character string INPUT into an array
 C     of real numbers returned in A(1...N)
 C
-C     Will attempt to extract no more than N numbers, 
+C     Will attempt to extract no more than N numbers,
 C     unless N = 0, in which case all numbers present
 C     in INPUT will be extracted.
 C
@@ -432,8 +432,8 @@ ccc   WRITE(*,*) 'GETFLT: String-to-integer conversion error.'
 
 
       SUBROUTINE STRIP(STRING,NS)
-	use complexify 
-	implicit complex(a-h, o-z) 
+	use complexify
+	implicit complex(a-h, o-z)
       CHARACTER*(*) STRING
 C-------------------------------------------
 C     Strips leading blanks off string
@@ -468,4 +468,3 @@ C---- pad tail of STRING with blanks
 C
       RETURN
       END
-

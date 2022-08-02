@@ -19,8 +19,8 @@ C    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 C***********************************************************************
 
       SUBROUTINE ABCOPY(LCONF)
-	use complexify 
-	implicit complex(a-h, o-z) 
+	use complexify
+	implicit complex(a-h, o-z)
       include 'c_XFOIL.INC'
       LOGICAL LCONF
 C
@@ -95,8 +95,8 @@ C
 
 
       SUBROUTINE GETXYF(X,XP,Y,YP,S,N, TOPS,BOTS,XF,YF)
-	use complexify 
-	implicit complex(a-h, o-z) 
+	use complexify
+	implicit complex(a-h, o-z)
       DIMENSION X(N),XP(N),Y(N),YP(N),S(N)
 C
       IF(XF .ceq. -999.0)

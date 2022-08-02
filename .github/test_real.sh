@@ -1,3 +1,4 @@
 #!/bin/bash
 set -e
-testflo -v . -n 1
+cd tests
+testflo -n 1 -v --coverage --coverpkg cmplxfoil

@@ -1,8 +1,8 @@
 C***********************************************************************
 C    Module:  xoper.f
-C 
-C    Copyright (C) 2000 Mark Drela 
-C 
+C
+C    Copyright (C) 2000 Mark Drela
+C
 C    This program is free software; you can redistribute it and/or modify
 C    it under the terms of the GNU General Public License as published by
 C    the Free Software Foundation; either version 2 of the License, or
@@ -89,9 +89,9 @@ C******************************************************
 C	REINF1 = 100000
 C	WRITE(*,*) REINF1
 C	STOP
-	
+
 C*****CHANGE REYNOLDS NUMBER***************************
-C       ITMAX = 75	
+C       ITMAX = 75
 C       CALL MRSHOW(.TRUE.,.TRUE.)
 c       ENDIF
        LCONV = .FALSE.
@@ -136,7 +136,7 @@ C      call cpcalc(N+NW,QVIS,QINF,MINF,CPV)
 C      CALL CLCALC(N,X,Y,GAM,GAM_A,ALFA,MINF,QINF,XCMREF,YCMREF,
 C     &            CL,CM,CDP, CL_ALF,CL_MSQ)
 
-	RETURN	
+	RETURN
 C
 	END ! OPER
 
@@ -206,15 +206,15 @@ C
       SUBROUTINE NAMMOD(NAME,KDEL,KMOD0)
       CHARACTER*(*) NAME
 C-------------------------------------------
-C     Requests new modified NAME with 
+C     Requests new modified NAME with
 C     version number in brackets, e.g.
 C            NACA 0012  [5]
 C
 C     If bracketed index exists in NAME,
 C        it is incremented by KDEL.
-C     If no bracketed index exists, it 
+C     If no bracketed index exists, it
 C        is added with initial value KMOD0,
-C        unless KMOD0 is negative in which 
+C        unless KMOD0 is negative in which
 C        case nothing is added.
 C-------------------------------------------
       CHARACTER*48 NAMDEF
@@ -225,7 +225,7 @@ C
 C
       NAMDEF = NAME(1:NNAME)
 C
-      IF(KBRACK1.NE.0 .AND. 
+      IF(KBRACK1.NE.0 .AND.
      &   KBRACK2.NE.0 .AND. KBRACK2-KBRACK1.GT.1) THEN
 C----- brackets exist... get number, (go get user's input on READ error)
        READ(NAME(KBRACK1+1:KBRACK2-1),*,ERR=40) KMOD
@@ -415,8 +415,8 @@ C
 C------ find top and bottom y at hinge x location
         TOPS = XOF
         BOTS = S(N) - XOF
-        CALL SINVRT(TOPS,XOF,X,XP,S,N)      
-        CALL SINVRT(BOTS,XOF,X,XP,S,N)      
+        CALL SINVRT(TOPS,XOF,X,XP,S,N)
+        CALL SINVRT(BOTS,XOF,X,XP,S,N)
 C
       ENDIF
 C
@@ -719,8 +719,8 @@ C---- set final Mach, CL, Cp distributions, and hinge moment
 C
       RETURN
       END ! SPECAL
- 
- 
+
+
       SUBROUTINE SPECCL
 C-----------------------------------------
 C     Converges to specified inviscid CL.
@@ -914,9 +914,9 @@ C------ set updated CL,CD
         CALL CDCALC
 C
 C------ display changes and test for convergence
-c        IF(RLX.LT.1.0) 
+c        IF(RLX.LT.1.0)
 c     &   WRITE(*,2000) ITER, RMSBL, RMXBL, VMXBL,IMXBL,ISMXBL,RLX
-c        IF(RLX.EQ.1.0) 
+c        IF(RLX.EQ.1.0)
 c     &   WRITE(*,2010) ITER, RMSBL, RMXBL, VMXBL,IMXBL,ISMXBL
 c        CDP = CD - CDF
 c         WRITE(*,2020) ALFA/DTOR, CL, CM, CD, CDF, CDP
@@ -930,7 +930,7 @@ C
 C
  1000 CONTINUE
 C      WRITE(*,*) 'VISCAL:  Convergence failed'
-C	
+C
    90 CONTINUE
       CALL CPCALC(N+NW,QINV,QINF,MINF,CPI)
       CALL CPCALC(N+NW,QVIS,QINF,MINF,CPV)
@@ -952,7 +952,7 @@ C....................................................................
       subroutine dcpout
       include 'XFOIL.INC'
 c
-c     Computes and writes upper and lower-surface 
+c     Computes and writes upper and lower-surface
 c     Cp values at two specified x locations
 c
 c
@@ -988,7 +988,7 @@ c
       cpl2 = seval(sl2,cpv,w1,s,n)
       cpu2 = seval(su2,cpv,w1,s,n)
 c
-      write(lu,1200) alfa/dtor, cl, 
+      write(lu,1200) alfa/dtor, cl,
      &               cpl1, cpu1, cpl1-cpu1,
      &               cpl2, cpu2, cpl2-cpu2
 

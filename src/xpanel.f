@@ -1,8 +1,8 @@
 C***********************************************************************
 C    Module:  xpanel.f
-C 
-C    Copyright (C) 2000 Mark Drela 
-C 
+C
+C    Copyright (C) 2000 Mark Drela
+C
 C    This program is free software; you can redistribute it and/or modify
 C    it under the terms of the GNU General Public License as published by
 C    the Free Software Foundation; either version 2 of the License, or
@@ -46,8 +46,8 @@ C---- TE panel
 C
       RETURN
       END
- 
- 
+
+
       SUBROUTINE NCALC(X,Y,S,N,XN,YN)
 C---------------------------------------
 C     Calculates normal unit vector
@@ -83,11 +83,11 @@ C
       RETURN
       END
 
- 
+
       SUBROUTINE PSILIN(I,XI,YI,NXI,NYI,PSI,PSI_NI,GEOLIN,SIGLIN)
 C-----------------------------------------------------------------------
 C     Calculates current streamfunction Psi at panel node or wake node
-C     I due to freestream and all bound vorticity Gam on the airfoil. 
+C     I due to freestream and all bound vorticity Gam on the airfoil.
 C     Sensitivities of Psi with respect to alpha (Z_ALFA) and inverse
 C     Qspec DOFs (Z_QDOF0,Z_QDOF1) which influence Gam in inverse cases.
 C     Also calculates the sensitivity vector dPsi/dGam (DZDG).
@@ -1049,7 +1049,7 @@ C---- set up Kutta condition (no direct source influence)
    32 CONTINUE
 C
       IF(SHARP) THEN
-C----- set zero internal velocity in TE corner 
+C----- set zero internal velocity in TE corner
 C
 C----- set TE bisector angle
        AG1 = ATAN2(-YP(1),-XP(1)    )
@@ -1210,7 +1210,7 @@ C
         DO 710 J=1, N
           CIJ(IW,J) = DQDG(J)
   710   CONTINUE
-C  
+C
         DO 720 J=1, N
           DIJ(I,J) = DQDM(J)
   720   CONTINUE
@@ -1261,7 +1261,7 @@ C
 
       SUBROUTINE XYWAKE
 C-----------------------------------------------------
-C     Sets wake coordinate array for current surface 
+C     Sets wake coordinate array for current surface
 C     vorticity and/or mass source distributions.
 C-----------------------------------------------------
       INCLUDE 'XFOIL.INC'
@@ -1341,7 +1341,7 @@ C
 
       SUBROUTINE STFIND
 C-----------------------------------------
-C     Locates stagnation point arc length 
+C     Locates stagnation point arc length
 C     location SST and panel index IST.
 C-----------------------------------------
       INCLUDE 'XFOIL.INC'
@@ -1639,7 +1639,7 @@ C------ move top side BL variables downstream
           THET(IBL,1) = THET(IBL-IDIF,1)
           DSTR(IBL,1) = DSTR(IBL-IDIF,1)
           UEDG(IBL,1) = UEDG(IBL-IDIF,1)
-  110   CONTINUE            
+  110   CONTINUE
 C
 C------ set BL variables between old and new stagnation point
         DUDX = UEDG(IDIF+2,1)/XSSI(IDIF+2,1)
@@ -1656,7 +1656,7 @@ C------ move bottom side BL variables upstream
           THET(IBL,2) = THET(IBL+IDIF,2)
           DSTR(IBL,2) = DSTR(IBL+IDIF,2)
           UEDG(IBL,2) = UEDG(IBL+IDIF,2)
-  120   CONTINUE            
+  120   CONTINUE
 C
        ELSE
 C------ increase in number of points on bottom side (IS=2)
@@ -1671,7 +1671,7 @@ C------ move bottom side BL variables downstream
           THET(IBL,2) = THET(IBL-IDIF,2)
           DSTR(IBL,2) = DSTR(IBL-IDIF,2)
           UEDG(IBL,2) = UEDG(IBL-IDIF,2)
-  210   CONTINUE            
+  210   CONTINUE
 C
 C------ set BL variables between old and new stagnation point
         DUDX = UEDG(IDIF+2,2)/XSSI(IDIF+2,2)
@@ -1688,7 +1688,7 @@ C------ move top side BL variables upstream
           THET(IBL,1) = THET(IBL+IDIF,1)
           DSTR(IBL,1) = DSTR(IBL+IDIF,1)
           UEDG(IBL,1) = UEDG(IBL+IDIF,1)
-  220   CONTINUE            
+  220   CONTINUE
        ENDIF
 C
       ENDIF

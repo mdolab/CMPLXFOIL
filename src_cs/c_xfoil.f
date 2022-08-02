@@ -1,8 +1,8 @@
 C***********************************************************************
 C    Module:  xfoil.f
-C 
-C    Copyright (C) 2000 Mark Drela 
-C 
+C
+C    Copyright (C) 2000 Mark Drela
+C
 C    This program is free software; you can redistribute it and/or modify
 C    it under the terms of the GNU General Public License as published by
 C    the Free Software Foundation; either version 2 of the License, or
@@ -21,7 +21,7 @@ C
 C***********************************************************************
 C	UPDATED: Dan Berkenstock March 2006, Stanford ADL
 C
-C	Functionality changed to command line driven for use in 
+C	Functionality changed to command line driven for use in
 C	optimization.
 C
 C	030606: Updated as xfoil subroutine for wrapping in python
@@ -33,8 +33,8 @@ C
       SUBROUTINE XFOIL
 c---- used to be subroutine xfoil
 
-	use complexify 
-	implicit complex(a-h, o-z) 
+	use complexify
+	implicit complex(a-h, o-z)
       include 'c_XFOIL.INC'
       CHARACTER*4 COMAND
       CHARACTER*128 COMARG
@@ -49,7 +49,7 @@ c---- used to be subroutine xfoil
 C---- max panel angle threshold for warning
       DATA ANGTOL / 40.0 /
 
-c---- call initialization function	
+c---- call initialization function
 c        write(*,*) 'before init'
     	CALL INIT
 c        write(*,*) 'after init'
@@ -57,7 +57,7 @@ c      	LU = 8
 c      	CALL GETDEF(LU,'xfoil.def', .TRUE.)
 
 c---- read file in variable 'FNAME' should be unlabelled airfoil file
-	LU = 9 
+	LU = 9
 c        CALL AREAD(LU,FNAME,IBX,XB,YB,NB,NAME,ISPARS,ITYPE,1)
 c        write(*,*) 'fname',FNAME
 c        write(*,*) 'ITYPE',ITYPE
@@ -85,8 +85,8 @@ C---------------------------------------------------
 
       SUBROUTINE setNACA(camber,position,thickness)
       ! This function is wrapped
-	use complexify 
-	implicit complex(a-h, o-z) 
+	use complexify
+	implicit complex(a-h, o-z)
       include 'c_XFOIL.INC'
       complex camber,position, thickness
       complex*16 Xreturn (NB),Yreturn(NB)
@@ -94,8 +94,8 @@ C---------------------------------------------------
       END
 
       SUBROUTINE NACA(camber,position,thickness,Xreturn,Yreturn)
-	use complexify 
-	implicit complex(a-h, o-z) 
+	use complexify
+	implicit complex(a-h, o-z)
       include 'c_XFOIL.INC'
       complex camber,position,thickness
       complex*16 Xreturn(NB),Yreturn(NB)
@@ -164,8 +164,8 @@ C---------------------------------------------------
 C     Variable initialization/default routine.
 C     See file XFOIL.INC for variable description.
 C---------------------------------------------------
-	use complexify 
-	implicit complex(a-h, o-z) 
+	use complexify
+	implicit complex(a-h, o-z)
       include 'c_XFOIL.INC'
 C
       PI = 4.0*ATAN(1.0)
@@ -302,7 +302,9 @@ C---- circle plane array size (largest 2  + 1 that will fit array size)
       IF(NC1 .GT. 257) NC1 = 2**(NN-1) + 1
 C
 C---- default paneling parameters
-      NPAN = 140
+      ! 284 is the maximum allowable number of panels in this code and
+      ! gives the smoothest derivatives possible (though still not smooth)
+      NPAN = 284
       CVPAR = 1.0
       CTERAT = 0.15
       CTRRAT = 0.2
@@ -362,15 +364,15 @@ C---- axis limits and annotation deltas for polar plot
 c      CPOLPLF(1,ICD) = 0.0
 c      CPOLPLF(2,ICD) = 0.04
 c      CPOLPLF(3,ICD) = 0.01
-C        
+C
 c      CPOLPLF(1,ICL) = 0.
 c      CPOLPLF(2,ICL) = 1.5
 c      CPOLPLF(3,ICL) = 0.5
-C        
+C
 c      CPOLPLF(1,ICM) = -0.25
 c      CPOLPLF(2,ICM) =  0.0
 c      CPOLPLF(3,ICM) =  0.05
-C        
+C
 c      CPOLPLF(1,IAL) = -4.0
 c      CPOLPLF(2,IAL) = 10.0
 c      CPOLPLF(3,IAL) =  2.0
@@ -423,8 +425,8 @@ C---- Plotting flag
 c      IDEV = 1   ! X11 window only
 c     IDEV = 2   ! B&W PostScript output file only (no color)
 c     IDEV = 3   ! both X11 and B&W PostScript file
-c     IDEV = 4   ! Color PostScript output file only 
-c     IDEV = 5   ! both X11 and Color PostScript file 
+c     IDEV = 4   ! Color PostScript output file only
+c     IDEV = 5   ! both X11 and Color PostScript file
 C
 C---- Re-plotting flag (for hardcopy)
       IDEVRP = 2   ! B&W PostScript
@@ -495,8 +497,8 @@ C     Sets actual Mach, Reynolds numbers
 C     from unit-CL values and specified CLS
 C     depending on MATYP,RETYP flags.
 C-------------------------------------------
-	use complexify 
-	implicit complex(a-h, o-z) 
+	use complexify
+	implicit complex(a-h, o-z)
       include 'c_XFOIL.INC'
       complex M_CLS
 C
@@ -577,10 +579,10 @@ C
 C	READS PARAM FILE
 C
 C*****************************************************************
- 
+
       SUBROUTINE GETDEF(LU,FILNAM,LASK)
-	use complexify 
-	implicit complex(a-h, o-z) 
+	use complexify
+	implicit complex(a-h, o-z)
       CHARACTER*(*) FILNAM
       LOGICAL LASK
 C-----------------------------------------------------
@@ -607,11 +609,11 @@ C
       CLMIN = CPOLPLF(1,ICL)
       CLMAX = CPOLPLF(2,ICL)
       CLDEL = CPOLPLF(3,ICL)
-C                 
+C
       CDMIN = CPOLPLF(1,ICD)
       CDMAX = CPOLPLF(2,ICD)
       CDDEL = CPOLPLF(3,ICD)
-C                 
+C
       ALMIN = CPOLPLF(1,IAL)
       ALMAX = CPOLPLF(2,IAL)
       ALDEL = CPOLPLF(3,IAL)
@@ -619,7 +621,7 @@ C
       CMMIN = CPOLPLF(1,ICM)
       CMMAX = CPOLPLF(2,ICM)
       CMDEL = CPOLPLF(3,ICM)
-C                 
+C
 C---- default paneling parameters (viscous)
       READ(LU,*,ERR=80) NPAN, CVPAR, CTERAT, CTRRAT
       READ(LU,*,ERR=80) XSREF1, XSREF2, XPREF1, XPREF2
@@ -640,7 +642,7 @@ C
 C---- airfoil x-offset and scale factor in Cp vs x plot, BL profile weight
       READ(LU,*,ERR=80) XOFAIR, FACAIR, UPRWT
 C
-C---- polar plot CL,CD,alpha,CM  min,max,delta 
+C---- polar plot CL,CD,alpha,CM  min,max,delta
       READ(LU,*,ERR=80) (CPOLPLF(K,ICL), K=1, 3)
       READ(LU,*,ERR=80) (CPOLPLF(K,ICD), K=1, 3)
       READ(LU,*,ERR=80) (CPOLPLF(K,IAL), K=1, 3)
@@ -683,13 +685,13 @@ C
       END ! GETDEF
 
 
- 
+
       SUBROUTINE WRTDEF(LU)
 C------------------------------------------
 C     Writes default parameters to unit LU
 C------------------------------------------
-	use complexify 
-	implicit complex(a-h, o-z) 
+	use complexify
+	implicit complex(a-h, o-z)
       include 'c_XFOIL.INC'
       LOGICAL LCOLOR
 C
@@ -714,7 +716,7 @@ C
 C---- x-offset and scale factor for airfoil on Cp vs x plot
       WRITE(LU,1050) XOFAIR, FACAIR, UPRWT
 C
-C---- polar plot CL,CD,alpha,CM  min,max,delta 
+C---- polar plot CL,CD,alpha,CM  min,max,delta
       WRITE(LU,1061) (CPOLPLF(K,ICL), K=1, 3)
       WRITE(LU,1062) (CPOLPLF(K,ICD), K=1, 3)
       WRITE(LU,1063) (CPOLPLF(K,IAL), K=1, 3)
@@ -745,8 +747,8 @@ C...............................................
 
 
       SUBROUTINE COMSET
-	use complexify 
-	implicit complex(a-h, o-z) 
+	use complexify
+	implicit complex(a-h, o-z)
       include 'c_XFOIL.INC'
 C
 C---- set Karman-Tsien parameter TKLAM
@@ -778,8 +780,8 @@ C
 C---------------------------------------------
 C     Sets compressible Cp from speed.
 C---------------------------------------------
-	use complexify 
-	implicit complex(a-h, o-z) 
+	use complexify
+	implicit complex(a-h, o-z)
       DIMENSION Q(N),CP(N)
       complex MINF
 C
@@ -810,9 +812,9 @@ C***********************************************************
 C
 C	CL CALCULATION ROUTINE
 C
-C*********************************************************** 
+C***********************************************************
 
-      SUBROUTINE CLCALC(N,X,Y,GAM,GAM_A,ALFA,MINF,QINF, 
+      SUBROUTINE CLCALC(N,X,Y,GAM,GAM_A,ALFA,MINF,QINF,
      &                  XREF,YREF,
      &                  CL,CM,CDP, CL_ALF,CL_MSQ)
 C-----------------------------------------------------------
@@ -820,8 +822,8 @@ C     Integrates surface pressures to get CL and CM.
 C     Integrates skin friction to get CDF.
 C     Calculates dCL/dAlpha for prescribed-CL routines.
 C-----------------------------------------------------------
-	use complexify 
-	implicit complex(a-h, o-z) 
+	use complexify
+	implicit complex(a-h, o-z)
       DIMENSION X(N),Y(N), GAM(N), GAM_A(N)
       complex MINF
 C
@@ -900,8 +902,8 @@ C
 C************************************************************************
 
       SUBROUTINE CDCALC
-	use complexify 
-	implicit complex(a-h, o-z) 
+	use complexify
+	implicit complex(a-h, o-z)
       include 'c_XFOIL.INC'
 C
       SA = SIN(ALFA)
@@ -949,8 +951,8 @@ C------------------------------------------------------
 C     Reads airfoil file into buffer airfoil
 C     and does various initial processesing on it.
 C------------------------------------------------------
-	use complexify 
-	implicit complex(a-h, o-z) 
+	use complexify
+	implicit complex(a-h, o-z)
       include 'c_XFOIL.INC'
       CHARACTER*(*) FILNAM
 C
@@ -1060,13 +1062,13 @@ C...............................................................
       END ! LOAD
 
 
- 
+
       SUBROUTINE SAVE(IFTYP,FNAME1)
 C--------------------------------
-C     Writes out current airfoil 
+C     Writes out current airfoil
 C--------------------------------
-	use complexify 
-	implicit complex(a-h, o-z) 
+	use complexify
+	implicit complex(a-h, o-z)
       include 'c_XFOIL.INC'
       CHARACTER*(*) FNAME1
 C
@@ -1123,7 +1125,7 @@ C----- write out in counterclockwise order (same as internal XFOIL order)
 C
       IF(IFTYP.ceq.-1) THEN
        DO I=IBEG, IEND, INCR
-         WRITE(LU,1400) INT(X(I)+SIGN(0.5,X(I))), 
+         WRITE(LU,1400) INT(X(I)+SIGN(0.5,X(I))),
      &                  INT(Y(I)+SIGN(0.5,Y(I)))
        ENDDO
       ELSE
@@ -1148,11 +1150,11 @@ C
 
       SUBROUTINE MSAVE(FNAME1)
 C------------------------------------------
-C     Writes out current airfoil as one 
+C     Writes out current airfoil as one
 C     element in a multielement MSES file.
 C------------------------------------------
-	use complexify 
-	implicit complex(a-h, o-z) 
+	use complexify
+	implicit complex(a-h, o-z)
       include 'c_XFOIL.INC'
       CHARACTER*(*) FNAME1
 C
@@ -1265,10 +1267,10 @@ C
       END ! MSAVE
 
 
- 
+
       SUBROUTINE ROTATE(X,Y,N,ALFA)
-	use complexify 
-	implicit complex(a-h, o-z) 
+	use complexify
+	implicit complex(a-h, o-z)
       DIMENSION X(N), Y(N)
 C
       SA = SIN(ALFA)
@@ -1292,14 +1294,14 @@ C
 C---------------------------------------------------
 C     Set paneling distribution from buffer airfoil
 C     geometry, thus creating current airfoil.
-C 
+C
 C     If REFINE=True, bunch points at x=XSREF on
 C     top side and at x=XPREF on bottom side
 C     by setting a fictitious local curvature of
 C     CTRRAT*(LE curvature) there.
 C---------------------------------------------------
-	use complexify 
-	implicit complex(a-h, o-z) 
+	use complexify
+	implicit complex(a-h, o-z)
       include 'c_XFOIL.INC'
       LOGICAL SHOPAR
 C
@@ -1390,7 +1392,7 @@ C
 CCC      CALL ASKR('Enter curvature smoothing length/c^',SMOOL)
 CCC      SMOOL = 0.010
 C
-C---- set smoothing length = 1 / averaged LE curvature, but 
+C---- set smoothing length = 1 / averaged LE curvature, but
 C-    no more than 5% of chord and no less than 1/4 average panel spacing
       SMOOL = MAX( 1.0/MAX(CVAVG,20.0) , 0.25 /FLOAT(NPAN/2) )
 C
@@ -1502,7 +1504,7 @@ C---- spline curvature array
       CALL SEGSPL(W5,W6,SB,NB)
 C
 C---- Set initial guess for node positions uniform in s.
-C     More nodes than specified (by factor of IPFAC) are 
+C     More nodes than specified (by factor of IPFAC) are
 C     temporarily used  for more reliable convergence.
       NN = IPFAC*(N-1)+1
 C
@@ -1948,11 +1950,11 @@ c      END ! GETPAN
 
       SUBROUTINE TECALC
 C-------------------------------------------
-C     Calculates total and projected TE gap 
+C     Calculates total and projected TE gap
 C     areas and TE panel strengths.
 C-------------------------------------------
-	use complexify 
-	implicit complex(a-h, o-z) 
+	use complexify
+	implicit complex(a-h, o-z)
       include 'c_XFOIL.INC'
 C
 C---- set TE base vector and TE bisector components
@@ -1987,7 +1989,7 @@ C
 C
       RETURN
       END ! TECALC
- 
+
 
 
       SUBROUTINE INTE
@@ -1995,12 +1997,12 @@ C-----------------------------------------------------------
 C     Interpolates two airfoils into an intermediate shape.
 C     Extrapolation is also possible to a reasonable extent.
 C-----------------------------------------------------------
-	use complexify 
-	implicit complex(a-h, o-z) 
+	use complexify
+	implicit complex(a-h, o-z)
       include 'c_XFOIL.INC'
       CHARACTER*2 CAIR
       INTEGER CNINT(2)
-      complex SINT(IBX,2),  
+      complex SINT(IBX,2),
      &     XINT(IBX,2), XPINT(IBX,2),
      &     YINT(IBX,2), YPINT(IBX,2),
      &     SLEINT(2)
@@ -2088,7 +2090,7 @@ C
      &              YINT(1,K),YPINT(1,K),SINT(1,K),CNINT(K))
  40   CONTINUE
 C
-      WRITE(*,*) 
+      WRITE(*,*)
       WRITE(*,*) 'airfoil "0":  ', NAMEINT(1)
       WRITE(*,*) 'airfoil "1":  ', NAMEINT(2)
       FRAC = 0.5
@@ -2121,7 +2123,3 @@ C
       WRITE(*,*) 'Invalid response'
       RETURN
       END ! INTE
-
-
-
-

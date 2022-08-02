@@ -17,7 +17,7 @@ sys.path.insert(0, os.path.abspath("../"))
 #     subprocess.call("doxygen", shell=True)
 
 # -- Project information -----------------------------------------------------
-project = "pyXLIGHT"
+project = "CMPLXFOIL"
 
 # -- General configuration ---------------------------------------------------
 # Built-in Sphinx extensions are already contained in the imported variable
@@ -26,7 +26,11 @@ project = "pyXLIGHT"
 extensions.extend([])
 
 # mock import for autodoc
-# autodoc_mock_imports = ["numpy", "mpi4py", "petsc4py", "baseclasses", "adflow.om_adflow"]
+autodoc_mock_imports = ["numpy", "mpi4py", "petsc4py", "baseclasses", "prefoil", "pygeo", "matplotlib", "niceplots"]
+
+# # logo
+# html_logo = "doc/assets/cmplxfoil_logo.svg"
+# html_theme_options["logo_only"] = True
 
 # bibtex sources
 # bibtex_bibfiles.extend(["citations.bib"])

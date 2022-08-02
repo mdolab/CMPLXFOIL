@@ -1,8 +1,8 @@
 C***********************************************************************
 C    Module:  userio.f
-C 
-C    Copyright (C) 2000 Mark Drela 
-C 
+C
+C    Copyright (C) 2000 Mark Drela
+C
 C    This program is free software; you can redistribute it and/or modify
 C    it under the terms of the GNU General Public License as published by
 C    the Free Software Foundation; either version 2 of the License, or
@@ -38,7 +38,7 @@ C
       READ (*,1001,ERR=10) LINE
       IF(LINE.NE.' ') THEN
         READ (LINE,*,ERR=10) IINPUT
-      ENDIF  
+      ENDIF
       RETURN
 C
  1000 FORMAT(/A,'   i>  ',$)
@@ -62,7 +62,7 @@ C
       READ (*,1001,ERR=10) LINE
       IF(LINE.NE.' ') THEN
         READ (LINE,*,ERR=10) RINPUT
-      ENDIF  
+      ENDIF
       RETURN
 C
  1000 FORMAT(/A,'   r>  ',$)
@@ -205,7 +205,7 @@ C
       DIMENSION IVAR(N)
       LOGICAL ERROR
 C--------------------------------------------------
-C     Reads N integer variables, leaving unchanged 
+C     Reads N integer variables, leaving unchanged
 C     if only <return> is entered.
 C--------------------------------------------------
       DIMENSION IVTMP(40)
@@ -236,7 +236,7 @@ C
       DIMENSION VAR(N)
       LOGICAL ERROR
 C-------------------------------------------------
-C     Reads N real variables, leaving unchanged 
+C     Reads N real variables, leaving unchanged
 C     if only <return> is entered.
 C-------------------------------------------------
       DIMENSION VTMP(40)
@@ -272,7 +272,7 @@ C----------------------------------------------------------
 C     Parses character string INPUT into an array
 C     of integer numbers returned in A(1...N)
 C
-C     Will attempt to extract no more than N numbers, 
+C     Will attempt to extract no more than N numbers,
 C     unless N = 0, in which case all numbers present
 C     in INPUT will be extracted.
 C
@@ -345,7 +345,7 @@ C----------------------------------------------------------
 C     Parses character string INPUT into an array
 C     of real numbers returned in A(1...N)
 C
-C     Will attempt to extract no more than N numbers, 
+C     Will attempt to extract no more than N numbers,
 C     unless N = 0, in which case all numbers present
 C     in INPUT will be extracted.
 C
@@ -446,4 +446,3 @@ C---- pad tail of STRING with blanks
 C
       RETURN
       END
-
