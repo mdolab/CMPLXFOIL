@@ -22,9 +22,3 @@ You can then view the built documentation in the ``doc/_build/html/`` by opening
 Citing CMPLXFOIL
 ---------------
 If you use CMPLXFOIL, please see [this page](https://mdolab-pyxlight.readthedocs-hosted.com/en/latest/citation.html) for citation information.
-
-License
--------
-Copyright 2021 MDO Lab
-
-Distributed using the GNU General Public License (GPL), version 2.0; see the LICENSE.md file for details.
