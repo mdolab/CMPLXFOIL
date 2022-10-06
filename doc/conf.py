@@ -26,7 +26,7 @@ project = "CMPLXFOIL"
 extensions.extend([])
 
 # mock import for autodoc
-autodoc_mock_imports = ["numpy", "mpi4py", "petsc4py", "baseclasses", "prefoil", "pygeo", "matplotlib", "niceplots"]
+autodoc_mock_imports = ["numpy", "mpi4py", "petsc4py", "baseclasses", "pygeo", "matplotlib", "niceplots"]
 
 # # logo
 # html_logo = "doc/assets/cmplxfoil_logo.svg"
