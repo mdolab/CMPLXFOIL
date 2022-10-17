@@ -6,9 +6,9 @@ Conda Installation
 ==================
 If you use Anaconda/Conda, the simplest way to install CMPLXFOIL is through the `conda forge <https://anaconda.org/conda-forge/cmplxfoil>`_:
 
-```shell
-conda install -c conda-forge cmplxfoil
-```
+.. prompt:: bash
+
+    conda install -c conda-forge cmplxfoil
 
 Installation from Source
 ========================
