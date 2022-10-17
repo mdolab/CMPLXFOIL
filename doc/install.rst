@@ -1,7 +1,10 @@
-Installation
-============
-CMPLXFOIL is a Python wrapper for the Fortran-based XFOIL code.
-Building and installing the code is a multi-step process that is machine specific.
+Conda Installation
+==================
+If you use Anaconda/Conda, the simplest way to install CMPLXFOIL is through the `conda forge <https://anaconda.org/conda-forge/cmplxfoil>`_.
+
+Installation from Source
+========================
+Building and installing CMPLXFOIL from source is a multi-step process that is machine specific.
 This guide goes through the required steps to compile and install CMPLXFOIL.
 
 
