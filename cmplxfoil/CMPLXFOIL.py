@@ -409,7 +409,7 @@ class CMPLXFOIL(BaseSolver):
                 print("Converged!")
                 break
             elif abs(res > maxRes):
-                warnings.warn(f"solveCL diverged (CL = {cl:.2f})")
+                warnings.warn(f"solveCL diverged (CL = {cl:.2f})", stacklevel=2)
                 break
 
             # If not converged or diverged, compute the next alpha
