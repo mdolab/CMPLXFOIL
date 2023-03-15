@@ -395,7 +395,6 @@ class CMPLXFOIL(BaseSolver):
         maxRes = 1e2
 
         for _ in range(maxIter):
-
             # Call the solver and compute the "residual"
             self.__call__(aeroProblem, deriv=True)
             failCheck = {}
