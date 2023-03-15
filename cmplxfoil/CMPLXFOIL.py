@@ -38,10 +38,10 @@ from . import MExt
 # Handle plotting imports
 plt = None
 try:
-    import matplotlib as mpl
+    from matplotlib import pyplot
+    import matplotlib.lines as mpl_lines
 
-    plt = mpl.pyplot
-    mpl_lines = mpl.lines
+    plt = pyplot
 except ImportError:
     pass
 
@@ -50,9 +50,8 @@ if plt:
     try:
         import niceplots
 
-        niceplots.setRCParams()
-        plt.rcParams.update({"font.size": 18})
-        colors = niceplots.get_niceColors()
+        plt.style.use(niceplots.get_style())
+        colors = niceplots.get_colors()
         color = colors["Blue"]
         cpUpColor = colors["Blue"]
         cpLowColor = colors["Red"]
