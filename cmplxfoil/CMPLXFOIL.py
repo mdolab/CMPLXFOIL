@@ -38,10 +38,10 @@ from . import MExt
 # Handle plotting imports
 plt = None
 try:
-    import matplotlib as mpl
+    from matplotlib import pyplot
+    import matplotlib.lines as mpl_lines
 
-    plt = mpl.pyplot
-    mpl_lines = mpl.lines
+    plt = pyplot
 except ImportError:
     pass
 
@@ -50,9 +50,8 @@ if plt:
     try:
         import niceplots
 
-        niceplots.setRCParams()
-        plt.rcParams.update({"font.size": 18})
-        colors = niceplots.get_niceColors()
+        plt.style.use(niceplots.get_style())
+        colors = niceplots.get_colors()
         color = colors["Blue"]
         cpUpColor = colors["Blue"]
         cpLowColor = colors["Red"]
@@ -396,7 +395,6 @@ class CMPLXFOIL(BaseSolver):
         maxRes = 1e2
 
         for _ in range(maxIter):
-
             # Call the solver and compute the "residual"
             self.__call__(aeroProblem, deriv=True)
             failCheck = {}
@@ -411,7 +409,7 @@ class CMPLXFOIL(BaseSolver):
                 print("Converged!")
                 break
             elif abs(res > maxRes):
-                warnings.warn(f"solveCL diverged (CL = {cl:.2f})")
+                warnings.warn(f"solveCL diverged (CL = {cl:.2f})", stacklevel=2)
                 break
 
             # If not converged or diverged, compute the next alpha

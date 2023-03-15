@@ -31,7 +31,7 @@ setup(
         "geometry": ["pygeo"],
         "testing": ["testflo"],
         "docs": ["sphinx-mdolab-theme"],
-        "plotting": ["matplotlib", "niceplots"],
+        "plotting": ["matplotlib", "niceplots>=2.0.0"],
     },
     classifiers=["Operating System :: Linux", "Programming Language :: Python, Fortran"],
 )
