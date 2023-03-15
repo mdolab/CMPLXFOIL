@@ -48,6 +48,9 @@ Copy a configuration file to the main ``config/`` folder using the command below
 
     cp config/defaults/config.<version>.mk config/config.mk
 
+.. note::
+    We have found that replacing ``-O2`` with ``-Ofast -march=native`` can make CMPLXFOIL almost 2x faster, but the ``Ofast`` optimizations are technically unsafe so we leave them out by default. 
+
 Once the configuration file is adjusted as needed, CMPLXFOIL can be built by running ``make`` in the root directory:
 
 .. prompt:: bash
