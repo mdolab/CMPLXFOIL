@@ -270,6 +270,11 @@ class CMPLXFOIL(BaseSolver):
         if not np.any(np.isnan(self.getOption("xTrip"))):  # NaN is default to not set, otherwise set it
             xfoil.cr15.xstrip = self.getOption("xTrip")
 
+        # Set nCrit (The Fortran variable is acrit)
+        # lvconv needs to be set to False to update internal variables
+        xfoil.cr15.acrit = self.getOption("nCrit")
+        xfoil.cl01.lvconv = False
+
         # Call XFOIL
         xfoil.oper()
 
@@ -1073,6 +1078,7 @@ class CMPLXFOIL(BaseSolver):
                 np.ndarray,
                 np.full(2, np.NaN),
             ],  # boundary layer trip x coordinate of upper and lower surface, respectively (two-element array)
+            "nCrit": [float, 9.0],
         }
 
     @staticmethod
