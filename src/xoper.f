@@ -918,12 +918,12 @@ C------ set updated CL,CD
         CALL CDCALC
 C
 C------ display changes and test for convergence
-c        IF(RLX.LT.1.0)
-c     &   WRITE(*,2000) ITER, RMSBL, RMXBL, VMXBL,IMXBL,ISMXBL,RLX
-c        IF(RLX.EQ.1.0)
-c     &   WRITE(*,2010) ITER, RMSBL, RMXBL, VMXBL,IMXBL,ISMXBL
-c        CDP = CD - CDF
-c         WRITE(*,2020) ALFA/DTOR, CL, CM, CD, CDF, CDP
+        IF(RLX.LT.1.0)
+     &   WRITE(*,2000) ITER, RMSBL, RMXBL, VMXBL,IMXBL,ISMXBL,RLX
+        IF(RLX.EQ.1.0)
+     &   WRITE(*,2010) ITER, RMSBL, RMXBL, VMXBL,IMXBL,ISMXBL
+        CDP = CD - CDF
+         WRITE(*,2020) ALFA/DTOR, CL, CM, CD, CDF, CDP
 C
         IF(RMSBL .LT. EPS1) THEN
          LVCONV = .TRUE.
