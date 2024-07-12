@@ -1427,9 +1427,10 @@ C
 C
       IBLMAX = MAX(IBLTE(1),IBLTE(2)) + NW
       IF(IBLMAX.GT.IVX) THEN
-C        WRITE(*,*) ' ***  BL array overflow.'
-C        WRITE(*,*) ' ***  Increase IVX to at least', IBLMAX
-        STOP
+        WRITE(*,*) 'BL array overflow, setting LEXITFLAG to true'
+        LEXITFLAG = .TRUE.
+        LVCONV = .FALSE.
+        RETURN
       ENDIF
 C
       LIPAN = .TRUE.
