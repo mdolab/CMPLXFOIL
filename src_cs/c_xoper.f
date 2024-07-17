@@ -823,8 +823,7 @@ C----------------------------------------
       include 'c_XFOIL.INC'
 C
 C---- convergence tolerance
-c      DATA EPS1 / 1.0E-10 /
-      DATA EPS1 / 1.0E-6 /
+      DATA EPS1 / 1.0E-10 /
 C
       NITER = NITER1
 C
