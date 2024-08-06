@@ -34,11 +34,63 @@ OFILES=$(f90Files:%.f90=%.o) $(F90Files:%.F90=%.o) $(f77FilesNoDir:%.f=%.o)
 
 .PHONY: sources lib
 
+LIBDIR = .
+
+LINKER_ALL_FLAGS = $(FF90_FLAGS) -L$(LIBDIR) -lcmplxfoil $(LINKER_FLAGS)
+
+PYTHON_OBJECTS = fortranobject.o \
+		 libcmplxfoilmodule.o\
+		 libcmplxfoil-f2pywrappers.o\
+
 default: lib ../f2py/libcmplxfoil.pyf
-	$(F2PY)  --fcompiler=$(F2PY_FF90) --f90flags='$(FF90_ALL_FLAGS)' -c -m libcmplxfoil ../f2py/libcmplxfoil.pyf libxfoil.a
-	mv libcmplxfoil.*so ../../cmplxfoil/libcmplxfoil.so
+
+# Generate Python inlude directory
+	$(eval PYTHON_INCLUDES = $(shell $(PYTHON-CONFIG) --includes))
+	 @echo "#------------------------------------------------------#"
+	 @echo Python Inclue Flags $(PYTHON_INCLUDES)
+	 @echo "#------------------------------------------------------#"
+
+# Generate Numpy inlude directory
+	$(eval NUMPY_INCLUDES = $(shell $(PYTHON) -c 'import numpy; print(numpy.get_include())'))
+	 @echo "#------------------------------------------------------#"
+	 @echo Numpy Include Directory: $(NUMPY_INCLUDES)
+	 @echo "#------------------------------------------------------#"
+
+# Generate f2py root directory
+	$(eval F2PY_ROOT = $(shell $(PYTHON) ../f2py/get_f2py.py))
+	 @echo "#------------------------------------------------------#"
+	 @echo f2py root directory: $(F2PY_ROOT)
+	 @echo "#------------------------------------------------------#"
+
+# Run f2py
+	$(F2PY) ../f2py/libcmplxfoil.pyf
+
+# Compile f2py-generated C wrapper file
+	$(CC) $(CC_FLAGS) $(PYTHON_INCLUDES) -I$(NUMPY_INCLUDES) \
+	-I$(F2PY_ROOT)/src -c libcmplxfoilmodule.c
+
+# Compile the Fortran wrapper in the f2py source
+	$(CC) $(CC_FLAGS) $(PYTHON_INCLUDES) -I$(NUMPY_INCLUDES) -c \
+	$(F2PY_ROOT)/src/fortranobject.c -o fortranobject.o
+
+# Compile f2py-generated Fortran wrapper file
+	$(FF90) $(FF90_ALL_FLAGS) -I./ -c libcmplxfoil-f2pywrappers.f
+
+# Create shared library
+	$(FF90) $(SO_LINKER_FLAGS) $(PYTHON_OBJECTS) $(LINKER_ALL_FLAGS) -o libcmplxfoil.so
+
+# Test if the shared library can be imported in Python
+	$(PYTHON) ../f2py/importTest.py libcmplxfoil.so
+
+# Move the shared libraryo to the main Python directory
+	mv libcmplxfoil.so ../../cmplxfoil
+
+# Clean up temporary files
+	-rm *.o
+	-rm *.c
+	-rm *.f
 
 sources: $(OFILES)
 
 lib: sources
-	$(AR) $(AR_FLAGS) libxfoil.a $(OFILES)
+	$(AR) $(AR_FLAGS) libcmplxfoil.a $(OFILES)
