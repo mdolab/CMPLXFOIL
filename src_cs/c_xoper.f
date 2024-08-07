@@ -122,7 +122,8 @@ cs       write(*,*) 'invicid CL',CL
 c          write(*,*) 'calling viscal'
           call VISCAL(ITMAX)
        endif
-
+c      return now if the VISCAL call failed
+       IF(LEXITFLAG) RETURN
 C       CALL CPX
        CALL FCPMIN
 
@@ -822,8 +823,7 @@ C----------------------------------------
       include 'c_XFOIL.INC'
 C
 C---- convergence tolerance
-c      DATA EPS1 / 1.0E-10 /
-      DATA EPS1 / 1.0E-6 /
+      DATA EPS1 / 1.0E-10 /
 C
       NITER = NITER1
 C
@@ -848,6 +848,8 @@ C----- locate stagnation point arc length position and panel index
 C
 C----- set  BL position -> panel position  pointers
        CALL IBLPAN
+c      quit if the boundary layer array overflows
+       IF(LEXITFLAG) RETURN
 C
 C----- calculate surface arc length array for current stagnation point location
        CALL XICALC
