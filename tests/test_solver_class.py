@@ -89,7 +89,7 @@ class TestNACA(unittest.TestCase):
             self.assertAlmostEqual(true_val, funcs[key])
 
 
-class TestTrip(unittest.TestCase):
+class TestTransition(unittest.TestCase):
     def test_trip(self):
         """
         Test that setting the trip changes the result.
@@ -115,6 +115,28 @@ class TestTrip(unittest.TestCase):
 
         for func in evalFuncs:
             self.assertNotEqual(funcs["fc_" + func], funcsTripped["fc_" + func])
+
+    def test_nCrit(self):
+        """
+        Test that setting nCrit changes the result.
+        """
+        evalFuncs = ["cl", "cd", "cm"]
+        self.ap = AeroProblem(
+            name="fc", alpha=3, mach=0.2, altitude=1e3, areaRef=1.0, chordRef=1.0, evalFuncs=evalFuncs
+        )
+        self.CFDSolver = CMPLXFOIL(os.path.join(baseDir, "naca0012.dat"))
+        self.CFDSolverNCrit = CMPLXFOIL(os.path.join(baseDir, "naca0012.dat"), options={"nCrit": 5.0})
+
+        funcs = {}
+        self.CFDSolver(self.ap)
+        self.CFDSolver.evalFunctions(self.ap, funcs)
+
+        funcsNCrit = {}
+        self.CFDSolverNCrit(self.ap)
+        self.CFDSolverNCrit.evalFunctions(self.ap, funcsNCrit)
+
+        for func in evalFuncs:
+            self.assertNotEqual(funcs["fc_" + func], funcsNCrit["fc_" + func])
 
 
 class TestDerivativesFFD(unittest.TestCase):
