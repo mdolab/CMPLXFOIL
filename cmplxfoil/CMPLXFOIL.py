@@ -263,10 +263,10 @@ class CMPLXFOIL(BaseSolver):
         self.setAeroProblem(aeroProblem)
 
         # Set flight condition and options
-        xfoil.cr15.reinf1 = aeroProblem.reynolds  # Reynolds number
-        xfoil.cr09.minf1 = aeroProblem.mach  # Mach Number set
-        xfoil.cr09.adeg = aeroProblem.alpha
-        xfoil.ci04.itmax = self.getOption("maxIters")  # Iterations Limit Set
+        xfoil.cr15.reinf1 = aeroProblem.re  # Reynolds number per unit length
+        xfoil.cr09.minf1 = aeroProblem.mach  # Mach number
+        xfoil.cr09.adeg = aeroProblem.alpha  # Angle of attack
+        xfoil.ci04.itmax = self.getOption("maxIters")  # Iterations limit
         if not np.any(np.isnan(self.getOption("xTrip"))):  # NaN is default to not set, otherwise set it
             xfoil.cr15.xstrip = self.getOption("xTrip")
 
