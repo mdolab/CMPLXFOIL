@@ -30,3 +30,8 @@ xTrip:
   desc: >
     The boundary layer trip location specified as a two-element numpy array where the first element is the chordwise location at which to trip the upper surface and the second is the chordwise location at which to trip the lower surface.
     By default will not trip the boundary layer and instead use XFOIL's transition model.
+nCrit:
+  desc: >
+    The critical amplification exponent for boundary layer transition.
+    This parameter represents the background turbulence level.
+    Lower values will result in earlier turbulent transition.
