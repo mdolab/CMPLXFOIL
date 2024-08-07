@@ -267,6 +267,7 @@ class CMPLXFOIL(BaseSolver):
         xfoil.cr09.minf1 = aeroProblem.mach  # Mach number
         xfoil.cr09.adeg = aeroProblem.alpha  # Angle of attack
         xfoil.ci04.itmax = self.getOption("maxIters")  # Iterations limit
+        xfoil.cl01.printconv = self.getOption("printConvergence")
         if not np.any(np.isnan(self.getOption("xTrip"))):  # NaN is default to not set, otherwise set it
             xfoil.cr15.xstrip = self.getOption("xTrip")
 
@@ -1068,6 +1069,7 @@ class CMPLXFOIL(BaseSolver):
     def _getDefaultOptions():
         return {
             "maxIters": [int, 100],  # maximum iterations for XFOIL solver
+            "printConvergence": [bool, True],
             "writeCoordinates": [bool, True],  # whether to write coordinates to .dat file when `writeSolution` called
             "writeSliceFile": [bool, True],  # whether or not to save chordwise data
             "writeSolution": [bool, False],  # whether or not to call writeSolution after each call to XFOIL
