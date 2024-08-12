@@ -32,7 +32,7 @@ class TestNACA(unittest.TestCase):
         self.ap = AeroProblem(
             name="fc", alpha=3, mach=0.2, altitude=1e3, areaRef=1.0, chordRef=1.0, evalFuncs=["cl", "cd", "cm"]
         )
-        self.CFDSolver = CMPLXFOIL(os.path.join(baseDir, "naca0012.dat"), options={"printConvergence": False})
+        self.CFDSolver = CMPLXFOIL(os.path.join(baseDir, "naca0012.dat"), options={"printRealConvergence": False})
         self.alphaSequence = np.linspace(-0.5, 0.5, 11)
         self.rng.shuffle(self.alphaSequence)
 
@@ -95,7 +95,7 @@ class TestTransition(unittest.TestCase):
         self.ap = AeroProblem(
             name="fc", alpha=3, mach=0.2, altitude=1e3, areaRef=1.0, chordRef=1.0, evalFuncs=self.evalFuncs
         )
-        self.cmplxfoilOptions = {"printConvergence": False}
+        self.cmplxfoilOptions = {"printRealConvergence": False}
         self.CFDSolver = CMPLXFOIL(os.path.join(baseDir, "naca0012.dat"), options=self.cmplxfoilOptions)
 
     def test_trip(self):
@@ -150,7 +150,7 @@ class TestDerivativesFFD(unittest.TestCase):
 
         # Add CMPLXFOIL solver
         cmplxfoilOptions = {
-            "printConvergence": False,
+            "printRealConvergence": False,
             "writeCoordinates": False,
             "plotAirfoil": False,
             "writeSolution": False,
@@ -287,7 +287,7 @@ class TestDerivativesCST(unittest.TestCase):
 
         # Add CMPLXFOIL solver
         cmplxfoilOptions = {
-            "printConvergence": False,
+            "printRealConvergence": False,
             "writeCoordinates": False,
             "plotAirfoil": False,
             "writeSolution": False,
@@ -439,7 +439,7 @@ class TestPlotting(unittest.TestCase):
         self.ap = AeroProblem(
             name="fc", alpha=3, mach=0.2, altitude=1e3, areaRef=1.0, chordRef=1.0, evalFuncs=["cl", "cd", "cm"]
         )
-        self.CFDSolver = CMPLXFOIL(os.path.join(baseDir, "naca0012.dat"), options={"printConvergence": False})
+        self.CFDSolver = CMPLXFOIL(os.path.join(baseDir, "naca0012.dat"), options={"printRealConvergence": False})
 
         # Run an initial case and plot it
         self.CFDSolver(self.ap)
