@@ -976,19 +976,19 @@ C
 C....................................................................
  2000   FORMAT
      &   (/1X,I3,'   rms: ',SS,ES10.4E2,1X,SP,
-     &   ES12.4E3,'i   max: ',SS,ES11.4E2,1X,SP,ES12.4E3,3X,
+     &   ES12.4E3,'i   max: ',SS,ES11.4E2,1X,SP,ES12.4E3'i ',3X,
      &   A1,' at 'SS,I4,I3, '   RLX:',SS,F6.3,1X,SP,ES12.4E3)
  2010   FORMAT
      &   (/1X,I3,'   rms: ',SS,ES10.4E2,1X,SP,
-     &   ES12.4E3,'i   max: ',SS,ES11.4E2,1X,SP,ES12.4E3,3X,
+     &   ES12.4E3,'i   max: ',SS,ES11.4E2,1X,SP,ES12.4E3'i ',3X,
      &   A1,' at 'SS,I4,I3)
  2020   FORMAT
      &   ( 1X,3X,'   a =',SS,F9.5,1X,SP,
-     &   ES12.4E3,'   CL ='SS,F9.5,1X,SP,ES12.4E3  /
+     &   ES12.4E3,'i   CL ='SS,F9.5,1X,SP,ES12.4E3'i '  /
      &     1X,3X,'  Cm =', F9.5,1X,SP,
-     &   ES12.4E3, '   CD =',SS,F9.5,1X,SP,
-     &   ES12.4E3, '   =>   CDf =',SS,F9.5,1X,SP,
-     &   ES12.4E3'   CDp =',SS,F9.5,1X,SP,ES12.4E3)
+     &   ES12.4E3,'i   CD =',SS,F9.5,1X,SP,
+     &   ES12.4E3,'i   =>   CDf =',SS,F9.5,1X,SP,
+     &   ES12.4E3,'i   CDp =',SS,F9.5,1X,SP,ES12.4E3,'i')
       END ! VISCAL
 
 
