@@ -22,6 +22,12 @@ maxIters:
   desc: >
     The maximum iterations for XFOIL solver.
     By default 100.
+printRealConvergence:
+  desc: >
+    Whether or not to print out the convergence history in real mode.
+printComplexConvergence:
+  desc: >
+    Whether or not to print out the convergence history in complex mode.
 numberSolutions:
   desc: >
     If True, will add call counter to output file names.

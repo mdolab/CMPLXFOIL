@@ -32,7 +32,7 @@ class TestNACA(unittest.TestCase):
         self.ap = AeroProblem(
             name="fc", alpha=3, mach=0.2, altitude=1e3, areaRef=1.0, chordRef=1.0, evalFuncs=["cl", "cd", "cm"]
         )
-        self.CFDSolver = CMPLXFOIL(os.path.join(baseDir, "naca0012.dat"))
+        self.CFDSolver = CMPLXFOIL(os.path.join(baseDir, "naca0012.dat"), options={"printRealConvergence": False})
         self.alphaSequence = np.linspace(-0.5, 0.5, 11)
         self.rng.shuffle(self.alphaSequence)
 
@@ -90,20 +90,21 @@ class TestNACA(unittest.TestCase):
 
 
 class TestTransition(unittest.TestCase):
+    def setUp(self):
+        self.evalFuncs = ["cl", "cd", "cm"]
+        self.ap = AeroProblem(
+            name="fc", alpha=3, mach=0.2, altitude=1e3, areaRef=1.0, chordRef=1.0, evalFuncs=self.evalFuncs
+        )
+        self.cmplxfoilOptions = {"printRealConvergence": False}
+        self.CFDSolver = CMPLXFOIL(os.path.join(baseDir, "naca0012.dat"), options=self.cmplxfoilOptions)
+
     def test_trip(self):
         """
         Test that setting the trip changes the result.
         """
-        # Set the random range to use consistent random numbers
-        self.rng = np.random.default_rng(7)
-        evalFuncs = ["cl", "cd", "cm"]
-        self.ap = AeroProblem(
-            name="fc", alpha=3, mach=0.2, altitude=1e3, areaRef=1.0, chordRef=1.0, evalFuncs=evalFuncs
-        )
-        self.CFDSolver = CMPLXFOIL(os.path.join(baseDir, "naca0012.dat"))
-        self.CFDSolverTripped = CMPLXFOIL(
-            os.path.join(baseDir, "naca0012.dat"), options={"xTrip": np.array([0.1, 0.1])}
-        )
+
+        self.cmplxfoilOptions.update({"xTrip": np.array([0.1, 0.1])})
+        self.CFDSolverTripped = CMPLXFOIL(os.path.join(baseDir, "naca0012.dat"), options=self.cmplxfoilOptions)
 
         funcs = {}
         self.CFDSolver(self.ap)
@@ -113,19 +114,16 @@ class TestTransition(unittest.TestCase):
         self.CFDSolverTripped(self.ap)
         self.CFDSolverTripped.evalFunctions(self.ap, funcsTripped)
 
-        for func in evalFuncs:
+        for func in self.evalFuncs:
             self.assertNotEqual(funcs["fc_" + func], funcsTripped["fc_" + func])
 
     def test_nCrit(self):
         """
         Test that setting nCrit changes the result.
         """
-        evalFuncs = ["cl", "cd", "cm"]
-        self.ap = AeroProblem(
-            name="fc", alpha=3, mach=0.2, altitude=1e3, areaRef=1.0, chordRef=1.0, evalFuncs=evalFuncs
-        )
-        self.CFDSolver = CMPLXFOIL(os.path.join(baseDir, "naca0012.dat"))
-        self.CFDSolverNCrit = CMPLXFOIL(os.path.join(baseDir, "naca0012.dat"), options={"nCrit": 5.0})
+
+        self.cmplxfoilOptions.update({"nCrit": 5.0})
+        self.CFDSolverNCrit = CMPLXFOIL(os.path.join(baseDir, "naca0012.dat"), options=self.cmplxfoilOptions)
 
         funcs = {}
         self.CFDSolver(self.ap)
@@ -135,7 +133,7 @@ class TestTransition(unittest.TestCase):
         self.CFDSolverNCrit(self.ap)
         self.CFDSolverNCrit.evalFunctions(self.ap, funcsNCrit)
 
-        for func in evalFuncs:
+        for func in self.evalFuncs:
             self.assertNotEqual(funcs["fc_" + func], funcsNCrit["fc_" + func])
 
 
@@ -152,6 +150,7 @@ class TestDerivativesFFD(unittest.TestCase):
 
         # Add CMPLXFOIL solver
         cmplxfoilOptions = {
+            "printRealConvergence": False,
             "writeCoordinates": False,
             "plotAirfoil": False,
             "writeSolution": False,
@@ -288,6 +287,7 @@ class TestDerivativesCST(unittest.TestCase):
 
         # Add CMPLXFOIL solver
         cmplxfoilOptions = {
+            "printRealConvergence": False,
             "writeCoordinates": False,
             "plotAirfoil": False,
             "writeSolution": False,
@@ -439,7 +439,7 @@ class TestPlotting(unittest.TestCase):
         self.ap = AeroProblem(
             name="fc", alpha=3, mach=0.2, altitude=1e3, areaRef=1.0, chordRef=1.0, evalFuncs=["cl", "cd", "cm"]
         )
-        self.CFDSolver = CMPLXFOIL(os.path.join(baseDir, "naca0012.dat"))
+        self.CFDSolver = CMPLXFOIL(os.path.join(baseDir, "naca0012.dat"), options={"printRealConvergence": False})
 
         # Run an initial case and plot it
         self.CFDSolver(self.ap)
