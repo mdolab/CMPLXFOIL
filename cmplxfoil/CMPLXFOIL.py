@@ -254,11 +254,13 @@ class CMPLXFOIL(BaseSolver):
             xfoil = self.xfoil_cs
             funcs = self.funcsComplex
             sliceData = self.sliceDataComplex
+            xfoil.cl01.printconv = self.getOption("printComplexConvergence")
         else:
             dtype = float
             xfoil = self.xfoil
             funcs = self.funcs
             sliceData = self.sliceData
+            xfoil.cl01.printconv = self.getOption("printRealConvergence")
 
         self.setAeroProblem(aeroProblem)
 
@@ -1068,6 +1070,8 @@ class CMPLXFOIL(BaseSolver):
     def _getDefaultOptions():
         return {
             "maxIters": [int, 100],  # maximum iterations for XFOIL solver
+            "printRealConvergence": [bool, True],
+            "printComplexConvergence": [bool, False],
             "writeCoordinates": [bool, True],  # whether to write coordinates to .dat file when `writeSolution` called
             "writeSliceFile": [bool, True],  # whether or not to save chordwise data
             "writeSolution": [bool, False],  # whether or not to call writeSolution after each call to XFOIL
