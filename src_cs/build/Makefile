@@ -77,18 +77,19 @@ default: lib ../f2py/libcmplxfoil_cs.pyf
 	$(FF90) $(FF90_ALL_FLAGS) -I./ -c libcmplxfoil_cs-f2pywrappers.f
 
 # Create shared library
-	$(FF90) $(SO_LINKER_FLAGS) $(PYTHON_OBJECTS) $(LINKER_ALL_FLAGS) -o libcmplxfoil_cs.so
+	$(FF90) $(SO_LINKER_FLAGS) $(PYTHON_OBJECTS) $(LINKER_ALL_FLAGS) -o libxfoil_cs.so
+	mv libxfoil_cs.so libcmplxfoil_cs.so
 
 # Test if the shared library can be imported in Python
 	$(PYTHON) ../../src/f2py/importTest.py libcmplxfoil_cs.so
 
-# Move the shared libraryo to the main Python directory
+# Move the shared library to the main Python directory
 	mv libcmplxfoil_cs.so ../../cmplxfoil
 
 # Clean up temporary files
-#	-rm *.o
-#	-rm *.c
-#	-rm *.f
+	-rm *.o
+	-rm *.c
+	-rm *.f
 
 sources: $(OFILES)
 
