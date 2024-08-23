@@ -82,7 +82,7 @@ default: lib ../f2py/libcmplxfoil.pyf
 # Test if the shared library can be imported in Python
 	$(PYTHON) ../f2py/importTest.py libcmplxfoil.so
 
-# Move the shared libraryo to the main Python directory
+# Move the shared library to the main Python directory
 	mv libcmplxfoil.so ../../cmplxfoil
 
 # Clean up temporary files
