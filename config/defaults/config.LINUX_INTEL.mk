@@ -9,7 +9,7 @@ else
   FF90       = ifx
 endif
 
-FF90_FLAGS = -O2 -r8 -fPIC
+FF90_FLAGS = -O2 -fp-model=precise -r8 -fPIC
 
 F2PY = f2py
 F2PY_FF90 = intelem
