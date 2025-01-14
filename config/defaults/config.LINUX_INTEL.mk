@@ -8,6 +8,7 @@ ifdef IFORT_EXISTS
   OPT_FLAGS  = -O2
 else
   FF90       = ifx
+  # We see a lot of solver failures with ifx when using anything more aggressive than -O0 optimization, increase the optimization level at your own risk
   OPT_FLAGS  = -O0
 endif
 
