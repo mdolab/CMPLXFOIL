@@ -269,7 +269,7 @@ class CMPLXFOIL(BaseSolver):
         xfoil.cr09.minf1 = aeroProblem.mach  # Mach number
         xfoil.cr09.adeg = aeroProblem.alpha  # Angle of attack
         xfoil.ci04.itmax = self.getOption("maxIters")  # Iterations limit
-        if not np.any(np.isnan(self.getOption("xTrip"))):  # NaN is default to not set, otherwise set it
+        if not np.any(np.isnan(self.getOption("xTrip"))):  # nan is default to not set, otherwise set it
             xfoil.cr15.xstrip = self.getOption("xTrip")
 
         # Set nCrit (The Fortran variable is acrit)
@@ -1080,7 +1080,7 @@ class CMPLXFOIL(BaseSolver):
             "numberSolutions": [bool, True],  # whether to add call counter to output file names
             "xTrip": [
                 np.ndarray,
-                np.full(2, np.NaN),
+                np.full(2, np.nan),
             ],  # boundary layer trip x coordinate of upper and lower surface, respectively (two-element array)
             "nCrit": [float, 9.0],
         }
