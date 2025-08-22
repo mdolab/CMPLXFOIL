@@ -382,7 +382,7 @@ python module libcmplxfoil ! in
             real*8 dimension(3,2,322) :: vdel
             real*8 dimension(3,322,322) :: vm
             real*8 dimension(3,2) :: vz
-            common /cl01/ ok,limage,sharp,lgamu,lqinu,lvisc,lalfa,lwake,lpacc,lblini,lipan,lqaij,ladij,lwdij,lcpxx,lqvdes,lqrefl,lqspec,lvconv,lcpref,lclock,lpfile,lpfilx,lppsho,lbflap,lflap,leiw,lscini,lforef,lnorm,lgsame,lplcam,lqsym,lgsym,lqgrid,lggrid,lgtick,lqslop,lgslop,lcslop,lqsppl,lgeopl,lgparm,lcpgrd,lblgrd,lblsym,lplot,lsym,liqset,lclip,lvlab,lcurs,lland,lpgrid,lpcdw,lplist,lplegn,lcminp,lhmomp,lexitflag
+            common /cl01/ ok,limage,sharp,lgamu,lqinu,lvisc,lalfa,lwake,lpacc,lblini,lipan,lqaij,ladij,lwdij,lcpxx,lqvdes,lqrefl,lqspec,lvconv,lcpref,lclock,lpfile,lpfilx,lppsho,lbflap,lflap,leiw,lscini,lforef,lnorm,lgsame,lplcam,lqsym,lgsym,lqgrid,lggrid,lgtick,lqslop,lgslop,lcslop,lqsppl,lgeopl,lgparm,lcpgrd,lblgrd,lblsym,lplot,lsym,liqset,lclip,lvlab,lcurs,lland,lpgrid,lpcdw,lplist,lplegn,lcminp,lhmomp,lexitflag,printconv
             common /cl02/ tforce
             common /cr07/ ssple,sspec,xspoc,yspoc,qgamm,qspec,qspecp,algam,clgam,cmgam,alqsp,clqsp,cmqsp,qf0,qf1,qf2,qf3,qdof0,qdof1,qdof2,qdof3,clspec,ffilt
             common /cr06/ gam,gamu,gam_a,sig,nx,ny,apanel,sst,sst_go,sst_gp,gamte,gamte_a,sigte,sigte_a,dste,ante,aste

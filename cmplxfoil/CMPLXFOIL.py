@@ -254,21 +254,28 @@ class CMPLXFOIL(BaseSolver):
             xfoil = self.xfoil_cs
             funcs = self.funcsComplex
             sliceData = self.sliceDataComplex
+            xfoil.cl01.printconv = self.getOption("printComplexConvergence")
         else:
             dtype = float
             xfoil = self.xfoil
             funcs = self.funcs
             sliceData = self.sliceData
+            xfoil.cl01.printconv = self.getOption("printRealConvergence")
 
         self.setAeroProblem(aeroProblem)
 
         # Set flight condition and options
-        xfoil.cr15.reinf1 = aeroProblem.re  # Reynolds number
-        xfoil.cr09.minf1 = aeroProblem.mach  # Mach Number set
-        xfoil.cr09.adeg = aeroProblem.alpha
-        xfoil.ci04.itmax = self.getOption("maxIters")  # Iterations Limit Set
-        if not np.any(np.isnan(self.getOption("xTrip"))):  # NaN is default to not set, otherwise set it
+        xfoil.cr15.reinf1 = aeroProblem.re  # Reynolds number per unit length
+        xfoil.cr09.minf1 = aeroProblem.mach  # Mach number
+        xfoil.cr09.adeg = aeroProblem.alpha  # Angle of attack
+        xfoil.ci04.itmax = self.getOption("maxIters")  # Iterations limit
+        if not np.any(np.isnan(self.getOption("xTrip"))):  # nan is default to not set, otherwise set it
             xfoil.cr15.xstrip = self.getOption("xTrip")
+
+        # Set nCrit (The Fortran variable is acrit)
+        # lvconv needs to be set to False to update internal variables
+        xfoil.cr15.acrit = self.getOption("nCrit")
+        xfoil.cl01.lvconv = False
 
         # Call XFOIL
         xfoil.oper()
@@ -1063,6 +1070,8 @@ class CMPLXFOIL(BaseSolver):
     def _getDefaultOptions():
         return {
             "maxIters": [int, 100],  # maximum iterations for XFOIL solver
+            "printRealConvergence": [bool, True],
+            "printComplexConvergence": [bool, False],
             "writeCoordinates": [bool, True],  # whether to write coordinates to .dat file when `writeSolution` called
             "writeSliceFile": [bool, True],  # whether or not to save chordwise data
             "writeSolution": [bool, False],  # whether or not to call writeSolution after each call to XFOIL
@@ -1071,8 +1080,9 @@ class CMPLXFOIL(BaseSolver):
             "numberSolutions": [bool, True],  # whether to add call counter to output file names
             "xTrip": [
                 np.ndarray,
-                np.full(2, np.NaN),
+                np.full(2, np.nan),
             ],  # boundary layer trip x coordinate of upper and lower surface, respectively (two-element array)
+            "nCrit": [float, 9.0],
         }
 
     @staticmethod

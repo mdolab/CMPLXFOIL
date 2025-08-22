@@ -122,7 +122,8 @@ cs       write(*,*) 'invicid CL',CL
 c          write(*,*) 'calling viscal'
           call VISCAL(ITMAX)
        endif
-
+c      return now if the VISCAL call failed
+       IF(LEXITFLAG) RETURN
 C       CALL CPX
        CALL FCPMIN
 
@@ -822,8 +823,7 @@ C----------------------------------------
       include 'c_XFOIL.INC'
 C
 C---- convergence tolerance
-c      DATA EPS1 / 1.0E-10 /
-      DATA EPS1 / 1.0E-6 /
+      DATA EPS1 / 1.0E-10 /
 C
       NITER = NITER1
 C
@@ -848,6 +848,8 @@ C----- locate stagnation point arc length position and panel index
 C
 C----- set  BL position -> panel position  pointers
        CALL IBLPAN
+c      quit if the boundary layer array overflows
+       IF(LEXITFLAG) RETURN
 C
 C----- calculate surface arc length array for current stagnation point location
        CALL XICALC
@@ -947,16 +949,15 @@ C------ set updated CL,CD
         CALL CDCALC
 C
 C------ display changes and test for convergence
-c        IF(RLX.LT.1.0)
-c     &   WRITE(*,2000) ITER, real(RMSBL), real(RMXBL),VMXBL,
-c     &   real(IMXBL),real(ISMXBL),real(RLX)
-c        IF(RLX.CEQ.1.0)
-c     &   WRITE(*,2010)ITER, real(RMSBL), real(RMXBL), VMXBL,
-c     &   real(IMXBL),real(ISMXBL),real(RLX)
-c        CDP = CD - CDF
-c         WRITE(*,2020) real(ALFA/DTOR), real(CL), real(CM), real(CD),
-c     &    real(CDF), real(CDP)
-C
+        IF (PRINTCONV) THEN
+         IF(RLX.LT.1.0)
+     &    WRITE(*,2000) ITER, RMSBL, RMXBL, VMXBL,IMXBL,ISMXBL,RLX
+         IF(RLX.EQ.1.0)
+     &    WRITE(*,2010) ITER, RMSBL, RMXBL, VMXBL,IMXBL,ISMXBL
+          CDP = CD - CDF
+          WRITE(*,2020) ALFA/DTOR, CL, CM, CD, CDF, CDP
+        ENDIF
+
         IF(RMSBL .LT. EPS1) THEN
          LVCONV = .TRUE.
          AVISC = ALFA
@@ -974,14 +975,20 @@ C
       RETURN
 C....................................................................
  2000   FORMAT
-     &   (/1X,I3,'   rms: ',E10.4,'   max: ',E10.4,3X,A1,' at ',I4,I3,
-     &     '   RLX:',F6.3)
+     &   (/1X,I3,'   rms: ',SS,ES10.4E2,1X,SP,
+     &   ES12.4E3,'i   max: ',SS,ES11.4E2,1X,SP,ES12.4E3'i ',3X,
+     &   A1,' at 'SS,I4,I3, '   RLX:',SS,F6.3,1X,SP,ES12.4E3)
  2010   FORMAT
-     &   (/1X,I3,'   rms: ',E10.4,'   max: ',E10.4,3X,A1,' at ',I4,I3)
+     &   (/1X,I3,'   rms: ',SS,ES10.4E2,1X,SP,
+     &   ES12.4E3,'i   max: ',SS,ES11.4E2,1X,SP,ES12.4E3'i ',3X,
+     &   A1,' at 'SS,I4,I3)
  2020   FORMAT
-     &   ( 1X,3X,'   a =', F7.3,'      CL =',F8.4  /
-     &     1X,3X,'  Cm =', F8.4, '     CD =',F9.5,
-     &           '   =>   CDf =',F9.5,'    CDp =',F9.5)
+     &   ( 1X,3X,'   a =',SS,F9.5,1X,SP,
+     &   ES12.4E3,'i   CL ='SS,F9.5,1X,SP,ES12.4E3'i '  /
+     &     1X,3X,'  Cm =', F9.5,1X,SP,
+     &   ES12.4E3,'i   CD =',SS,F9.5,1X,SP,
+     &   ES12.4E3,'i   =>   CDf =',SS,F9.5,1X,SP,
+     &   ES12.4E3,'i   CDp =',SS,F9.5,1X,SP,ES12.4E3,'i')
       END ! VISCAL
 
 

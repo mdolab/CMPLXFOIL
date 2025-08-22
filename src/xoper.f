@@ -117,6 +117,8 @@ C	 ADEG = 0.0	SET IN XFOIL.F NOW
        ENDIF
 C
        IF(LVISC) CALL VISCAL(ITMAX)
+c      return now if the VISCAL call failed
+       IF(LEXITFLAG) RETURN
 C       CALL CPX
        CALL FCPMIN
 
@@ -819,6 +821,8 @@ C----- locate stagnation point arc length position and panel index
 C
 C----- set  BL position -> panel position  pointers
        CALL IBLPAN
+c      quit if the boundary layer array overflows
+       IF(LEXITFLAG) RETURN
 C
 C----- calculate surface arc length array for current stagnation point location
        CALL XICALC
@@ -914,12 +918,14 @@ C------ set updated CL,CD
         CALL CDCALC
 C
 C------ display changes and test for convergence
-c        IF(RLX.LT.1.0)
-c     &   WRITE(*,2000) ITER, RMSBL, RMXBL, VMXBL,IMXBL,ISMXBL,RLX
-c        IF(RLX.EQ.1.0)
-c     &   WRITE(*,2010) ITER, RMSBL, RMXBL, VMXBL,IMXBL,ISMXBL
-c        CDP = CD - CDF
-c         WRITE(*,2020) ALFA/DTOR, CL, CM, CD, CDF, CDP
+        IF (PRINTCONV) THEN
+         IF(RLX.LT.1.0)
+     &    WRITE(*,2000) ITER, RMSBL, RMXBL, VMXBL,IMXBL,ISMXBL,RLX
+         IF(RLX.EQ.1.0)
+     &    WRITE(*,2010) ITER, RMSBL, RMXBL, VMXBL,IMXBL,ISMXBL
+          CDP = CD - CDF
+          WRITE(*,2020) ALFA/DTOR, CL, CM, CD, CDF, CDP
+        ENDIF
 C
         IF(RMSBL .LT. EPS1) THEN
          LVCONV = .TRUE.
@@ -938,13 +944,14 @@ C
       RETURN
 C....................................................................
  2000   FORMAT
-     &   (/1X,I3,'   rms: ',E10.4,'   max: ',E10.4,3X,A1,' at ',I4,I3,
-     &     '   RLX:',F6.3)
+     &   (/1X,I3,'   rms: ',ES10.4E2,'   max: ',ES11.4E2,
+     &   3X,A1,' at ',I4,I3, '   RLX:',F6.3)
  2010   FORMAT
-     &   (/1X,I3,'   rms: ',E10.4,'   max: ',E10.4,3X,A1,' at ',I4,I3)
+     &   (/1X,I3,'   rms: ',ES10.4E2,'   max: ',ES11.4E2,
+     &   3X,A1,' at ',I4,I3)
  2020   FORMAT
-     &   ( 1X,3X,'   a =', F7.3,'      CL =',F8.4  /
-     &     1X,3X,'  Cm =', F8.4, '     CD =',F9.5,
+     &   ( 1X,3X,'   a =', F9.5,'      CL =',F9.5  /
+     &     1X,3X,'  Cm =', F9.5,'      CD =',F9.5,
      &           '   =>   CDf =',F9.5,'    CDp =',F9.5)
       END ! VISCAL
 
