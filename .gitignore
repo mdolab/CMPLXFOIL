@@ -1,9 +1,8 @@
 .pre-commit-config.yaml
 .vscode/*
-.flake8
 
 # Ignore ruff and pre commit config files
-ruff.toml
+# ruff.toml
 .pre-commit-config.yaml
 
 *.mod
