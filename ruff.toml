@@ -1,3 +1,4 @@
+    extend = "ruff.toml-global"
     extend-exclude =[
         "src_cs/complexify.py"
     ]
