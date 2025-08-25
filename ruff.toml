@@ -1,4 +1,4 @@
-    extend = "~/.config/ruff/ruff.toml"
-    extend-exclude =[
-        "src_cs/complexify.py"
-    ]
+extend = "~/.config/ruff/ruff.toml"
+extend-exclude =[
+    "src_cs/complexify.py"
+]
