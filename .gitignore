@@ -2,7 +2,7 @@
 .vscode/*
 
 # Ignore ruff and pre commit config files
-# ruff.toml
+ruff.toml
 .pre-commit-config.yaml
 
 *.mod
