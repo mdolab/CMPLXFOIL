@@ -194,7 +194,7 @@ class CMPLXFOIL(BaseSolver):
 
         # Initialize the callCounter if it's not already an attribute
         try:
-            aeroProblem.callCounter
+            _ = aeroProblem.callCounter
         except AttributeError:
             aeroProblem.callCounter = 0
 
@@ -807,8 +807,8 @@ class CMPLXFOIL(BaseSolver):
         """
         try:
             from pygeo.pyGeo import pyGeo
-        except ImportError:
-            raise ImportError("pygeo is required to use getTriangulatedMeshSurface")
+        except ImportError as e:
+            raise ImportError("pygeo is required to use getTriangulatedMeshSurface") from e
 
         airfoil_list = [self.DATFileName] * 2
         naf = len(airfoil_list)

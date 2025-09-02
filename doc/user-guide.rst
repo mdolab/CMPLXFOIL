@@ -66,7 +66,7 @@ CMPLXFOIL solver setup
 The options tell the solver to write out chordwise aerodynamic data (``writeSliceFile``) and the airfoil coordinates (``writeCoordinates``) every time it is called.
 It also enables live plotting during the optimization (``plotAirfoil``).
 Finally, it specifies the output directory to save these files.
- 
+
 .. literalinclude:: ../examples/single_point.py
     :start-after: # rst solver (beg)
     :end-before: # rst solver (end)
