@@ -1,6 +1,16 @@
 # The following checks the numpy version and uses it to support both legacy distutils and meson backends
 # Also python 3.12 and later removed distutils so we need to check for that as well
-USE_MESON := $(shell python -c "import sys, numpy; print(int(sys.version_info[:2] >= (3,12) or int(numpy.__version__.split('.')[0]) >= 2))")
+PYTHON_NEW_ENOUGH := $(shell python -c "import sys; print(int(sys.version_info[:2] >= (3, 12)))")
+NUMPY_NEW_ENOUGH := $(shell python -c "import numpy; print(int(int(numpy.__version__.split('.')[0]) >= 2))")
+
+# If either is true, use Meson
+USE_MESON := 0
+ifeq ($(PYTHON_NEW_ENOUGH),1)
+    USE_MESON := 1
+endif
+ifeq ($(NUMPY_NEW_ENOUGH),1)
+	USE_MESON := 1
+endif
 
 ifeq ($(USE_MESON),1)
 	F2PY_CMD = export FC=$(FF90); $(F2PY)
