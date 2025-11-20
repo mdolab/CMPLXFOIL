@@ -34,18 +34,11 @@ OFILES=$(f90Files:%.f90=%.o) $(F90Files:%.F90=%.o) $(f77FilesNoDir:%.f=%.o)
 
 .PHONY: sources lib
 
-# The following checks the numpy version and uses it to support both legacy distutils and meson backends
-# Also python 3.12 and later removed distutils so we need to check for that as well
-USE_MESON := $(shell python -c "import sys, numpy; print(int(sys.version_info[:2] >= (3,12) or int(numpy.__version__.split('.')[0]) >= 2))")
-F2PY_COMMON := --f90flags='$(FF90_ALL_FLAGS)' -c -m libcmplxfoil ../f2py/libcmplxfoil.pyf  -L$(shell pwd) -lxfoil
+include ../../config/f2py_backend.mk
+F2PY_COMMON := --f90flags='$(FF90_ALL_FLAGS)' -c -m libcmplxfoil ../f2py/libcmplxfoil.pyf  $(REAL_F2PY_LINK)
 
 default: lib ../f2py/libcmplxfoil.pyf
-ifeq ($(USE_MESON),1)
-	export FC=$(FF90); \
-	$(F2PY) $(F2PY_COMMON)
-else
-	$(F2PY) --fcompiler=$(F2PY_FF90) $(F2PY_COMMON)
-endif
+	$(F2PY_CMD) $(F2PY_COMMON)
 	mv libcmplxfoil.*so ../../cmplxfoil/libcmplxfoil.so
 
 sources: $(OFILES)
