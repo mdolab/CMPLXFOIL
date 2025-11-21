@@ -327,7 +327,7 @@ class CMPLXFOIL(BaseSolver):
         # Check if kscpmin is requested, if so, then compute it
         if "kscpmin" in self.curAP.evalFuncs:
             cpAll = np.concatenate((sliceData[aeroProblem.name]["cp_visc_upper"], sliceData[aeroProblem.name]["cp_visc_lower"]))
-            kscpmin = -self.computeKSMax(-cpAll, rho=self.getOption("rhoKS"), printOK=True)
+            kscpmin = -self.computeKSMax(-cpAll, rho=self.getOption("rhoKS"), printOK=False)
 
             funcs[aeroProblem.name]["kscpmin"] = dtype(kscpmin)
 
