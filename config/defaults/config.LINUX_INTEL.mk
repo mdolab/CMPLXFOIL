@@ -9,11 +9,11 @@ ICC_EXISTS := $(shell command -v icc;)
 ifdef ICC_EXISTS
   # icc only exists on older Intel versions
   # Assume that we want to use the old compilers
-  FF90 = ifort
+  FF90       = ifort
   CC = icc
 else
   # Use the new compilers
-  FF90 = ifx
+  FF90       = ifx
   CC = icx
 endif
 

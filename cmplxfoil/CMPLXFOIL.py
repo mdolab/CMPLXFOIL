@@ -194,7 +194,7 @@ class CMPLXFOIL(BaseSolver):
 
         # Initialize the callCounter if it's not already an attribute
         try:
-            aeroProblem.callCounter
+            _ = aeroProblem.callCounter
         except AttributeError:
             aeroProblem.callCounter = 0
 
@@ -269,7 +269,7 @@ class CMPLXFOIL(BaseSolver):
         xfoil.cr09.minf1 = aeroProblem.mach  # Mach number
         xfoil.cr09.adeg = aeroProblem.alpha  # Angle of attack
         xfoil.ci04.itmax = self.getOption("maxIters")  # Iterations limit
-        if not np.any(np.isnan(self.getOption("xTrip"))):  # NaN is default to not set, otherwise set it
+        if not np.any(np.isnan(self.getOption("xTrip"))):  # nan is default to not set, otherwise set it
             xfoil.cr15.xstrip = self.getOption("xTrip")
 
         # Set nCrit (The Fortran variable is acrit)
@@ -807,8 +807,8 @@ class CMPLXFOIL(BaseSolver):
         """
         try:
             from pygeo.pyGeo import pyGeo
-        except ImportError:
-            raise ImportError("pygeo is required to use getTriangulatedMeshSurface")
+        except ImportError as e:
+            raise ImportError("pygeo is required to use getTriangulatedMeshSurface") from e
 
         airfoil_list = [self.DATFileName] * 2
         naf = len(airfoil_list)
@@ -1080,7 +1080,7 @@ class CMPLXFOIL(BaseSolver):
             "numberSolutions": [bool, True],  # whether to add call counter to output file names
             "xTrip": [
                 np.ndarray,
-                np.full(2, np.NaN),
+                np.full(2, np.nan),
             ],  # boundary layer trip x coordinate of upper and lower surface, respectively (two-element array)
             "nCrit": [float, 9.0],
         }

@@ -9,9 +9,9 @@ CMPLXFOIL
 .. currentmodule:: cmplxfoil
 
 .. autoclass:: CMPLXFOIL
-    :members: 
+    :members:
 
 AnimateAirfoilOpt
 -----------------
 .. autoclass:: AnimateAirfoilOpt
-    :members: 
+    :members:
