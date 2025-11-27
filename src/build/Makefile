@@ -34,9 +34,7 @@ OFILES=$(f90Files:%.f90=%.o) $(F90Files:%.F90=%.o) $(f77FilesNoDir:%.f=%.o)
 
 .PHONY: sources lib
 
-LIBDIR = .
-
-LINKER_ALL_FLAGS = $(FF90_FLAGS) -L$(LIBDIR) -lcmplxfoil $(LINKER_FLAGS)
+LINKER_ALL_FLAGS = $(FF90_FLAGS) $(LINKER_FLAGS)
 
 PYTHON_OBJECTS = fortranobject.o \
 		 libcmplxfoilmodule.o\
@@ -77,7 +75,7 @@ default: lib ../f2py/libcmplxfoil.pyf
 	$(FF90) $(FF90_ALL_FLAGS) -I./ -c libcmplxfoil-f2pywrappers.f
 
 # Create shared library
-	$(FF90) $(SO_LINKER_FLAGS) $(PYTHON_OBJECTS) $(LINKER_ALL_FLAGS) -o libxfoil.so
+	$(FF90) $(SO_LINKER_FLAGS) $(PYTHON_OBJECTS) libcmplxfoil.a $(LINKER_ALL_FLAGS) -o libxfoil.so
 	mv libxfoil.so libcmplxfoil.so
 
 # Test if the shared library can be imported in Python
