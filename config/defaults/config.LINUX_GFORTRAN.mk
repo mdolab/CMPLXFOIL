@@ -4,7 +4,7 @@ AR       = ar
 AR_FLAGS = -rvs
 
 FF90       = gfortran
-FF90_FLAGS = -O2 -fdefault-real-8 -fPIC
+FF90_FLAGS = -O2 -fPIC -fdefault-real-8 -fdefault-double-8
 
 CC = gcc
 CC_FLAGS = -O2 -fPIC
