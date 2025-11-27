@@ -11,14 +11,16 @@ ifdef ICC_EXISTS
   # Assume that we want to use the old compilers
   FF90       = ifort
   CC = icc
+  OPT_FLAGS = -O2
 else
   # Use the new compilers
   FF90       = ifx
   CC = icx
+  OPT_FLAGS = -O0
 endif
 
-FF90_FLAGS = -O2 -r8 -fPIC
-CC_FLAGS = -O2 -fPIC
+FF90_FLAGS = $(OPT_FLAGS) -r8 -fPIC
+CC_FLAGS = $(OPT_FLAGS) -fPIC
 
 # Define potentially different python, python-config and f2py executables:
 PYTHON = python
