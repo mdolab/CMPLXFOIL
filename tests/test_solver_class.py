@@ -51,21 +51,15 @@ class TestNACA(unittest.TestCase):
         for CLTarget in self.alphaSequence:
             # Default settings
             self.CFDSolver.solveCL(self.ap, CLTarget, tol=tol)
-            self.assertAlmostEqual(
-                float(self.CFDSolver.xfoil.cr09.cl), CLTarget, delta=tol
-            )
+            self.assertAlmostEqual(float(self.CFDSolver.xfoil.cr09.cl), CLTarget, delta=tol)
 
     def test_cl_solve_CLalphaGuess(self):
         """Test that SolveCL works correctly"""
         tol = 1e-5
         for CLTarget in self.alphaSequence:
             # Using secant with CLalphaGuess
-            self.CFDSolver.solveCL(
-                self.ap, CLTarget, tol=tol, useNewton=False, CLalphaGuess=0.11
-            )
-            self.assertAlmostEqual(
-                float(self.CFDSolver.xfoil.cr09.cl), CLTarget, delta=tol
-            )
+            self.CFDSolver.solveCL(self.ap, CLTarget, tol=tol, useNewton=False, CLalphaGuess=0.11)
+            self.assertAlmostEqual(float(self.CFDSolver.xfoil.cr09.cl), CLTarget, delta=tol)
 
     def test_cl_solve_Newton(self):
         """Test that SolveCL works correctly"""
@@ -73,9 +67,7 @@ class TestNACA(unittest.TestCase):
         for CLTarget in self.alphaSequence:
             # Using Newton
             self.CFDSolver.solveCL(self.ap, CLTarget, tol=tol, useNewton=True)
-            self.assertAlmostEqual(
-                float(self.CFDSolver.xfoil.cr09.cl), CLTarget, delta=tol
-            )
+            self.assertAlmostEqual(float(self.CFDSolver.xfoil.cr09.cl), CLTarget, delta=tol)
 
     def test_function_values(self):
         funcs = {}
@@ -119,9 +111,7 @@ class TestTransition(unittest.TestCase):
             evalFuncs=self.evalFuncs,
         )
         self.cmplxfoilOptions = {"printRealConvergence": False}
-        self.CFDSolver = CMPLXFOIL(
-            os.path.join(baseDir, "naca0012.dat"), options=self.cmplxfoilOptions
-        )
+        self.CFDSolver = CMPLXFOIL(os.path.join(baseDir, "naca0012.dat"), options=self.cmplxfoilOptions)
 
     def test_trip(self):
         """
@@ -129,9 +119,7 @@ class TestTransition(unittest.TestCase):
         """
 
         self.cmplxfoilOptions.update({"xTrip": np.array([0.1, 0.1])})
-        self.CFDSolverTripped = CMPLXFOIL(
-            os.path.join(baseDir, "naca0012.dat"), options=self.cmplxfoilOptions
-        )
+        self.CFDSolverTripped = CMPLXFOIL(os.path.join(baseDir, "naca0012.dat"), options=self.cmplxfoilOptions)
 
         funcs = {}
         self.CFDSolver(self.ap)
@@ -150,9 +138,7 @@ class TestTransition(unittest.TestCase):
         """
 
         self.cmplxfoilOptions.update({"nCrit": 5.0})
-        self.CFDSolverNCrit = CMPLXFOIL(
-            os.path.join(baseDir, "naca0012.dat"), options=self.cmplxfoilOptions
-        )
+        self.CFDSolverNCrit = CMPLXFOIL(os.path.join(baseDir, "naca0012.dat"), options=self.cmplxfoilOptions)
 
         funcs = {}
         self.CFDSolver(self.ap)
@@ -184,9 +170,7 @@ class TestDerivativesFFD(unittest.TestCase):
             "plotAirfoil": False,
             "writeSolution": False,
         }
-        self.CFDSolver = CMPLXFOIL(
-            os.path.join(baseDir, "naca0012.dat"), options=cmplxfoilOptions
-        )
+        self.CFDSolver = CMPLXFOIL(os.path.join(baseDir, "naca0012.dat"), options=cmplxfoilOptions)
 
         # Add AeroProblem with flight conditions and AoA DV
         self.ap = AeroProblem(
@@ -242,15 +226,11 @@ class TestDerivativesFFD(unittest.TestCase):
 
             # Check evalFunctionsSens's finite difference
             actualSensFD = funcsSensFD[evalFunc][alphaName].item()
-            np.testing.assert_allclose(
-                checkSensFD, actualSensFD, rtol=relTol, atol=1e-16
-            )
+            np.testing.assert_allclose(checkSensFD, actualSensFD, rtol=relTol, atol=1e-16)
 
             # Check evalFunctionsSens's complex step
             actualSensCS = funcsSensCS[evalFunc][alphaName].item()
-            np.testing.assert_allclose(
-                checkSensFD, actualSensCS, rtol=relTol, atol=1e-16
-            )
+            np.testing.assert_allclose(checkSensFD, actualSensCS, rtol=relTol, atol=1e-16)
 
     def test_shape_sens_random(self):
         # Initialize necessary variables
@@ -279,9 +259,7 @@ class TestDerivativesFFD(unittest.TestCase):
         self.CFDSolver.evalFunctionsSens(self.ap, funcsSensCS, mode="CS")
 
         # Estimate each partial with finite differences
-        checkSensFD = {
-            func: {"shape": np.zeros(nShape)} for func in origFuncs.keys()
-        }  # initialize
+        checkSensFD = {func: {"shape": np.zeros(nShape)} for func in origFuncs.keys()}  # initialize
         for i in range(nShape):
             x[shapeName][i] += step
             self.DVGeo.setDesignVars(x)
@@ -292,9 +270,7 @@ class TestDerivativesFFD(unittest.TestCase):
 
             # Compute partial derivative for each function of interest
             for evalFunc in origFuncs.keys():
-                checkSensFD[evalFunc][shapeName][i] = (
-                    pertFuncs[evalFunc] - origFuncs[evalFunc]
-                ) / step
+                checkSensFD[evalFunc][shapeName][i] = (pertFuncs[evalFunc] - origFuncs[evalFunc]) / step
 
         # Check each function
         for evalFunc in origFuncs.keys():
@@ -310,9 +286,7 @@ class TestDerivativesFFD(unittest.TestCase):
             np.testing.assert_allclose(checkVal, actualSensCS, rtol=relTol, atol=absTol)
 
             # Check evalFunctionsSens's methods against each other
-            np.testing.assert_allclose(
-                actualSensFD, actualSensCS, rtol=relTol, atol=absTol
-            )
+            np.testing.assert_allclose(actualSensFD, actualSensCS, rtol=relTol, atol=absTol)
 
 
 class TestDerivativesCST(unittest.TestCase):
@@ -333,9 +307,7 @@ class TestDerivativesCST(unittest.TestCase):
             "plotAirfoil": False,
             "writeSolution": False,
         }
-        self.CFDSolver = CMPLXFOIL(
-            os.path.join(baseDir, self.DATfile), options=cmplxfoilOptions
-        )
+        self.CFDSolver = CMPLXFOIL(os.path.join(baseDir, self.DATfile), options=cmplxfoilOptions)
 
         # Add AeroProblem with flight conditions and AoA DV
         self.ap = AeroProblem(
@@ -366,15 +338,9 @@ class TestDerivativesCST(unittest.TestCase):
         # self.CST["upper"] = np.array([0.15335040881179007, 0.1373052558913066])
         # self.CST["lower"] = np.array([-0.15335040881179007, -0.05284956303352384])
 
-        self.DVGeo = DVGeometryCST(
-            os.path.join(baseDir, self.DATfile), numCST=self.nCoeff, debug=False
-        )
-        self.DVGeo.addDV(
-            self.CSTName["upper"], dvType="upper", default=self.CST["upper"]
-        )
-        self.DVGeo.addDV(
-            self.CSTName["lower"], dvType="lower", default=self.CST["lower"]
-        )
+        self.DVGeo = DVGeometryCST(os.path.join(baseDir, self.DATfile), numCST=self.nCoeff, debug=False)
+        self.DVGeo.addDV(self.CSTName["upper"], dvType="upper", default=self.CST["upper"])
+        self.DVGeo.addDV(self.CSTName["lower"], dvType="lower", default=self.CST["lower"])
         self.CFDSolver.setDVGeo(self.DVGeo)
 
     def test_alpha_sens(self):
@@ -412,14 +378,10 @@ class TestDerivativesCST(unittest.TestCase):
             actualSensCS = funcsSensCS[evalFunc][alphaName].item()
 
             # Check evalFunctionsSens's finite difference
-            np.testing.assert_allclose(
-                checkSensFD, actualSensFD, rtol=relTol, atol=absTol
-            )
+            np.testing.assert_allclose(checkSensFD, actualSensFD, rtol=relTol, atol=absTol)
 
             # Check evalFunctionsSens's complex step
-            np.testing.assert_allclose(
-                checkSensFD, actualSensCS, rtol=relTol, atol=absTol
-            )
+            np.testing.assert_allclose(checkSensFD, actualSensCS, rtol=relTol, atol=absTol)
 
     def test_upper_shape_sens(self):
         self._eval_shape_sens("upper")
@@ -450,8 +412,7 @@ class TestDerivativesCST(unittest.TestCase):
 
         # Estimate each partial with finite differences
         checkSensFD = {
-            func: {self.CSTName[surf]: np.zeros(len(self.CST[surf]))}
-            for func in origFuncs.keys()
+            func: {self.CSTName[surf]: np.zeros(len(self.CST[surf]))} for func in origFuncs.keys()
         }  # initialize
         for i in range(len(self.CST[surf])):
             x[self.CSTName[surf]][i] += step
@@ -463,9 +424,7 @@ class TestDerivativesCST(unittest.TestCase):
 
             # Compute partial derivative for each function of interest
             for evalFunc in origFuncs.keys():
-                checkSensFD[evalFunc][self.CSTName[surf]][i] = (
-                    pertFuncs[evalFunc] - origFuncs[evalFunc]
-                ) / step
+                checkSensFD[evalFunc][self.CSTName[surf]][i] = (pertFuncs[evalFunc] - origFuncs[evalFunc]) / step
 
         # Check each function
         for evalFunc in origFuncs.keys():
@@ -481,9 +440,7 @@ class TestDerivativesCST(unittest.TestCase):
             np.testing.assert_allclose(checkVal, actualSensCS, rtol=relTol, atol=absTol)
 
             # Check evalFunctionsSens's methods against each other
-            np.testing.assert_allclose(
-                actualSensFD, actualSensCS, rtol=relTol, atol=absTol
-            )
+            np.testing.assert_allclose(actualSensFD, actualSensCS, rtol=relTol, atol=absTol)
 
 
 class TestPlotting(unittest.TestCase):
@@ -515,9 +472,7 @@ class TestPlotting(unittest.TestCase):
         # Run another case and update the plot
         self.ap.alpha = 4.0
         self.CFDSolver(self.ap)
-        _, _ = self.CFDSolver.plotAirfoil(
-            showPlot=False
-        )  # this will call self.CFDSolver._updateAirfoilPlot()
+        _, _ = self.CFDSolver.plotAirfoil(showPlot=False)  # this will call self.CFDSolver._updateAirfoilPlot()
 
         # Run another case and try calling _updateAirfoilPlot directly
         self.ap.alpha = 5.0
