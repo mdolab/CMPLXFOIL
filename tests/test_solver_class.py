@@ -198,7 +198,7 @@ class TestDerivativesFFD(unittest.TestCase):
             T=T,
             areaRef=1.0,
             chordRef=1.0,
-            evalFuncs=["cl", "cd", "cm"],
+            evalFuncs=["cl", "cd", "cm", "kscpmin"],
         )
         self.ap.addDV("alpha", value=alpha, lower=0, upper=10.0, scale=1.0)
 

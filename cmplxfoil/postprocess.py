@@ -64,7 +64,9 @@ class AnimateAirfoilOpt:
 
         # Make sure pickle files are also available
         if len(glob(os.path.join(self.dirName, f"{self.APName}_*.pkl"))) != self.iters:
-            raise FileNotFoundError("There must be a pickle file and dat file for each iteration")
+            raise FileNotFoundError(
+                "There must be a pickle file and dat file for each iteration"
+            )
 
         print(f"Found dat and pkl files for {self.iters} iterations")
 
@@ -104,7 +106,10 @@ class AnimateAirfoilOpt:
             """
             Function to be called by FuncAnimation
             """
-            print(f"Rendering frame {i} of {self.iters}.....{(i + 1) / self.iters * 100:0.2f}% done", end="\r")
+            print(
+                f"Rendering frame {i} of {self.iters}.....{(i + 1) / self.iters * 100:0.2f}% done",
+                end="\r",
+            )
             foil = CMPLXFOIL(self.fileList[i] + ".dat")
             foil.curAP = AeroProblem(self.APName, mach=0.5, altitude=0.0)
             foil.CPlim = CPlim
@@ -119,7 +124,9 @@ class AnimateAirfoilOpt:
             foil._updateAirfoilPlot(pause=False)
 
         # Call the animator and save the result as a movie file
-        anim = FuncAnimation(fig, animateFrame, frames=self.iters, interval=66, blit=False)
+        anim = FuncAnimation(
+            fig, animateFrame, frames=self.iters, interval=66, blit=False
+        )
         anim.save(outputFileName + "." + ext, **animKwargs)
 
         # Save the last frame

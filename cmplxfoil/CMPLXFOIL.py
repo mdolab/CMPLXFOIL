@@ -238,9 +238,7 @@ class CMPLXFOIL(BaseSolver):
         coords : ndarray
             New airfoil coordinates (either 2 or 3 columns)
         """
-        self._setCoordinates(
-            coords[:, 0].astype(complex), coords[:, 1].astype(complex), setComplex=True
-        )
+        self._setCoordinates(coords[:, 0].astype(complex), coords[:, 1].astype(complex), setComplex=True)
 
     def __call__(self, aeroProblem, useComplex=False, deriv=False):
         """
@@ -276,9 +274,7 @@ class CMPLXFOIL(BaseSolver):
         xfoil.cr09.minf1 = aeroProblem.mach  # Mach number
         xfoil.cr09.adeg = aeroProblem.alpha  # Angle of attack
         xfoil.ci04.itmax = self.getOption("maxIters")  # Iterations limit
-        if not np.any(
-            np.isnan(self.getOption("xTrip"))
-        ):  # nan is default to not set, otherwise set it
+        if not np.any(np.isnan(self.getOption("xTrip"))):  # nan is default to not set, otherwise set it
             xfoil.cr15.xstrip = self.getOption("xTrip")
 
         # Set nCrit (The Fortran variable is acrit)
@@ -301,19 +297,13 @@ class CMPLXFOIL(BaseSolver):
         cpi = xfoil.cr04.cpi  # inviscid
         x = xfoil.cr05.x
         y = xfoil.cr05.y
-        end_foil_idx = (
-            np.argmax(x > self.coords[0, 0]) + 1
-        )  # XFOIL includes wake panels, which we don't want
+        end_foil_idx = np.argmax(x > self.coords[0, 0]) + 1  # XFOIL includes wake panels, which we don't want
         idx_lower_start = end_foil_idx // 2  # first half of data is upper surface
 
         idxUpper = np.argwhere(xfoil.cr15.tau[:, 0] != 0).flatten()
         idxLower = np.argwhere(xfoil.cr15.tau[:, 1] != 0).flatten()
-        iPanUpper = (
-            xfoil.ci05.ipan[idxUpper, 0] - 1
-        )  # FORTRAN uses 1-based indexing, need to adjust
-        iPanLower = (
-            xfoil.ci05.ipan[idxLower, 1] - 1
-        )  # FORTRAN uses 1-based indexing, need to adjust
+        iPanUpper = xfoil.ci05.ipan[idxUpper, 0] - 1  # FORTRAN uses 1-based indexing, need to adjust
+        iPanLower = xfoil.ci05.ipan[idxLower, 1] - 1  # FORTRAN uses 1-based indexing, need to adjust
         tauUpper = xfoil.cr15.tau[idxUpper, 0].copy().astype(dtype)
         tauLower = xfoil.cr15.tau[idxLower, 1].copy().astype(dtype)
         uInf = xfoil.cr09.qinf
@@ -347,16 +337,12 @@ class CMPLXFOIL(BaseSolver):
                     sliceData[aeroProblem.name]["cp_visc_lower"],
                 )
             )
-            kscpmin = -self.computeKSMax(
-                -cpAll, rho=self.getOption("rhoKS"), printOK=False
-            )
+            kscpmin = -self.computeKSMax(-cpAll, rho=self.getOption("rhoKS"), printOK=False)
 
             funcs[aeroProblem.name]["kscpmin"] = dtype(kscpmin)
 
         # Check for failure
-        self.curAP.solveFailed = self.curAP.fatalFail = (
-            xfoil.cl01.lexitflag != 0 or xfoil.cl01.lvconv == 0
-        )
+        self.curAP.solveFailed = self.curAP.fatalFail = xfoil.cl01.lexitflag != 0 or xfoil.cl01.lvconv == 0
 
         # If not a derivative call, increment callCounter
         if not deriv:
@@ -482,9 +468,7 @@ class CMPLXFOIL(BaseSolver):
                 if useNewton:
                     aeroProblem.alpha += 1e-200 * 1j
                     self.__call__(aeroProblem, useComplex=True, deriv=True)
-                    dCLdAlpha = (
-                        np.imag(self.funcsComplex[aeroProblem.name]["cl"]) * 1e200
-                    )
+                    dCLdAlpha = np.imag(self.funcsComplex[aeroProblem.name]["cl"]) * 1e200
                     aeroProblem.alpha = np.real(aeroProblem.alpha)
                 else:
                     # If using secant, we can only compute dCLdAlpha from the second iteration onwards
@@ -497,9 +481,7 @@ class CMPLXFOIL(BaseSolver):
             if dCLdAlpha == 0.0 or failCheck["fail"]:
                 aeroProblem.alpha *= 0.9
             elif dCLdAlpha is not None:
-                aeroProblem.alpha = np.clip(
-                    aeroProblem.alpha - res / dCLdAlpha, alphaBound[0], alphaBound[1]
-                )
+                aeroProblem.alpha = np.clip(aeroProblem.alpha - res / dCLdAlpha, alphaBound[0], alphaBound[1])
             else:
                 aeroProblem.alpha = aeroProblem.alpha + delta
         if not hasConverged:
@@ -557,12 +539,7 @@ class CMPLXFOIL(BaseSolver):
         fileName += ".dat"
         with open(fileName, "w") as f:
             for i in range(self.coords.shape[0]):
-                f.write(
-                    str(round(self.coords[i, 0], 12))
-                    + "\t\t"
-                    + str(round(self.coords[i, 1], 12))
-                    + "\n"
-                )
+                f.write(str(round(self.coords[i, 0], 12)) + "\t\t" + str(round(self.coords[i, 1], 12)) + "\n")
 
     def writeSlice(self, fileName):
         """Write pickle file containing the sliceData dictionary. The data can be
@@ -682,22 +659,16 @@ class CMPLXFOIL(BaseSolver):
             if f not in self.functionList:
                 # Either throw an error (if requested) or skip it
                 if not ignoreMissing:
-                    raise ValueError(
-                        f'Supplied function "{f}" is not in the available functions {self.functionList}.'
-                    )
+                    raise ValueError(f'Supplied function "{f}" is not in the available functions {self.functionList}.')
             else:
-                returnFuncs[aeroProblem.name + "_" + f] = self.funcs[aeroProblem.name][
-                    f
-                ]
+                returnFuncs[aeroProblem.name + "_" + f] = self.funcs[aeroProblem.name][f]
         funcs.update(returnFuncs)
 
         # Set the AeroProblem's function names
         for name in evalFuncs:
             self.curAP.funcNames[name] = self.curAP.name + "_" + name
 
-    def evalFunctionsSens(
-        self, aeroProblem, funcsSens, evalFuncs=None, mode="CS", h=None
-    ):
+    def evalFunctionsSens(self, aeroProblem, funcsSens, evalFuncs=None, mode="CS", h=None):
         """
         Evaluate the sensitivity of the desired functions given in
         iterable object, 'evalFuncs' and add them to the dictionary
@@ -739,9 +710,7 @@ class CMPLXFOIL(BaseSolver):
             funcsSens[self.curAP.name + "_" + f] = {}
             for dvName, dvVal in DVs.items():
                 if isinstance(dvVal, np.ndarray):
-                    funcsSens[self.curAP.name + "_" + f][dvName] = np.zeros(
-                        dvVal.shape, dtype=float
-                    )
+                    funcsSens[self.curAP.name + "_" + f][dvName] = np.zeros(dvVal.shape, dtype=float)
                 else:
                     funcsSens[self.curAP.name + "_" + f][dvName] = np.zeros(1)
 
@@ -766,14 +735,10 @@ class CMPLXFOIL(BaseSolver):
             func = self.curAP.name + "_" + f
             for dvName in DVs.keys():
                 if dvName in self.possibleAeroDVs and dvName in funcsSens[func]:
-                    funcsSens[func][dvName + "_" + self.curAP.name] = funcsSens[func][
-                        dvName
-                    ]
+                    funcsSens[func][dvName + "_" + self.curAP.name] = funcsSens[func][dvName]
                     del funcsSens[func][dvName]
 
-    def computeJacobianVectorProductFwd(
-        self, xDvDot=None, xSDot=None, mode="CS", h=None
-    ):
+    def computeJacobianVectorProductFwd(self, xDvDot=None, xSDot=None, mode="CS", h=None):
         """This the main Python gateway for producing forward mode jacobian
         vector products. They are computed using either the complex step or finite
         difference method. This function is not generally called by the user but
@@ -801,14 +766,10 @@ class CMPLXFOIL(BaseSolver):
             raise ValueError("xDvDot and xSDot cannot both be None")
 
         if mode not in ["FD", "CS"]:
-            raise ValueError(
-                f'Jacobian vector product mode "{mode}" invalid. Must be either "FD" or "CS"'
-            )
+            raise ValueError(f'Jacobian vector product mode "{mode}" invalid. Must be either "FD" or "CS"')
 
         if self.DVGeo is None:
-            raise ValueError(
-                "DVGeo object must be added with setDVGeo before calling computeJacobianVectorProductFwd"
-            )
+            raise ValueError("DVGeo object must be added with setDVGeo before calling computeJacobianVectorProductFwd")
 
         geoDVs = list(self.DVGeo.getValues().keys())
         possibleDVs = self.possibleAeroDVs + geoDVs
@@ -835,9 +796,9 @@ class CMPLXFOIL(BaseSolver):
         # already existing (and possibly nonzero) xsdot and xvdot
         geoxDvDot = {k: xDvDot[k] for k in geoDVs if k in xDvDot}
         if xDvDot is not None and self.DVGeo is not None:
-            xsdot += self.DVGeo.totalSensitivityProd(
-                geoxDvDot, self.curAP.ptSetName, config=self.curAP.name
-            ).reshape(xsdot.shape)
+            xsdot += self.DVGeo.totalSensitivityProd(geoxDvDot, self.curAP.ptSetName, config=self.curAP.name).reshape(
+                xsdot.shape
+            )
 
         # Perturb the coordinates
         orig_coords = self.getCoordinates()
@@ -858,9 +819,7 @@ class CMPLXFOIL(BaseSolver):
             if mode == "FD":
                 jacVecProd[f] = (self.funcs[self.curAP.name][f] - orig_funcs[f]) / h
             else:
-                jacVecProd[f] = np.imag(
-                    self.funcsComplex[self.curAP.name][f]
-                ) / np.imag(h)
+                jacVecProd[f] = np.imag(self.funcsComplex[self.curAP.name][f]) / np.imag(h)
 
         # Reset the perturbed variables
         self.curAP.alpha = orig_alpha
@@ -893,9 +852,7 @@ class CMPLXFOIL(BaseSolver):
         try:
             from pygeo.pyGeo import pyGeo
         except ImportError as e:
-            raise ImportError(
-                "pygeo is required to use getTriangulatedMeshSurface"
-            ) from e
+            raise ImportError("pygeo is required to use getTriangulatedMeshSurface") from e
 
         airfoil_list = [self.DATFileName] * 2
         naf = len(airfoil_list)
@@ -904,9 +861,7 @@ class CMPLXFOIL(BaseSolver):
         x = [0.0, 0.0]
         y = [0.0, 0.0]
         z = [0.0, offsetDist]
-        offset = np.zeros(
-            (naf, 2)
-        )  # x-y offset applied to airfoil position before scaling
+        offset = np.zeros((naf, 2))  # x-y offset applied to airfoil position before scaling
 
         # Airfoil rotations
         rot_x = [0.0, 0.0]
@@ -995,16 +950,10 @@ class CMPLXFOIL(BaseSolver):
             axs[iAxsCP].plot(xLower, CPLower, color="k", zorder=-1, alpha=0.15)
             axs[iAxsCP].plot(xUpper, CPUpper, color=cpUpColor)
             axs[iAxsCP].plot(xLower, CPLower, color=cpLowColor)
-            axs[iAxsCP].plot(
-                xUpper, CPUpperInvisc, "--", color=cpUpColor, linewidth=1.0
-            )
-            axs[iAxsCP].plot(
-                xLower, CPLowerInvisc, "--", color=cpLowColor, linewidth=1.0
-            )
+            axs[iAxsCP].plot(xUpper, CPUpperInvisc, "--", color=cpUpColor, linewidth=1.0)
+            axs[iAxsCP].plot(xLower, CPLowerInvisc, "--", color=cpLowColor, linewidth=1.0)
             axs[iAxsCP].set_ylim(self.CPlim)
-            axs[iAxsCP].set_ylabel(
-                "$c_p$", rotation="horizontal", ha="right", va="center"
-            )
+            axs[iAxsCP].set_ylabel("$c_p$", rotation="horizontal", ha="right", va="center")
 
             # Make legend for viscous vs. inviscid
             customLines = [
@@ -1027,9 +976,7 @@ class CMPLXFOIL(BaseSolver):
             axs[iAxsCF].plot(xCFUpper, CFUpper, color=cpUpColor)
             axs[iAxsCF].plot(xCFLower, CFLower, color=cpLowColor)
             axs[iAxsCF].set_ylim(self.CFlim)
-            axs[iAxsCF].set_ylabel(
-                "$c_f$", rotation="horizontal", ha="right", va="center"
-            )
+            axs[iAxsCF].set_ylabel("$c_f$", rotation="horizontal", ha="right", va="center")
 
             # Plot the airfoil on the lower axis
             axs[iAxsFoil].plot(x, y, color="k", zorder=-1, alpha=0.15)
@@ -1037,9 +984,7 @@ class CMPLXFOIL(BaseSolver):
             axs[iAxsFoil].set_xlim(self.xlimFoil)
             axs[iAxsFoil].set_ylim(self.ylimFoil)
             axs[iAxsFoil].set_xlabel("x/c")
-            axs[iAxsFoil].set_ylabel(
-                "y/c", rotation="horizontal", ha="right", va="center"
-            )
+            axs[iAxsFoil].set_ylabel("y/c", rotation="horizontal", ha="right", va="center")
             axs[iAxsFoil].set_aspect("equal")
             axs[iAxsFoil].spines["right"].set_visible(False)
             axs[iAxsFoil].spines["top"].set_visible(False)
@@ -1126,12 +1071,8 @@ class CMPLXFOIL(BaseSolver):
         self.airfoilAxs[iAxsCP].lines[-1].remove()
         self.airfoilAxs[iAxsCP].plot(xUpper, CPUpper, color=cpUpColor)
         self.airfoilAxs[iAxsCP].plot(xLower, CPLower, color=cpLowColor)
-        self.airfoilAxs[iAxsCP].plot(
-            xUpper, CPUpperInvisc, "--", color=cpUpColor, linewidth=1.0
-        )
-        self.airfoilAxs[iAxsCP].plot(
-            xLower, CPLowerInvisc, "--", color=cpLowColor, linewidth=1.0
-        )
+        self.airfoilAxs[iAxsCP].plot(xUpper, CPUpperInvisc, "--", color=cpUpColor, linewidth=1.0)
+        self.airfoilAxs[iAxsCP].plot(xLower, CPLowerInvisc, "--", color=cpLowColor, linewidth=1.0)
         self.airfoilAxs[iAxsCP].set_ylim(CPlim)
 
         # CF plot
