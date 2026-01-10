@@ -87,12 +87,7 @@ class CMPLXFOIL(BaseSolver):
         time.sleep(0.1)  # BOTH of these sleeps are necessary for some reason!
         self.xfoil_cs = MExt.MExt("libcmplxfoil_cs", curDir, debug=debug)._module
 
-        super().__init__(
-            "CMPLXFOIL",
-            "Panel Method",
-            defaultOptions=self._getDefaultOptions(),
-            options=options,
-        )
+        super().__init__("CMPLXFOIL", "Panel Method", defaultOptions=self._getDefaultOptions(), options=options)
 
         if self.getOption("xTrip").shape != (2,):
             raise ValueError("xTrip option shape must be (2,)")
@@ -963,14 +958,7 @@ class CMPLXFOIL(BaseSolver):
             axs[iAxsCP].legend(customLines, ["Viscous", "Inviscid"])
 
             # Plot the skin friction coefficient
-            axs[iAxsCF].plot(
-                [min(x) - 1, max(x) + 1],
-                [0.0, 0.0],
-                zorder=-2,
-                color="k",
-                linewidth=0.7,
-                alpha=0.3,
-            )
+            axs[iAxsCF].plot( [min(x) - 1, max(x) + 1], [0.0, 0.0], zorder=-2, color="k", linewidth=0.7, alpha=0.3)
             axs[iAxsCF].plot(xCFUpper, CFUpper, color="k", zorder=-1, alpha=0.15)
             axs[iAxsCF].plot(xCFLower, CFLower, color="k", zorder=-1, alpha=0.15)
             axs[iAxsCF].plot(xCFUpper, CFUpper, color=cpUpColor)
@@ -1045,24 +1033,15 @@ class CMPLXFOIL(BaseSolver):
         stackedCF = stackedCF[np.isfinite(stackedCF)]
 
         CPlim = [max(stackedCP) + 0.2, min(stackedCP) - 0.2]
-        CPlim = [
-            max(CPlim[0], self.CPlim[0]),
-            min(CPlim[1], self.CPlim[1]),
-        ]  # inverted axis
+        CPlim = [max(CPlim[0], self.CPlim[0]), min(CPlim[1], self.CPlim[1])]  # inverted axis
 
         CFlim = [min(stackedCF) - 0.002, max(stackedCF) + 0.002]
         CFlim = [min(CFlim[0], self.CFlim[0]), max(CFlim[1], self.CFlim[1])]
 
         xlimFoil = [min(x) - 0.01, max(x) + 0.01]
         ylimFoil = [min(y) - 0.01, max(y) + 0.01]
-        xlimFoil = [
-            min(xlimFoil[0], self.xlimFoil[0]),
-            max(xlimFoil[1], self.xlimFoil[1]),
-        ]
-        ylimFoil = [
-            min(ylimFoil[0], self.ylimFoil[0]),
-            max(ylimFoil[1], self.ylimFoil[1]),
-        ]
+        xlimFoil = [min(xlimFoil[0], self.xlimFoil[0]), max(xlimFoil[1], self.xlimFoil[1])]
+        ylimFoil = [min(ylimFoil[0], self.ylimFoil[0]), max(ylimFoil[1], self.ylimFoil[1])]
 
         # CP plot
         self.airfoilAxs[iAxsCP].lines[-1].remove()
@@ -1132,21 +1111,12 @@ class CMPLXFOIL(BaseSolver):
             "maxIters": [int, 100],  # maximum iterations for XFOIL solver
             "printRealConvergence": [bool, True],
             "printComplexConvergence": [bool, False],
-            "writeCoordinates": [
-                bool,
-                True,
-            ],  # whether to write coordinates to .dat file when `writeSolution` called
+            "writeCoordinates": [bool, True],  # whether to write coordinates to .dat file when `writeSolution` called
             "writeSliceFile": [bool, True],  # whether or not to save chordwise data
-            "writeSolution": [
-                bool,
-                False,
-            ],  # whether or not to call writeSolution after each call to XFOIL
+            "writeSolution": [bool, False],  # whether or not to call writeSolution after each call to XFOIL
             "plotAirfoil": [bool, False],  # whether to plot airfoil while running
             "outputDirectory": [str, "."],  # where to put output files
-            "numberSolutions": [
-                bool,
-                True,
-            ],  # whether to add call counter to output file names
+            "numberSolutions": [bool, True],  # whether to add call counter to output file names
             "xTrip": [
                 np.ndarray,
                 np.full(2, np.nan),

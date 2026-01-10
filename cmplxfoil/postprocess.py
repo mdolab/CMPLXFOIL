@@ -104,10 +104,7 @@ class AnimateAirfoilOpt:
             """
             Function to be called by FuncAnimation
             """
-            print(
-                f"Rendering frame {i} of {self.iters}.....{(i + 1) / self.iters * 100:0.2f}% done",
-                end="\r",
-            )
+            print(f"Rendering frame {i} of {self.iters}.....{(i + 1) / self.iters * 100:0.2f}% done", end="\r")
             foil = CMPLXFOIL(self.fileList[i] + ".dat")
             foil.curAP = AeroProblem(self.APName, mach=0.5, altitude=0.0)
             foil.CPlim = CPlim
