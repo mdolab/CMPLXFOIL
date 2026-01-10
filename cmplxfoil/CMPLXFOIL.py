@@ -958,7 +958,7 @@ class CMPLXFOIL(BaseSolver):
             axs[iAxsCP].legend(customLines, ["Viscous", "Inviscid"])
 
             # Plot the skin friction coefficient
-            axs[iAxsCF].plot( [min(x) - 1, max(x) + 1], [0.0, 0.0], zorder=-2, color="k", linewidth=0.7, alpha=0.3)
+            axs[iAxsCF].plot([min(x) - 1, max(x) + 1], [0.0, 0.0], zorder=-2, color="k", linewidth=0.7, alpha=0.3)
             axs[iAxsCF].plot(xCFUpper, CFUpper, color="k", zorder=-1, alpha=0.15)
             axs[iAxsCF].plot(xCFLower, CFLower, color="k", zorder=-1, alpha=0.15)
             axs[iAxsCF].plot(xCFUpper, CFUpper, color=cpUpColor)
