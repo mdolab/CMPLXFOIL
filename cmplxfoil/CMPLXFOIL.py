@@ -273,10 +273,12 @@ class CMPLXFOIL(BaseSolver):
             xfoil.cr15.xstrip = self.getOption("xTrip")
 
         # Moment reference point in cartesian coordinates
+        if aeroProblem.xRef is None:
+            aeroProblem.xRef = 0.25
+        if aeroProblem.yRef is None:
+            aeroProblem.yRef = 0.0
         xfoil.cr09.xcmref = aeroProblem.xRef
         xfoil.cr09.ycmref = aeroProblem.yRef
-        if aeroProblem.xRef is None or aeroProblem.yRef is None:
-            raise ValueError("Moment reference point coordinates xRef and yRef must be set in aeroProblem.")
 
         # Set nCrit (The Fortran variable is acrit)
         # lvconv needs to be set to False to update internal variables
