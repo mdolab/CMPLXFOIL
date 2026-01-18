@@ -272,6 +272,12 @@ class CMPLXFOIL(BaseSolver):
         if not np.any(np.isnan(self.getOption("xTrip"))):  # nan is default to not set, otherwise set it
             xfoil.cr15.xstrip = self.getOption("xTrip")
 
+        # Moment reference point in cartesian coordinates
+        xfoil.cr09.xcmref = aeroProblem.xRef
+        xfoil.cr09.ycmref = aeroProblem.yRef
+        if aeroProblem.xRef is None or aeroProblem.yRef is None:
+            raise ValueError("Moment reference point coordinates xRef and yRef must be set in aeroProblem.")
+
         # Set nCrit (The Fortran variable is acrit)
         # lvconv needs to be set to False to update internal variables
         xfoil.cr15.acrit = self.getOption("nCrit")
