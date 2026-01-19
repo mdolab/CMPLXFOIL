@@ -347,7 +347,7 @@ class CMPLXFOIL(BaseSolver):
         if not deriv and self.getOption("writeSolution"):
             self.writeSolution()
 
-    def computeKSMax(self, g, rho=10000.0, printOK=True):
+    def computeKSMax(self, g, rho, printOK=True):
         """
         Compute a smooth approximation to the maximum of a set of values
         using Kreisselmeier--Steinhauser aggregation.
@@ -1122,7 +1122,7 @@ class CMPLXFOIL(BaseSolver):
                 np.full(2, np.nan),
             ],  # boundary layer trip x coordinate of upper and lower surface, respectively (two-element array)
             "nCrit": [float, 9.0],
-            "rhoKS": [float, 500.0],  # aggregation parameter
+            "rhoKS": [float, 500.0],  # KS aggregation parameter used for computing ``kscpmin``
         }
 
     @staticmethod
