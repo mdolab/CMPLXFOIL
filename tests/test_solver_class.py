@@ -30,9 +30,18 @@ class TestNACA(unittest.TestCase):
         # Set the random range to use consistent random numbers
         self.rng = np.random.default_rng(7)
         self.ap = AeroProblem(
-            name="fc", alpha=3, mach=0.2, altitude=1e3, areaRef=1.0, chordRef=1.0, evalFuncs=["cl", "cd", "cm"]
+            name="fc",
+            alpha=3,
+            mach=0.2,
+            altitude=1e3,
+            areaRef=1.0,
+            chordRef=1.0,
+            evalFuncs=["cl", "cd", "cm"],
         )
-        self.CFDSolver = CMPLXFOIL(os.path.join(baseDir, "naca0012.dat"), options={"printRealConvergence": False})
+        self.CFDSolver = CMPLXFOIL(
+            os.path.join(baseDir, "naca0012.dat"),
+            options={"printRealConvergence": False},
+        )
         self.alphaSequence = np.linspace(-0.5, 0.5, 11)
         self.rng.shuffle(self.alphaSequence)
 
@@ -93,7 +102,13 @@ class TestTransition(unittest.TestCase):
     def setUp(self):
         self.evalFuncs = ["cl", "cd", "cm"]
         self.ap = AeroProblem(
-            name="fc", alpha=3, mach=0.2, altitude=1e3, areaRef=1.0, chordRef=1.0, evalFuncs=self.evalFuncs
+            name="fc",
+            alpha=3,
+            mach=0.2,
+            altitude=1e3,
+            areaRef=1.0,
+            chordRef=1.0,
+            evalFuncs=self.evalFuncs,
         )
         self.cmplxfoilOptions = {"printRealConvergence": False}
         self.CFDSolver = CMPLXFOIL(os.path.join(baseDir, "naca0012.dat"), options=self.cmplxfoilOptions)
@@ -167,7 +182,7 @@ class TestDerivativesFFD(unittest.TestCase):
             T=T,
             areaRef=1.0,
             chordRef=1.0,
-            evalFuncs=["cl", "cd", "cm"],
+            evalFuncs=["cl", "cd", "cm", "kscpmin"],
         )
         self.ap.addDV("alpha", value=alpha, lower=0, upper=10.0, scale=1.0)
 
@@ -304,7 +319,7 @@ class TestDerivativesCST(unittest.TestCase):
             T=self.T,
             areaRef=1.0,
             chordRef=1.0,
-            evalFuncs=["cl", "cd", "cm"],
+            evalFuncs=["cl", "cd", "cm", "kscpmin"],
         )
         self.ap.addDV("alpha", value=self.alpha, lower=0, upper=10.0, scale=1.0)
 
@@ -437,9 +452,18 @@ class TestPlotting(unittest.TestCase):
         # Set the random range to use consistent random numbers
         self.rng = np.random.default_rng(13)
         self.ap = AeroProblem(
-            name="fc", alpha=3, mach=0.2, altitude=1e3, areaRef=1.0, chordRef=1.0, evalFuncs=["cl", "cd", "cm"]
+            name="fc",
+            alpha=3,
+            mach=0.2,
+            altitude=1e3,
+            areaRef=1.0,
+            chordRef=1.0,
+            evalFuncs=["cl", "cd", "cm"],
         )
-        self.CFDSolver = CMPLXFOIL(os.path.join(baseDir, "naca0012.dat"), options={"printRealConvergence": False})
+        self.CFDSolver = CMPLXFOIL(
+            os.path.join(baseDir, "naca0012.dat"),
+            options={"printRealConvergence": False},
+        )
 
         # Run an initial case and plot it
         self.CFDSolver(self.ap)

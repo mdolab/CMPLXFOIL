@@ -41,3 +41,7 @@ nCrit:
     The critical amplification exponent for boundary layer transition.
     This parameter represents the background turbulence level.
     Lower values will result in earlier turbulent transition.
+rhoKS:
+  desc: >
+    This is the aggregation parameter in the Kreisselmeier--Steinhauser aggregation function.
+    Higher values are more accurate but more nonlinear.

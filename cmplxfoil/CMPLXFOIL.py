@@ -108,7 +108,7 @@ class CMPLXFOIL(BaseSolver):
         # Dictionary with dictionary of functions for each aero problem
         self.funcs = {}
         self.funcsComplex = {}
-        self.functionList = ["cl", "cd", "cm"]  # available functions
+        self.functionList = ["cl", "cd", "cm", "kscpmin"]  # available functions
 
         # When the XFOIL solver is called, slice data is saved (key is the current
         # AeroProblem name). In the associated value is a dictionary containing
@@ -324,6 +324,18 @@ class CMPLXFOIL(BaseSolver):
             "y_cf_lower": yCfLower,
         }
 
+        # Check if kscpmin is requested, if so, then compute it
+        if "kscpmin" in self.curAP.evalFuncs:
+            cpAll = np.concatenate(
+                (
+                    sliceData[aeroProblem.name]["cp_visc_upper"],
+                    sliceData[aeroProblem.name]["cp_visc_lower"],
+                )
+            )
+            kscpmin = -self.computeKSMax(-cpAll, rho=self.getOption("rhoKS"), printOK=False)
+
+            funcs[aeroProblem.name]["kscpmin"] = dtype(kscpmin)
+
         # Check for failure
         self.curAP.solveFailed = self.curAP.fatalFail = xfoil.cl01.lexitflag != 0 or xfoil.cl01.lvconv == 0
 
@@ -334,6 +346,33 @@ class CMPLXFOIL(BaseSolver):
         # Write solution files if desired
         if not deriv and self.getOption("writeSolution"):
             self.writeSolution()
+
+    def computeKSMax(self, g, rho, printOK=True):
+        """
+        Compute a smooth approximation to the maximum of a set of values
+        using Kreisselmeier--Steinhauser aggregation.
+
+        Parameters
+        ----------
+        g : 1d array
+            Values of which to approximate the maximum
+        rho : float, optional
+            KS Weight parameter, larger values give a closer but less smooth
+            approximation of the maximum, by default 10000.0
+
+        Returns
+        -------
+        ksmax : float
+            The KS aggregated value
+        """
+
+        maxg = np.max(g)
+        ksmax = maxg + 1.0 / rho * np.log(np.sum(np.exp(rho * (g - maxg))))
+
+        if printOK:
+            print(f"true max: {maxg} \nks max:   {ksmax}")
+
+        return ksmax
 
     def solveCL(
         self,
@@ -1083,6 +1122,7 @@ class CMPLXFOIL(BaseSolver):
                 np.full(2, np.nan),
             ],  # boundary layer trip x coordinate of upper and lower surface, respectively (two-element array)
             "nCrit": [float, 9.0],
+            "rhoKS": [float, 500.0],  # KS aggregation parameter used for computing ``kscpmin``
         }
 
     @staticmethod
