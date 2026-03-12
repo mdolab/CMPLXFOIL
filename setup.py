@@ -26,7 +26,8 @@ setup(
         "cmplxfoil",
     ],
     package_data={"cmplxfoil": ["*.so"]},
-    install_requires=["numpy>=1.21", "mdolab-baseclasses"],
+    python_requires=">=3.11",
+    install_requires=["numpy>=1.25", "mdolab-baseclasses"],
     extras_require={
         "geometry": ["pygeo"],
         "testing": ["testflo"],
