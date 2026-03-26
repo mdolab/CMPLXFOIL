@@ -916,6 +916,7 @@ C------ set updated CL,CD
         CALL CLCALC(N,X,Y,GAM,GAM_A,ALFA,MINF,QINF, XCMREF,YCMREF,
      &              CL,CM,CDP,CL_ALF,CL_MSQ)
         CALL CDCALC
+		CDP = CD - CDF
 C
 C------ display changes and test for convergence
         IF (PRINTCONV) THEN
@@ -923,8 +924,7 @@ C------ display changes and test for convergence
      &    WRITE(*,2000) ITER, RMSBL, RMXBL, VMXBL,IMXBL,ISMXBL,RLX
          IF(RLX.EQ.1.0)
      &    WRITE(*,2010) ITER, RMSBL, RMXBL, VMXBL,IMXBL,ISMXBL
-          CDP = CD - CDF
-          WRITE(*,2020) ALFA/DTOR, CL, CM, CD, CDF, CDP
+         WRITE(*,2020) ALFA/DTOR, CL, CM, CD, CDF, CDP
         ENDIF
 C
         IF(RMSBL .LT. EPS1) THEN

@@ -108,7 +108,7 @@ class CMPLXFOIL(BaseSolver):
         # Dictionary with dictionary of functions for each aero problem
         self.funcs = {}
         self.funcsComplex = {}
-        self.functionList = ["cl", "cd", "cm", "kscpmin"]  # available functions
+        self.functionList = ["cl", "cd", "cdp", "cm", "kscpmin"]  # available functions
 
         # When the XFOIL solver is called, slice data is saved (key is the current
         # AeroProblem name). In the associated value is a dictionary containing
@@ -292,6 +292,7 @@ class CMPLXFOIL(BaseSolver):
         funcs[aeroProblem.name] = {
             "cl": dtype(xfoil.cr09.cl),
             "cd": dtype(xfoil.cr09.cd),
+            "cdp": dtype(xfoil.cr09.cdp),
             "cm": dtype(xfoil.cr09.cm),
         }
 
