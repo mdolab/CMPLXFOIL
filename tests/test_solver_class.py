@@ -29,6 +29,12 @@ class TestNACA(unittest.TestCase):
     def setUp(self):
         # Set the random range to use consistent random numbers
         self.rng = np.random.default_rng(7)
+        self.CFDSolver = CMPLXFOIL(
+            os.path.join(baseDir, "naca0012.dat"),
+            options={"printRealConvergence": False},
+        )
+        self.alphaSequence = np.linspace(-0.5, 0.5, 11)
+        self.rng.shuffle(self.alphaSequence)
         self.ap = AeroProblem(
             name="fc",
             alpha=3,
@@ -36,14 +42,8 @@ class TestNACA(unittest.TestCase):
             altitude=1e3,
             areaRef=1.0,
             chordRef=1.0,
-            evalFuncs=["cl", "cd", "cm"],
+            evalFuncs=self.CFDSolver.functionList,
         )
-        self.CFDSolver = CMPLXFOIL(
-            os.path.join(baseDir, "naca0012.dat"),
-            options={"printRealConvergence": False},
-        )
-        self.alphaSequence = np.linspace(-0.5, 0.5, 11)
-        self.rng.shuffle(self.alphaSequence)
 
     def test_cl_solve_default(self):
         """Test that SolveCL works correctly"""
@@ -79,18 +79,23 @@ class TestNACA(unittest.TestCase):
             self.CFDSolver.evalFunctions(self.ap, funcs)
         true_funcs = {
             "polar_-10.0deg_cd": 0.011025153413460432,
+            "polar_-10.0deg_cdp": 0.006380803330791225,
             "polar_-10.0deg_cl": -1.1588483291827825,
             "polar_-10.0deg_cm": -0.0012226349825473892,
             "polar_-5.0deg_cd": 0.006681735627505201,
+            "polar_-5.0deg_cdp": 0.002103027412746445,
             "polar_-5.0deg_cl": -0.5699314393578008,
             "polar_-5.0deg_cm": -0.0017402658692315196,
             "polar_0.0deg_cd": 0.005149998979665711,
+            "polar_0.0deg_cdp": 0.000720336879765777,
             "polar_0.0deg_cl": 2.3731559252448964e-14,
             "polar_0.0deg_cm": -5.189882517357458e-15,
             "polar_5.0deg_cd": 0.006681852094188599,
+            "polar_5.0deg_cdp": 0.0021030658942220873,
             "polar_5.0deg_cl": 0.5699617443207495,
             "polar_5.0deg_cm": 0.0017333482408693297,
             "polar_10.0deg_cd": 0.011024378048979051,
+            "polar_10.0deg_cdp": 0.006379997348330231,
             "polar_10.0deg_cl": 1.1587674856662604,
             "polar_10.0deg_cm": 0.0012397586091073744,
         }
@@ -100,7 +105,9 @@ class TestNACA(unittest.TestCase):
 
 class TestTransition(unittest.TestCase):
     def setUp(self):
-        self.evalFuncs = ["cl", "cd", "cm"]
+        self.cmplxfoilOptions = {"printRealConvergence": False}
+        self.CFDSolver = CMPLXFOIL(os.path.join(baseDir, "naca0012.dat"), options=self.cmplxfoilOptions)
+        self.evalFuncs = self.CFDSolver.functionList
         self.ap = AeroProblem(
             name="fc",
             alpha=3,
@@ -110,8 +117,6 @@ class TestTransition(unittest.TestCase):
             chordRef=1.0,
             evalFuncs=self.evalFuncs,
         )
-        self.cmplxfoilOptions = {"printRealConvergence": False}
-        self.CFDSolver = CMPLXFOIL(os.path.join(baseDir, "naca0012.dat"), options=self.cmplxfoilOptions)
 
     def test_trip(self):
         """
@@ -182,7 +187,7 @@ class TestDerivativesFFD(unittest.TestCase):
             T=T,
             areaRef=1.0,
             chordRef=1.0,
-            evalFuncs=["cl", "cd", "cm", "kscpmin"],
+            evalFuncs=self.CFDSolver.functionList,
         )
         self.ap.addDV("alpha", value=alpha, lower=0, upper=10.0, scale=1.0)
 
@@ -319,7 +324,7 @@ class TestDerivativesCST(unittest.TestCase):
             T=self.T,
             areaRef=1.0,
             chordRef=1.0,
-            evalFuncs=["cl", "cd", "cm", "kscpmin"],
+            evalFuncs=self.CFDSolver.functionList,
         )
         self.ap.addDV("alpha", value=self.alpha, lower=0, upper=10.0, scale=1.0)
 
