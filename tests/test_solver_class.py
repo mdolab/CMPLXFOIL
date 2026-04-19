@@ -488,8 +488,8 @@ class TestPlotting(unittest.TestCase):
         self.CFDSolver._updateAirfoilPlot(pause=False)
 
 
-class TestIssue44Regression(unittest.TestCase):
-    """Regression tests for mdolab/CMPLXFOIL#44."""
+class TestEvalFunctions(unittest.TestCase):
+    """Check that functions and derivatives are returned for the specified evalFuncs and the evalFuncs only."""
 
     def setUp(self):
         self.CFDSolver = CMPLXFOIL(
@@ -505,9 +505,9 @@ class TestIssue44Regression(unittest.TestCase):
             T=288.15,
             areaRef=1.0,
             chordRef=1.0,
-            evalFuncs=["cl", "cd"],
         )
         self.ap.addDV("alpha", value=1.5, lower=0.0, upper=10.0, scale=1.0)
+        self.CFDSolver(self.ap)
 
     def _runAndCheck(self, mode):
         self.CFDSolver(self.ap)
@@ -521,11 +521,21 @@ class TestIssue44Regression(unittest.TestCase):
         funcSensKeys = {k for k in funcsSens if k != "fail"}
         self.assertEqual(funcSensKeys, {"fc_cl", "fc_cd"})
 
-    def test_evalFunctions_and_sens_without_kscpmin_CS(self):
-        self._runAndCheck(mode="CS")
+    def test_evalFunctionsKeys(self):
+        for func in self.CFDSolver.functionList:
+            with self.subTest(func=func):
+                funcs = {}
+                self.CFDSolver.evalFunctions(self.ap, funcs, evalFuncs=[func])
+                self.assertEqual(set(funcs.keys()), {f"fc_{func}"})
 
-    def test_evalFunctions_and_sens_without_kscpmin_FD(self):
-        self._runAndCheck(mode="FD")
+    def test_evalFunctionsSensKeys(self):
+        for func in self.CFDSolver.functionList:
+            with self.subTest(func=func):
+                for mode in ["FD", "CS"]:
+                    with self.subTest(mode=mode):
+                        funcsSens = {}
+                        self.CFDSolver.evalFunctionsSens(self.ap, funcsSens, evalFuncs=[func], mode=mode)
+                        self.assertEqual(set(funcsSens.keys()), {f"fc_{func}", "fail"})
 
 
 if __name__ == "__main__":
