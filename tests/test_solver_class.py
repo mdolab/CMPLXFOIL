@@ -485,5 +485,72 @@ class TestPlotting(unittest.TestCase):
         self.CFDSolver._updateAirfoilPlot(pause=False)
 
 
+@unittest.skipIf(externalImportsFailed, "Required external imports (baseclasses, pygeo) failed")
+class TestIssue44Regression(unittest.TestCase):
+    """Regression test for mdolab/CMPLXFOIL#44.
+
+    Before the fix, computeJacobianVectorProductFwd iterated unconditionally over
+    self.functionList (which always contains "kscpmin") and indexed into
+    self.funcs[apName]. If the user's AeroProblem.evalFuncs did not include
+    "kscpmin", that entry was never populated by __call__ and the access raised
+    KeyError: 'kscpmin'. The fix makes the derivative loop mirror the gating in
+    __call__ by only emitting Jacobian entries for functions actually computed.
+    """
+
+    def setUp(self):
+        cmplxfoilOptions = {
+            "printRealConvergence": False,
+            "writeCoordinates": False,
+            "plotAirfoil": False,
+            "writeSolution": False,
+        }
+        self.CFDSolver = CMPLXFOIL(
+            os.path.join(baseDir, "naca0012.dat"), options=cmplxfoilOptions
+        )
+
+        # Intentionally omit "kscpmin" — this is exactly the scenario that
+        # triggers issue #44 (and matches examples/single_point.py).
+        self.ap = AeroProblem(
+            name="fc",
+            alpha=1.5,
+            mach=0.3,
+            reynolds=1e6,
+            reynoldsLength=1.0,
+            T=288.15,
+            areaRef=1.0,
+            chordRef=1.0,
+            evalFuncs=["cl", "cd"],
+        )
+        self.ap.addDV("alpha", value=1.5, lower=0.0, upper=10.0, scale=1.0)
+
+        FFDFile = os.path.join(baseDir, "naca0012_ffd.xyz")
+        self.DVGeo = DVGeometry(FFDFile)
+        self.DVGeo.addLocalDV("shape", lower=-0.05, upper=0.05, axis="y", scale=1.0)
+        self.CFDSolver.setDVGeo(self.DVGeo)
+
+    def _runAndCheck(self, mode):
+        self.CFDSolver(self.ap)
+        funcsSens = {}
+        # Before the fix, this raised KeyError: 'kscpmin'.
+        self.CFDSolver.evalFunctionsSens(self.ap, funcsSens, mode=mode)
+
+        self.assertIn("fc_cl", funcsSens)
+        self.assertIn("fc_cd", funcsSens)
+        self.assertNotIn("fc_kscpmin", funcsSens)
+
+        # Sanity-check shape of returned sensitivities.
+        alphaKey = "alpha_fc"
+        self.assertIn(alphaKey, funcsSens["fc_cl"])
+        self.assertIn("shape", funcsSens["fc_cl"])
+
+    def test_evalFunctionsSens_without_kscpmin_CS(self):
+        """evalFunctionsSens in CS mode must not raise when kscpmin is absent."""
+        self._runAndCheck(mode="CS")
+
+    def test_evalFunctionsSens_without_kscpmin_FD(self):
+        """evalFunctionsSens in FD mode must not raise when kscpmin is absent."""
+        self._runAndCheck(mode="FD")
+
+
 if __name__ == "__main__":
     unittest.main()

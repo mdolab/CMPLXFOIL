@@ -817,9 +817,14 @@ class CMPLXFOIL(BaseSolver):
 
         self.__call__(self.curAP, useComplex=mode == "CS", deriv=True)
 
-        # Compute the Jacobian vector products
+        # Compute the Jacobian vector products. Only emit entries for functions
+        # that were actually populated by __call__; kscpmin in particular is only
+        # computed when it appears in AeroProblem.evalFuncs (see issue #44).
         jacVecProd = {}
+        funcsForMode = self.funcs[self.curAP.name] if mode == "FD" else self.funcsComplex[self.curAP.name]
         for f in self.functionList:
+            if f not in funcsForMode:
+                continue
             if mode == "FD":
                 jacVecProd[f] = (self.funcs[self.curAP.name][f] - orig_funcs[f]) / h
             else:
