@@ -333,17 +333,15 @@ class CMPLXFOIL(BaseSolver):
             "y_cf_lower": yCfLower,
         }
 
-        # Check if kscpmin is requested, if so, then compute it
-        if "kscpmin" in self.curAP.evalFuncs:
-            cpAll = np.concatenate(
-                (
-                    sliceData[aeroProblem.name]["cp_visc_upper"],
-                    sliceData[aeroProblem.name]["cp_visc_lower"],
-                )
+        # Compute min pressure using KS aggregation
+        cpAll = np.concatenate(
+            (
+                sliceData[aeroProblem.name]["cp_visc_upper"],
+                sliceData[aeroProblem.name]["cp_visc_lower"],
             )
-            kscpmin = -self.computeKSMax(-cpAll, rho=self.getOption("rhoKS"), printOK=False)
-
-            funcs[aeroProblem.name]["kscpmin"] = dtype(kscpmin)
+        )
+        kscpmin = -self.computeKSMax(-cpAll, rho=self.getOption("rhoKS"))
+        funcs[aeroProblem.name]["kscpmin"] = dtype(kscpmin)
 
         # Check for failure
         self.curAP.solveFailed = self.curAP.fatalFail = xfoil.cl01.lexitflag != 0 or xfoil.cl01.lvconv == 0
@@ -356,7 +354,7 @@ class CMPLXFOIL(BaseSolver):
         if not deriv and self.getOption("writeSolution"):
             self.writeSolution()
 
-    def computeKSMax(self, g, rho, printOK=True):
+    def computeKSMax(self, g, rho):
         """
         Compute a smooth approximation to the maximum of a set of values
         using Kreisselmeier--Steinhauser aggregation.
@@ -377,9 +375,6 @@ class CMPLXFOIL(BaseSolver):
 
         maxg = np.max(g)
         ksmax = maxg + 1.0 / rho * np.log(np.sum(np.exp(rho * (g - maxg))))
-
-        if printOK:
-            print(f"true max: {maxg} \nks max:   {ksmax}")
 
         return ksmax
 
@@ -817,14 +812,9 @@ class CMPLXFOIL(BaseSolver):
 
         self.__call__(self.curAP, useComplex=mode == "CS", deriv=True)
 
-        # Compute the Jacobian vector products. Only emit entries for functions
-        # that were actually populated by __call__; kscpmin in particular is only
-        # computed when it appears in AeroProblem.evalFuncs (see issue #44).
+        # Compute the Jacobian vector products
         jacVecProd = {}
-        funcsForMode = self.funcs[self.curAP.name] if mode == "FD" else self.funcsComplex[self.curAP.name]
         for f in self.functionList:
-            if f not in funcsForMode:
-                continue
             if mode == "FD":
                 jacVecProd[f] = (self.funcs[self.curAP.name][f] - orig_funcs[f]) / h
             else:

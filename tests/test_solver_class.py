@@ -489,12 +489,12 @@ class TestPlotting(unittest.TestCase):
 class TestIssue44Regression(unittest.TestCase):
     """Regression test for mdolab/CMPLXFOIL#44.
 
-    Before the fix, computeJacobianVectorProductFwd iterated unconditionally over
-    self.functionList (which always contains "kscpmin") and indexed into
-    self.funcs[apName]. If the user's AeroProblem.evalFuncs did not include
-    "kscpmin", that entry was never populated by __call__ and the access raised
-    KeyError: 'kscpmin'. The fix makes the derivative loop mirror the gating in
-    __call__ by only emitting Jacobian entries for functions actually computed.
+    Before the fix, __call__ only computed kscpmin when it appeared in
+    AeroProblem.evalFuncs, but computeJacobianVectorProductFwd iterated
+    unconditionally over self.functionList and indexed into self.funcs[apName],
+    raising KeyError: 'kscpmin' for any user whose evalFuncs was a strict subset
+    (e.g. evalFuncs=["cl", "cd"] as in examples/single_point.py). The fix makes
+    __call__ always compute kscpmin, consistent with cl/cd/cdp/cm.
     """
 
     def setUp(self):
