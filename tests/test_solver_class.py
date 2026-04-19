@@ -15,12 +15,13 @@ import os
 import unittest
 import numpy as np
 
-externalImportsFailed = False
+from baseclasses import AeroProblem
+
+pygeoImportFailed = False
 try:
-    from baseclasses import AeroProblem
     from pygeo import DVGeometry, DVGeometryCST
 except ImportError:
-    externalImportsFailed = True
+    pygeoImportFailed = True
 
 baseDir = os.path.dirname(os.path.abspath(__file__))  # Path to current folder
 
@@ -157,6 +158,7 @@ class TestTransition(unittest.TestCase):
             self.assertNotEqual(funcs["fc_" + func], funcsNCrit["fc_" + func])
 
 
+@unittest.skipIf(pygeoImportFailed, "pygeo not available")
 class TestDerivativesFFD(unittest.TestCase):
     def setUp(self):
         # Set the random range to use consistent random numbers
@@ -294,6 +296,7 @@ class TestDerivativesFFD(unittest.TestCase):
             np.testing.assert_allclose(actualSensFD, actualSensCS, rtol=relTol, atol=absTol)
 
 
+@unittest.skipIf(pygeoImportFailed, "pygeo not available")
 class TestDerivativesCST(unittest.TestCase):
     def setUp(self):
         # Flight conditions
@@ -485,31 +488,14 @@ class TestPlotting(unittest.TestCase):
         self.CFDSolver._updateAirfoilPlot(pause=False)
 
 
-@unittest.skipIf(externalImportsFailed, "Required external imports (baseclasses, pygeo) failed")
 class TestIssue44Regression(unittest.TestCase):
-    """Regression test for mdolab/CMPLXFOIL#44.
-
-    Before the fix, __call__ only computed kscpmin when it appeared in
-    AeroProblem.evalFuncs, but computeJacobianVectorProductFwd iterated
-    unconditionally over self.functionList and indexed into self.funcs[apName],
-    raising KeyError: 'kscpmin' for any user whose evalFuncs was a strict subset
-    (e.g. evalFuncs=["cl", "cd"] as in examples/single_point.py). The fix makes
-    __call__ always compute kscpmin, consistent with cl/cd/cdp/cm.
-    """
+    """Regression tests for mdolab/CMPLXFOIL#44."""
 
     def setUp(self):
-        cmplxfoilOptions = {
-            "printRealConvergence": False,
-            "writeCoordinates": False,
-            "plotAirfoil": False,
-            "writeSolution": False,
-        }
         self.CFDSolver = CMPLXFOIL(
-            os.path.join(baseDir, "naca0012.dat"), options=cmplxfoilOptions
+            os.path.join(baseDir, "naca0012.dat"),
+            options={"printRealConvergence": False, "writeSolution": False, "writeCoordinates": False},
         )
-
-        # Intentionally omit "kscpmin" — this is exactly the scenario that
-        # triggers issue #44 (and matches examples/single_point.py).
         self.ap = AeroProblem(
             name="fc",
             alpha=1.5,
@@ -523,32 +509,22 @@ class TestIssue44Regression(unittest.TestCase):
         )
         self.ap.addDV("alpha", value=1.5, lower=0.0, upper=10.0, scale=1.0)
 
-        FFDFile = os.path.join(baseDir, "naca0012_ffd.xyz")
-        self.DVGeo = DVGeometry(FFDFile)
-        self.DVGeo.addLocalDV("shape", lower=-0.05, upper=0.05, axis="y", scale=1.0)
-        self.CFDSolver.setDVGeo(self.DVGeo)
-
     def _runAndCheck(self, mode):
         self.CFDSolver(self.ap)
+
+        funcs = {}
+        self.CFDSolver.evalFunctions(self.ap, funcs)
+        self.assertEqual(set(funcs.keys()), {"fc_cl", "fc_cd"})
+
         funcsSens = {}
-        # Before the fix, this raised KeyError: 'kscpmin'.
         self.CFDSolver.evalFunctionsSens(self.ap, funcsSens, mode=mode)
+        funcSensKeys = {k for k in funcsSens if k != "fail"}
+        self.assertEqual(funcSensKeys, {"fc_cl", "fc_cd"})
 
-        self.assertIn("fc_cl", funcsSens)
-        self.assertIn("fc_cd", funcsSens)
-        self.assertNotIn("fc_kscpmin", funcsSens)
-
-        # Sanity-check shape of returned sensitivities.
-        alphaKey = "alpha_fc"
-        self.assertIn(alphaKey, funcsSens["fc_cl"])
-        self.assertIn("shape", funcsSens["fc_cl"])
-
-    def test_evalFunctionsSens_without_kscpmin_CS(self):
-        """evalFunctionsSens in CS mode must not raise when kscpmin is absent."""
+    def test_evalFunctions_and_sens_without_kscpmin_CS(self):
         self._runAndCheck(mode="CS")
 
-    def test_evalFunctionsSens_without_kscpmin_FD(self):
-        """evalFunctionsSens in FD mode must not raise when kscpmin is absent."""
+    def test_evalFunctions_and_sens_without_kscpmin_FD(self):
         self._runAndCheck(mode="FD")
 
 

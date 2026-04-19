@@ -700,7 +700,7 @@ class CMPLXFOIL(BaseSolver):
         evalFuncs = [s.lower() for s in evalFuncs]
 
         # Get design variables
-        DVs = self.DVGeo.getValues()
+        DVs = self.DVGeo.getValues() if self.DVGeo is not None else {}
         for dv in self.curAP.DVs.values():
             DVs[dv.key] = np.atleast_1d(dv.value)
 
@@ -767,10 +767,7 @@ class CMPLXFOIL(BaseSolver):
         if mode not in ["FD", "CS"]:
             raise ValueError(f'Jacobian vector product mode "{mode}" invalid. Must be either "FD" or "CS"')
 
-        if self.DVGeo is None:
-            raise ValueError("DVGeo object must be added with setDVGeo before calling computeJacobianVectorProductFwd")
-
-        geoDVs = list(self.DVGeo.getValues().keys())
+        geoDVs = list(self.DVGeo.getValues().keys()) if self.DVGeo is not None else []
         possibleDVs = self.possibleAeroDVs + geoDVs
         for DV in xDvDot.keys():
             if DV not in possibleDVs:
