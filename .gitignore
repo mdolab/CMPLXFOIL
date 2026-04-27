@@ -14,6 +14,9 @@ config/config*
 *.out
 *.egg-info
 
+# Ignore example output
+examples/output/
+
 # ==============================================================================
 # Github python gitignore template
 # ==============================================================================

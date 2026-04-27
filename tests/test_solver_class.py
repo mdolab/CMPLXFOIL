@@ -15,12 +15,13 @@ import os
 import unittest
 import numpy as np
 
-externalImportsFailed = False
+from baseclasses import AeroProblem
+
+pygeoImportFailed = False
 try:
-    from baseclasses import AeroProblem
     from pygeo import DVGeometry, DVGeometryCST
 except ImportError:
-    externalImportsFailed = True
+    pygeoImportFailed = True
 
 baseDir = os.path.dirname(os.path.abspath(__file__))  # Path to current folder
 
@@ -157,6 +158,7 @@ class TestTransition(unittest.TestCase):
             self.assertNotEqual(funcs["fc_" + func], funcsNCrit["fc_" + func])
 
 
+@unittest.skipIf(pygeoImportFailed, "pygeo not available")
 class TestDerivativesFFD(unittest.TestCase):
     def setUp(self):
         # Set the random range to use consistent random numbers
@@ -294,6 +296,7 @@ class TestDerivativesFFD(unittest.TestCase):
             np.testing.assert_allclose(actualSensFD, actualSensCS, rtol=relTol, atol=absTol)
 
 
+@unittest.skipIf(pygeoImportFailed, "pygeo not available")
 class TestDerivativesCST(unittest.TestCase):
     def setUp(self):
         # Flight conditions
@@ -483,6 +486,56 @@ class TestPlotting(unittest.TestCase):
         self.ap.alpha = 5.0
         self.CFDSolver(self.ap)
         self.CFDSolver._updateAirfoilPlot(pause=False)
+
+
+class TestEvalFunctions(unittest.TestCase):
+    """Check that functions and derivatives are returned for the specified evalFuncs and the evalFuncs only."""
+
+    def setUp(self):
+        self.CFDSolver = CMPLXFOIL(
+            os.path.join(baseDir, "naca0012.dat"),
+            options={"printRealConvergence": False, "writeSolution": False, "writeCoordinates": False},
+        )
+        self.ap = AeroProblem(
+            name="fc",
+            alpha=1.5,
+            mach=0.3,
+            reynolds=1e6,
+            reynoldsLength=1.0,
+            T=288.15,
+            areaRef=1.0,
+            chordRef=1.0,
+        )
+        self.ap.addDV("alpha", value=1.5, lower=0.0, upper=10.0, scale=1.0)
+        self.CFDSolver(self.ap)
+
+    def _runAndCheck(self, mode):
+        self.CFDSolver(self.ap)
+
+        funcs = {}
+        self.CFDSolver.evalFunctions(self.ap, funcs)
+        self.assertEqual(set(funcs.keys()), {"fc_cl", "fc_cd"})
+
+        funcsSens = {}
+        self.CFDSolver.evalFunctionsSens(self.ap, funcsSens, mode=mode)
+        funcSensKeys = {k for k in funcsSens if k != "fail"}
+        self.assertEqual(funcSensKeys, {"fc_cl", "fc_cd"})
+
+    def test_evalFunctionsKeys(self):
+        for func in self.CFDSolver.functionList:
+            with self.subTest(func=func):
+                funcs = {}
+                self.CFDSolver.evalFunctions(self.ap, funcs, evalFuncs=[func])
+                self.assertEqual(set(funcs.keys()), {f"fc_{func}"})
+
+    def test_evalFunctionsSensKeys(self):
+        for func in self.CFDSolver.functionList:
+            with self.subTest(func=func):
+                for mode in ["FD", "CS"]:
+                    with self.subTest(mode=mode):
+                        funcsSens = {}
+                        self.CFDSolver.evalFunctionsSens(self.ap, funcsSens, evalFuncs=[func], mode=mode)
+                        self.assertEqual(set(funcsSens.keys()), {f"fc_{func}", "fail"})
 
 
 if __name__ == "__main__":
